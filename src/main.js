@@ -1,10 +1,10 @@
 import k from "./kaplayCtx";
-import mainMenu from "./scenes/mainMenu";
+import mainMenu from "./scenes/spinning";
 
 k.loadSprite("frame-1", "images/frames/frame-1.png");
+k.loadSprite("wheel-border", "images/wheel-border.png")
+k.loadSprite("bgcolor", "images/bgcolor.png");
 
-k.scene("main-menu", mainMenu());
+k.scene("spinning", mainMenu());
 
-//k.scene("game", () => {})
-
-k.go("main-menu");
+k.go("spinning");
