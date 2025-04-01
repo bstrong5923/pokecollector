@@ -1,4 +1,4 @@
-import { onClick } from "kaplay/dist/declaration/events";
+import { onClick } from "/node_modules/kaplay/dist/declaration/events";
 import k from "../kaplayCtx";
 import { screenWidth, screenHeight } from "../kaplayCtx";
 
@@ -6,7 +6,7 @@ export default function spinning() {
     const wheelWidth = 600;
     const wheelX = screenWidth / 2 - 403;
     const wheelY = screenHeight / 2 - 175;
-    let speed = 0;
+    let speed = 15;
     
     let wheel = [
         k.add([k.sprite("boxes", { frame: Math.floor(Math.random() * 7) }), k.pos(wheelX, wheelY)]),
@@ -23,11 +23,11 @@ export default function spinning() {
     ];
     const spinbutton = k.add([k.sprite("spinbutton"), k.pos(screenWidth / 2 - 75, screenHeight / 2 + 100)]);
 
-    onClick("spinbutton", (spinbutton) => {
-        if (speed == 0) {
-            speed = 20;
-        }
-    });
+    // onClick("spinbutton", (spinbutton) => {
+    //     if (speed == 0) {
+    //         speed = 20;
+    //     }
+    // });
 
     k.onUpdate(() => {
         for (const box of wheel) {
@@ -37,6 +37,6 @@ export default function spinning() {
                 box.frame = Math.floor(Math.random() * 7);
             }
         }
-        speed--;
+        // speed--;
     });
 }
