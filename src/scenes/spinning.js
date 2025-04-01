@@ -1,4 +1,4 @@
-import { onClick } from "/node_modules/kaplay/dist/declaration/events";
+// import { onClick } from "/node_modules/kaplay/dist/declaration/events";
 import k from "../kaplayCtx";
 import { screenWidth, screenHeight } from "../kaplayCtx";
 
