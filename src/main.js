@@ -1,5 +1,12 @@
 import k from "./kaplayCtx";
-import mainMenu from "./scenes/spinning";
+import spinningScene from "./scenes/spinningScene";
+import inventoryScene from "./scenes/inventoryScene";
+
+k.loadBean();
+
+k.scene("test", () => {k.add([k.sprite("bean")])});
+
+k.go("test");
 
 k.loadSprite("boxes", "images/allboxes.png", {
     sliceX: 4,
@@ -9,8 +16,7 @@ k.loadSprite("wheelborder", "images/wheelborder.png")
 k.loadSprite("bgcolor", "images/bgcolor.png");
 k.loadSprite("spinbutton", "images/spinbutton.png");
 
-k.scene("spinning", mainMenu());
+k.scene("spinningScene", spinningScene());
+k.scene("inventoryScene", inventoryScene());
 
-console.log(process.env.NODE_PATH);
-
-k.go("spinning");
+k.go("inventoryScene");

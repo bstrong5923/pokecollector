@@ -1,7 +1,7 @@
 import k from "../kaplayCtx";
 import { screenWidth, screenHeight } from "../kaplayCtx";
 
-export default function spinning() {
+export default function spinningScene() {
     const wheelWidth = 600;
     const wheelX = screenWidth / 2 - 403;
     const wheelY = screenHeight / 2 - 175;
@@ -25,7 +25,7 @@ export default function spinning() {
 
     spinbutton.onClick(() => {
         if (speed == 0) {
-            speed = 30;
+            speed = 180;
         }
     });
 
@@ -41,7 +41,7 @@ export default function spinning() {
             }
         }
         if (speed > 0) {
-            speed -= 0.05;
+            speed *= 0.99;
         }
     });
 }
