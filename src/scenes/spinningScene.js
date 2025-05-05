@@ -7,13 +7,11 @@ export default function spinningScene() {
     const wheelY = screenHeight / 2 - 175;
     let speed = 0;
     
-    let wheel = [
-        k.add([k.sprite("boxes", { frame: Math.floor(Math.random() * 7) }), k.pos(wheelX, wheelY)]),
-        k.add([k.sprite("boxes", { frame: Math.floor(Math.random() * 7) }), k.pos(wheelX + 202, wheelY)]),
-        k.add([k.sprite("boxes", { frame: Math.floor(Math.random() * 7) }), k.pos(wheelX + 404, wheelY)]),
-        k.add([k.sprite("boxes", { frame: Math.floor(Math.random() * 7) }), k.pos(wheelX + 606, wheelY)]),
-        k.add([k.sprite("boxes", { frame: Math.floor(Math.random() * 7) }), k.pos(wheelX + 808, wheelY)]),
-    ];
+    let wheel = [];
+    for (let x = 0; x <= 4; x++) {
+        wheel.push(k.add([k.sprite("boxes", { frame: Math.floor(Math.random() * 7) }), k.pos(wheelX + 202 * x, wheelY)]))
+    }
+    let wheeldisplay = [];
 
     const bgcolor = [
         k.add([k.sprite("bgcolor"), k.pos(screenWidth / 2 - 614, screenHeight / 2 - 180)]),
@@ -25,13 +23,18 @@ export default function spinningScene() {
 
     spinbutton.onClick(() => {
         if (speed == 0) {
-            speed = 180;
+            speed = (Math.random() * 20 + 180);
         }
     });
 
     k.onUpdate(() => {
-        if (speed < .05) {
+        if (speed < .05 && speed != 0) {
             speed = 0;
+            for (const box of wheel) {
+                if (box.pos.x < screenWidth / 2 && box.pos.x > screenWidth / 2 - 200) {
+                    console.log("a");
+                }
+            }    
         }
         for (const box of wheel) {
             box.pos.x -= speed;
@@ -44,4 +47,11 @@ export default function spinningScene() {
             speed *= 0.99;
         }
     });
+}
+
+class Box {
+    constructor() {
+        this.rarity = Math.floor(Math.random() * 7)
+        this.sprite = k.sprite("boxes", { frame: rarity })
+    }
 }

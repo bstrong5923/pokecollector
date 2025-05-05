@@ -13,4 +13,4 @@ k.loadSprite("spinbutton", "images/spinbutton.png");
 k.scene("spinningScene", () => spinningScene());
 k.scene("inventoryScene", () => inventoryScene());
 
-k.go("inventoryScene");
+k.go("spinningScene");
