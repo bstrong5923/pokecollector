@@ -1,57 +1,72 @@
 import k from "../kaplayCtx";
 import { screenWidth, screenHeight } from "../kaplayCtx";
+import { inventory } from "../inventory";
 
-export default function spinningScene() {
-    const wheelWidth = 600;
-    const wheelX = screenWidth / 2 - 403;
-    const wheelY = screenHeight / 2 - 175;
+
+export default function spinningScene() { // scene of wheel spinnin'
+
+    const wheelX = screenWidth / 2 - 403; // starting point for the boxes and wheel
+    const wheelY = screenHeight / 2 - 175; // starting point for the boxes and wheel
     let speed = 0;
+    k.layers(["boxes", "wheel"], "boxes"); // boxes go behing wheel
     
     let wheel = [];
-    for (let x = 0; x <= 4; x++) {
-        wheel.push(k.add([k.sprite("boxes", { frame: Math.floor(Math.random() * 7) }), k.pos(wheelX + 202 * x, wheelY)]))
+    for (let x = 0; x <= 4; x++) { // wheel is a list of box objects
+        wheel.push(new Box());
+        wheel[x].add(wheelX + 202 * x, wheelY); // each one is 200 px wide, with 2 px in between
     }
-    let wheeldisplay = [];
 
-    const bgcolor = [
-        k.add([k.sprite("bgcolor"), k.pos(screenWidth / 2 - 614, screenHeight / 2 - 180)]),
-        k.add([k.sprite("bgcolor"), k.pos(screenWidth / 2 + 404, screenHeight / 2 - 180)]),
+
+    const bgcolor = [ // cover up the boxes that go outside the wheel
+        k.add([k.sprite("bgcolor"), k.pos(screenWidth / 2 - 614, screenHeight / 2 - 180), k.layer("wheel")]),
+        k.add([k.sprite("bgcolor"), k.pos(screenWidth / 2 + 404, screenHeight / 2 - 180), k.layer("wheel")]),
     ];
-    const wheelborder = k.add([k.sprite("wheelborder"), k.pos(screenWidth / 2 - 408, screenHeight / 2 - 180)]);
-    const spinbutton = k.add([k.sprite("spinbutton"), k.pos(screenWidth / 2 - 75, screenHeight / 2 + 100), k.area()]);
+    const wheelborder = k.add([k.sprite("wheelborder"), k.pos(screenWidth / 2 - 408, screenHeight / 2 - 180), k.layer("wheel")]); // the wheel
+    const spinbutton = k.add([k.sprite("spinbutton"), k.pos(screenWidth / 2 - 75, screenHeight / 2 + 100), k.area(), k.layer("wheel")]); // spin button
 
 
-    spinbutton.onClick(() => {
+
+
+    spinbutton.onClick(() => { // when spinbutton clicked, speed it set between 180 and 200
         if (speed == 0) {
-            speed = (Math.random() * 20 + 180);
+            speed = Math.floor(Math.random() * 21 + 180);
         }
     });
 
+
     k.onUpdate(() => {
-        if (speed < .05 && speed != 0) {
+        if (speed < .15 && speed != 0) { // If speed is close enough to 0, set it to 0
             speed = 0;
             for (const box of wheel) {
-                if (box.pos.x < screenWidth / 2 && box.pos.x > screenWidth / 2 - 200) {
-                    console.log("a");
+                if (box.sprite.pos.x > wheelX + 202 && box.sprite.pos.x < wheelX + 405) { // which box did it land on?
+                    inventory.push(box);
+                    console.log(box.rarity);
                 }
             }    
         }
-        for (const box of wheel) {
-            box.pos.x -= speed;
-            if (box.pos.x < wheelX - 200) {
-                box.pos.x += 1010;
-                box.frame = Math.floor(Math.random() * 7);
-            }
+        for (const box of wheel) { // move the boxes
+            box.sprite.pos.x -= speed;
         }
-        if (speed > 0) {
-            speed *= 0.99;
+        if (wheel[0].sprite.pos.x < wheelX - 200) { // if its outside the wheel:
+            const x = wheel[0].sprite.pos.x + 1010;
+            wheel[0].sprite.destroy(); // get rid of it
+            wheel.shift();
+            wheel.push(new Box()); // and add a new one to the right
+            wheel[4].add(x, wheelY);
+        }
+        if (speed > 0) { 
+            speed *= 0.985; // slow down a lil
         }
     });
 }
 
+
 class Box {
     constructor() {
-        this.rarity = Math.floor(Math.random() * 7)
-        this.sprite = k.sprite("boxes", { frame: rarity })
+        this.rarity = Math.floor(Math.random() * 7); // random rarity
+    }
+    add(x, y) {
+        this.sprite = k.add([k.sprite("boxes", { frame: this.rarity }), k.pos(x, y)]); // k.add
     }
 }
+
