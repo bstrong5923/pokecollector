@@ -39,7 +39,7 @@ export default function spinningScene() { // scene of wheel spinnin'
         if (speed < .15 && speed != 0) { // If speed is close enough to 0, set it to 0
             speed = 0;
             for (const box of wheel) {
-                if (box.sprite.pos.x > wheelX + 202 && box.sprite.pos.x < wheelX + 405) { // which box did it land on?
+                if (box.sprite.pos.x >= wheelX + 203 && box.sprite.pos.x <= wheelX + 404) { // which box did it land on?
                     inventory.push(box);
                     console.log(box.rarity);
                 }
