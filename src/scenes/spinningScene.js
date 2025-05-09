@@ -1,7 +1,10 @@
 import k from "../kaplayCtx";
-import { screenWidth, screenHeight } from "../kaplayCtx";
+import menu from "../menu";
+import { screenHeight, screenWidth, menuHeight } from "../menu";
 
 export default function spinningScene() {
+    menu();
+
     const wheelWidth = 600;
     const wheelX = screenWidth / 2 - 403;
     const wheelY = screenHeight / 2 - 175;

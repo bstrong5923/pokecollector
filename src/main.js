@@ -10,6 +10,8 @@ k.loadSprite("wheelborder", "images/wheelborder.png")
 k.loadSprite("bgcolor", "images/bgcolor.png");
 k.loadSprite("spinbutton", "images/spinbutton.png");
 
+k.loadFont("pkmn", "fonts/pkmn_rbygsc.ttf")
+
 k.scene("spinningScene", () => spinningScene());
 k.scene("inventoryScene", () => inventoryScene());
 
