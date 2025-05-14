@@ -1,15 +1,16 @@
 import k from "../kaplayCtx";
-import { screenWidth, screenHeight } from "../kaplayCtx";
 import { inventory } from "../inventory";
+import menu from "../menu";
+import { menuHeight, screenWidth, screenHeight } from "../menu";
 
 
 export default function spinningScene() { // scene of wheel spinnin'
+    menu("spinning");
 
     const wheelX = screenWidth / 2 - 403; // starting point for the boxes and wheel
-    const wheelY = screenHeight / 2 - 175; // starting point for the boxes and wheel
+    const wheelY = screenHeight / 2 - 175 + menuHeight; // starting point for the boxes and wheel
     let speed = 0;
-    k.layers(["boxes", "wheel"], "boxes"); // boxes go behing wheel
-    
+
     let wheel = [];
     for (let x = 0; x <= 4; x++) { // wheel is a list of box objects
         wheel.push(new Box());
@@ -18,11 +19,11 @@ export default function spinningScene() { // scene of wheel spinnin'
 
 
     const bgcolor = [ // cover up the boxes that go outside the wheel
-        k.add([k.sprite("bgcolor"), k.pos(screenWidth / 2 - 614, screenHeight / 2 - 180), k.layer("wheel")]),
-        k.add([k.sprite("bgcolor"), k.pos(screenWidth / 2 + 404, screenHeight / 2 - 180), k.layer("wheel")]),
+        k.add([k.sprite("bgcolor"), k.pos(screenWidth / 2 - 614, screenHeight / 2 - 180 + menuHeight), k.layer("wheel")]),
+        k.add([k.sprite("bgcolor"), k.pos(screenWidth / 2 + 404, screenHeight / 2 - 180 + menuHeight), k.layer("wheel")]),
     ];
-    const wheelborder = k.add([k.sprite("wheelborder"), k.pos(screenWidth / 2 - 408, screenHeight / 2 - 180), k.layer("wheel")]); // the wheel
-    const spinbutton = k.add([k.sprite("spinbutton"), k.pos(screenWidth / 2 - 75, screenHeight / 2 + 100), k.area(), k.layer("wheel")]); // spin button
+    const wheelborder = k.add([k.sprite("wheelborder"), k.pos(screenWidth / 2 - 408, screenHeight / 2 - 180 + menuHeight), k.layer("wheel")]); // the wheel
+    const spinbutton = k.add([k.sprite("spinbutton"), k.pos(screenWidth / 2 - 75, screenHeight / 2 + 100 + menuHeight), k.area(), k.layer("wheel")]); // spin button
 
 
 
