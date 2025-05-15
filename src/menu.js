@@ -44,7 +44,5 @@ export default function menu(current) {
         buttons.push(button); // add it to buttons
         
     }
-
-    // git test
 }
 
