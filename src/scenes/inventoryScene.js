@@ -1,10 +1,10 @@
 import k from "../kaplayCtx";
 import menu from "../menu";
-import { screenHeight, screenWidth, menuHeight } from "../menu";
-import inventory from inventory;
+import { menuHeight, screenWidth, screenHeight } from "../menu";
+import { inventory } from "../inventory";
 
-export default function inventoryScene() {
-    menu();
+export default function inventoryScene() { // scene showin inventory
+    menu("inventory");
 
-    k.add([k.text("Inventory size: " + inventory.length), k.pos(screenWidth / 2, screenHeight / 2)]);
+    k.add([k.text(inventory.length, {size: 36, font: "pkmn"}), k.pos(screenWidth / 2, screenHeight / 2)]);
 }

@@ -2,7 +2,11 @@ import k from "./kaplayCtx";
 import spinningScene from "./scenes/spinningScene";
 import inventoryScene from "./scenes/inventoryScene";
 
-k.loadSprite("boxes", "images/allboxes.png", {
+// set up layers
+k.setLayers(["boxes", "wheel"], "boxes"); 
+
+// load the sprites
+k.loadSprite("boxes", "images/allboxes.png", { 
     sliceX: 4,
     sliceY: 2,
 });
@@ -10,9 +14,12 @@ k.loadSprite("wheelborder", "images/wheelborder.png")
 k.loadSprite("bgcolor", "images/bgcolor.png");
 k.loadSprite("spinbutton", "images/spinbutton.png");
 
-k.loadFont("pkmn", "fonts/pkmn_rbygsc.ttf")
-
-k.scene("spinningScene", () => spinningScene());
+// create the scenes
+k.scene("spinningScene", () => spinningScene()); 
 k.scene("inventoryScene", () => inventoryScene());
 
+// load fonts
+k.loadFont("pkmn", "fonts/pkmn_rbygsc.ttf");
+
+// v start on this scene v
 k.go("spinningScene");
