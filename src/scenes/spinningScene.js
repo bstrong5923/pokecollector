@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { inventory } from "../inventory";
+import { inventory, Box } from "../constants";
 import menu from "../menu";
 import { menuHeight, screenWidth, screenHeight } from "../menu";
 
@@ -25,23 +25,28 @@ export default function spinningScene() { // scene of wheel spinnin'
     const wheelborder = k.add([k.sprite("wheelborder"), k.pos(screenWidth / 2 - 408, screenHeight / 2 - 180 + menuHeight), k.layer("wheel")]); // the wheel
     const spinbutton = k.add([k.sprite("spinbutton"), k.pos(screenWidth / 2 - 75, screenHeight / 2 + 100 + menuHeight), k.area(), k.layer("wheel")]); // spin button
 
-
+    const shine = k.add([k.sprite("shine"), k.pos(0, 0), k.layer("wheel"), k.opacity(0)]);
+    let updown = 0;
 
 
     spinbutton.onClick(() => { // when spinbutton clicked, speed it set between 180 and 200
-        if (speed == 0) {
+        if (speed == 0 && shine.opacity == 0) {
             speed = Math.floor(Math.random() * 21 + 180);
         }
     });
 
 
     k.onUpdate(() => {
-        if (speed < .15 && speed != 0) { // If speed is close enough to 0, set it to 0
+        if (speed < 0.15 && speed != 0) { // If speed is close enough to 0, set it to 0
             speed = 0;
             for (const box of wheel) {
                 if (box.sprite.pos.x >= wheelX + 203 && box.sprite.pos.x <= wheelX + 404) { // which box did it land on?
+                    shine.pos.x = box.sprite.pos.x - 65;
+                    shine.pos.y = box.sprite.pos.y - 69;
+                    updown = 1;
                     inventory.push(box);
                     console.log(box.rarity);
+                    
                 }
             }    
         }
@@ -56,18 +61,17 @@ export default function spinningScene() { // scene of wheel spinnin'
             wheel[4].add(x, wheelY);
         }
         if (speed > 0) { 
-            speed *= 0.985; // slow down a lil
+            speed *= 0.975 + .0001 * speed; // slow down a lil
+        }
+
+        shine.opacity += .02 * updown;
+        if (shine.opacity >= 1) {
+            updown = -1;
+        }
+        else if (shine.opacity <= 0 && updown != 0) {
+            shine.opacity = 0;
+            updown = 0;
         }
     });
-}
-
-
-class Box {
-    constructor() {
-        this.rarity = Math.floor(Math.random() * 7); // random rarity
-    }
-    add(x, y) {
-        this.sprite = k.add([k.sprite("boxes", { frame: this.rarity }), k.pos(x, y)]); // k.add
-    }
 }
 
