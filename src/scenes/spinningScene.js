@@ -25,13 +25,16 @@ export default function spinningScene() { // scene of wheel spinnin'
     const wheelborder = k.add([k.sprite("wheelborder"), k.pos(screenWidth / 2 - 408, screenHeight / 2 - 180 + menuHeight), k.layer("wheel")]); // the wheel
     const spinbutton = k.add([k.sprite("spinbutton"), k.pos(screenWidth / 2 - 75, screenHeight / 2 + 100 + menuHeight), k.area(), k.layer("wheel")]); // spin button
 
-    const shine = k.add([k.sprite("shine"), k.pos(0, 0), k.layer("wheel"), k.opacity(0)]);
-    let updown = 0;
-
 
     spinbutton.onClick(() => { // when spinbutton clicked, speed it set between 180 and 200
-        if (speed == 0 && shine.opacity == 0) {
+        if (speed == 0) {
             speed = Math.floor(Math.random() * 21 + 180);
+            for (const box of wheel) {
+                if (box.sprite.pos.y != wheelY) {
+                    box.sprite.pos.y -= 7.5;
+                    box.sprite.pos.x -= 10;
+                }
+            }
         }
     });
 
@@ -41,12 +44,15 @@ export default function spinningScene() { // scene of wheel spinnin'
             speed = 0;
             for (const box of wheel) {
                 if (box.sprite.pos.x >= wheelX + 203 && box.sprite.pos.x <= wheelX + 404) { // which box did it land on?
-                    shine.pos.x = box.sprite.pos.x - 65;
-                    shine.pos.y = box.sprite.pos.y - 69;
-                    updown = 1;
                     inventory.push(box);
                     console.log(box.rarity);
                     
+                }
+                else {
+                    box.sprite.opacity = 0.4;
+                    box.sprite.scale = 0.9;
+                    box.sprite.pos.x += 10;
+                    box.sprite.pos.y += 7.5;
                 }
             }    
         }
@@ -62,15 +68,6 @@ export default function spinningScene() { // scene of wheel spinnin'
         }
         if (speed > 0) { 
             speed *= 0.975 + .0001 * speed; // slow down a lil
-        }
-
-        shine.opacity += .02 * updown;
-        if (shine.opacity >= 1) {
-            updown = -1;
-        }
-        else if (shine.opacity <= 0 && updown != 0) {
-            shine.opacity = 0;
-            updown = 0;
         }
     });
 }
