@@ -3,7 +3,7 @@ import spinningScene from "./scenes/spinningScene";
 import inventoryScene from "./scenes/inventoryScene";
 
 // set up layers
-k.setLayers(["boxes", "wheel"], "boxes"); 
+k.layers(["5", "4", "3", "2", "1", "0"], "4"); 
 
 // load the sprites
 k.loadSprite("boxes", "images/allboxes.png", { 
@@ -13,7 +13,9 @@ k.loadSprite("boxes", "images/allboxes.png", {
 k.loadSprite("wheelborder", "images/wheelborder.png")
 k.loadSprite("bgcolor", "images/bgcolor.png");
 k.loadSprite("spinbutton", "images/spinbutton.png");
-k.loadSprite("shine", "images/shine2.png");
+
+k.loadSprite("pagearrowright", "images/pagearrow/right.png");
+k.loadSprite("pagearrowleft", "images/pagearrow/left.png");
 
 // create the scenes
 k.scene("spinningScene", () => spinningScene()); 

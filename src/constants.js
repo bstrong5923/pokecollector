@@ -10,3 +10,4 @@ export class Box {
 }
 
 export const inventory = [];
+export const inventoryPage = [0];
