@@ -1,8 +1,9 @@
 import k from "../kaplayCtx";
-import { inventory, Box } from "../constants";
+import { inventory, Box, Pack, whichPack, packs } from "../constants";
 import menu from "../menu";
 import { menuHeight, screenWidth, screenHeight } from "../menu";
 
+const possibleItems = whichPack[0].items;
 
 export default function spinningScene() { // scene of wheel spinnin'
     menu("spinning");
@@ -13,7 +14,7 @@ export default function spinningScene() { // scene of wheel spinnin'
 
     let wheel = [];
     for (let x = 0; x <= 4; x++) { // wheel is a list of box objects
-        wheel.push(new Box());
+        wheel.push(pickRandomItem());
         wheel[x].add(wheelX + 202 * x, wheelY); // each one is 200 px wide, with 2 px in between
     }
 
@@ -65,7 +66,7 @@ export default function spinningScene() { // scene of wheel spinnin'
             const x = wheel[0].sprite.pos.x + 1010;
             wheel[0].sprite.destroy(); // get rid of it
             wheel.shift();
-            wheel.push(new Box()); // and add a new one to the right
+            wheel.push(pickRandomItem()); // and add a new one to the right
             wheel[4].add(x, wheelY);
         }
         if (speed > 0) { 
@@ -74,3 +75,6 @@ export default function spinningScene() { // scene of wheel spinnin'
     });
 }
 
+function pickRandomItem() {
+    return new Box();
+}

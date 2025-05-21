@@ -11,7 +11,7 @@ export default function menu(current) {
     k.add([k.rect(1920, menuHeight - 10), k.pos(0, 0), k.color(20, 20, 20)]);
     k.add([k.rect(1920, 10), k.pos(0, menuHeight - 10), k.color(0, 0, 0)]);
 
-    const scenes = ["spinning", "inventory"];
+    const scenes = ["packs", "inventory"];
     const widths = [165, 203];
 
     // totalWidth is the width from the start of the first to the end of the last, with spacing

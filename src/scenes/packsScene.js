@@ -1,41 +1,37 @@
 import k from "../kaplayCtx";
+import { packsPage, packs } from "../constants";
 import menu from "../menu";
 import { menuHeight, screenWidth, screenHeight } from "../menu";
-import { inventory, inventoryPage } from "../constants";
 
-export default function inventoryScene() { // scene showin inventory
-    menu("inventory");
-
-    if (inventory.length == 0) {
-        k.add([k.text("you broke cuh", {size: 36, font: "pkmn"}), k.pos(screenWidth / 2 - 13 * 14, screenHeight / 2 + menuHeight)])
-    }
+export default function packsScene() {
+    menu("packs");
 
     const spacing = 6;
     const xIndent = 36
     const yIndent = 10;
 
-    let page = inventoryPage[0];
+    let page = packsPage[0];
 
     if (page != 0) {
         const button = k.add([k.sprite("pagearrowleft"), k.pos(10, screenHeight / 2 + menuHeight - 75), k.opacity(0.8), k.area(), k.layer("1")]);
         button.onClick(() => { 
-            inventoryPage[0]--;
-            k.go("inventoryScene");
+            packsPage[0]--;
+            k.go("packsScene");
         });
     }
-    if (inventory.length > (page + 1) * 54) {
+    if (packs.length > (page + 1) * 54) {
         const button = k.add([k.sprite("pagearrowright"), k.pos(screenWidth - 160, screenHeight / 2 + menuHeight - 75), k.opacity(0.8), k.area(), k.layer("1")]);
         button.onClick(() => { 
-            inventoryPage[0]++;
-            k.go("inventoryScene");
+            packsPage[0]++;
+            k.go("packsScene");
         });
     }
 
     let x = xIndent
     let y = menuHeight + yIndent;
-    for (let i = page * 54; i < inventory.length && i < (page + 1) * 54; i++) {
-        const item = inventory[i];
-        item.add(x, y);
+    for (let i = page * 54; i < packs.length && i < (page + 1) * 54; i++) {
+        const pack = packs[i];
+        pack.add(x, y);
         x += 200 + spacing;
         if (x > screenWidth - 200 - xIndent) {
             y += 150 + spacing;
