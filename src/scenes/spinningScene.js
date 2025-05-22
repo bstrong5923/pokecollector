@@ -3,8 +3,6 @@ import { inventory, Box, Pack, whichPack, packs } from "../constants";
 import menu from "../menu";
 import { menuHeight, screenWidth, screenHeight } from "../menu";
 
-const possibleItems = whichPack[0].items;
-
 export default function spinningScene() { // scene of wheel spinnin'
     menu("spinning");
 
@@ -76,5 +74,5 @@ export default function spinningScene() { // scene of wheel spinnin'
 }
 
 function pickRandomItem() {
-    return new Box();
+    return whichPack[0].getRandom();
 }

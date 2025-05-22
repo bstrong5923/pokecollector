@@ -1,11 +1,14 @@
 import k from "./kaplayCtx";
 
 export class Box {
-    constructor() {
-        this.rarity = Math.floor(Math.random() * 7); // random rarity
+    constructor(rarity = Math.floor(Math.random() * 7)) {
+        this.rarity = rarity;
     }
     add(x, y) {
         this.sprite = k.add([k.sprite("boxes", { frame: this.rarity }), k.pos(x, y), k.opacity(1)]); // k.add
+    }
+    clone() {
+        return new Box(this.rarity)
     }
 }
 
@@ -20,6 +23,9 @@ export class Pack {
             whichPack[0] = this;
             k.go("spinningScene")
         });
+    }
+    getRandom() {
+        return this.items[Math.floor(Math.random() * this.items.length)].clone();
     }
 }
 
