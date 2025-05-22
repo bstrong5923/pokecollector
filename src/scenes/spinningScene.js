@@ -74,5 +74,5 @@ export default function spinningScene() { // scene of wheel spinnin'
 }
 
 function pickRandomItem() {
-    return whichPack[0].getRandom();
+    return packs[whichPack[0]].getRandom();
 }
