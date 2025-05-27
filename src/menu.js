@@ -6,6 +6,8 @@ export const menuHeight = 130;
 export const screenWidth = kScreenWidth
 export const screenHeight = kScreenHeight - menuHeight;
 
+export const page = [0];
+
 
 export default function menu(current) {
     k.add([k.rect(1920, menuHeight - 10), k.pos(0, 0), k.color(20, 20, 20)]);
@@ -36,6 +38,7 @@ export default function menu(current) {
         button.onClick(() => { // when the button is clicked:
             if (button.text != current) { // if it is not the current scene
                 k.go(button.text + "Scene"); // run the scene associated with it
+                page[0] = 0;
             }
         });
 
