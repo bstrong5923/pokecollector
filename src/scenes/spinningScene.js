@@ -25,7 +25,7 @@ export default function spinningScene() { // scene of wheel spinnin'
     let buymult = 1;
 
     const buymultbutton = k.add([k.sprite("buymults", { frame: 0 }), k.pos(screenWidth / 2 - 243, screenHeight / 2 + 40 + menuHeight), k.area(), k.layer("1")]);
-    const buybutton = k.add([k.sprite("buybutton"), k.pos(screenWidth / 2 - 77, screenHeight / 2 + 40 + menuHeight), k.area(), k.layer("1")]);
+    const buybutton = k.add([k.sprite("buybutton"), k.pos(screenWidth / 2 - 77, screenHeight / 2 + 40 + menuHeight), k.area(), k.layer("1"), k.opacity(1)]);
     const spinbutton = k.add([k.sprite("spinbutton"), k.pos(screenWidth / 2 + 89, screenHeight / 2 + 40 + menuHeight), k.area(), k.layer("1")]); // spin button
     let pricedisplay = k.add([k.text("Price: *" + packs[whichPack].price, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 70 - Math.floor(Math.log10(packs[whichPack].price)) * 14, screenHeight / 2 + menuHeight + 140)]);
     let owneddisplay = k.add([k.text("Owned: " + packsowned[whichPack], { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 75 - Math.floor(Math.log10(packsowned[whichPack] + 1)) * 12, screenHeight / 2 + menuHeight + 180)]);
@@ -50,8 +50,9 @@ export default function spinningScene() { // scene of wheel spinnin'
         }
     });
     spinbutton.onClick(() => { // when spinbutton clicked, speed it set between 180 and 200
-        if (speed == 0) {
+        if (speed == 0 && packsowned[whichPack] > 0) {
             turnMenuOff();
+            packsowned[whichPack]--;
             speed = Math.floor(Math.random() * 21 + 180);
             for (let i = 0; i < wheel.length; i++) {
                 const box = wheel[i];
@@ -70,6 +71,12 @@ export default function spinningScene() { // scene of wheel spinnin'
         pricedisplay.pos.x = screenWidth / 2 - 70 - Math.floor(Math.log10(packs[whichPack].price * buymult)) * 14;
         owneddisplay.text = "Owned: " + packsowned[whichPack];
         owneddisplay.pos.x = screenWidth / 2 - 75 - Math.floor(Math.log10(packsowned[whichPack] + 1)) * 12;
+        if (buymult * packs[whichPack].price > money) {
+            buybutton.opacity = 0.5;
+        }
+        else {
+            buybutton.opacity = 1;
+        }
 
         if (speed < 0.15 && speed != 0) { // If speed is close enough to 0, set it to 0
             speed = 0;  

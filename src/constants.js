@@ -3,7 +3,7 @@ import { kScreenWidth, kScreenHeight } from "./kaplayCtx";
 
 export const inventory = [];
 export const packsowned = [0, 0, 0];
-export let money = 1346135;
+export let money = 100000;
 export function subtractMoney(amount) {
     money -= amount;
 }
@@ -70,16 +70,18 @@ export function menu(current) {
     })
 }
 
+
 // item in a pack
 export class Box {
-    constructor(rarity = Math.floor(Math.random() * 7)) {
+    constructor(rarity = Math.floor(Math.random() * 7), value) {
         this.rarity = rarity;
+        this.value = value;
     }
     add(x, y) {
         this.sprite = k.add([k.sprite("boxes", { frame: this.rarity }), k.pos(x, y), k.opacity(1)]); // k.add
     }
     clone() {
-        return new Box(this.rarity)
+        return new Box(this.rarity, this.value)
     }
 }
 
@@ -118,11 +120,10 @@ export class Pack {
 
 // list of packs
 export const packs = [
-    new Pack(0, "Pack 1", 10, [new Box(0), new Box(1), new Box(2), new Box(3), new Box(4), new Box(5), new Box(6)], [0.45, 0.3, 0.16, 0.03, 0.0077, 0.0014, 0.0004]),
-    new Pack(1, "Pack 2", 10, [new Box(), new Box(), new Box()], [0.1, 0.3, 0.6]),
-    new Pack(2, "Pack 3", 10, [new Box(), new Box(), new Box()], [0.1, 0.3, 0.6]),
+    new Pack(0, "Pack 1", 30, [new Box(0, 36), new Box(1, 212), new Box(2, 1296), new Box(3, 4319), new Box(4, 26232), new Box(5, 115487), new Box(6, 742941)], [0.45, 0.3, 0.16, 0.03, 0.0077, 0.0014, 0.0004]),
     ];
 export let whichPack = 0;
+
 
 // used in inventoryScene and packsScene and stuff to format items into rows and cols
 export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height, spacing) {
