@@ -1,10 +1,8 @@
 import k from "../kaplayCtx";
-import { packs, displayItems } from "../constants";
-import menu from "../menu";
-import { menuHeight, screenWidth, screenHeight } from "../menu";
+import { packs, displayItems, menu, menuHeight, screenWidth, screenHeight } from "../constants";
 
 export default function packsScene() {
     menu("packs");
 
-    displayItems(packs, "packsScene", 36, screenWidth - 36, menuHeight + 10, screenHeight - 10, 200, 150, 6);
+    displayItems(packs, "packsScene", 0, screenWidth, menuHeight, screenHeight, 300, 225, 6);
 }

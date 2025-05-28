@@ -18,13 +18,15 @@ k.loadSprite("spinbutton", "images/spinbutton.png");
 k.loadSprite("pagearrowright", "images/pagearrow/right.png");
 k.loadSprite("pagearrowleft", "images/pagearrow/left.png");
 
+k.loadSprite("pack", "images/pack.png");
+
 // create the scenes
 k.scene("spinningScene", () => spinningScene()); 
 k.scene("inventoryScene", () => inventoryScene());
 k.scene("packsScene", () => packsScene());
 
 // load fonts
-k.loadFont("pkmn", "fonts/pkmn_rbygsc.ttf");
+k.loadFont("pkmn", "fonts/pkmnbydrizzee.ttf");
 
 // v start on this scene v
 k.go("packsScene");

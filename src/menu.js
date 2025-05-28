@@ -6,7 +6,7 @@ export const menuHeight = 130;
 export const screenWidth = kScreenWidth
 export const screenHeight = kScreenHeight - menuHeight;
 
-export const page = [0];
+export let page = 0;
 
 
 export default function menu(current) {
@@ -38,11 +38,15 @@ export default function menu(current) {
         button.onClick(() => { // when the button is clicked:
             if (button.text != current) { // if it is not the current scene
                 k.go(button.text + "Scene"); // run the scene associated with it
-                page[0] = 0;
+                page = 0;
             }
         });
 
         buttons.push(button); // add it to buttons
         
     }
+
+    // money display in top left
+    k.add([k.text("*" + money, { size: 12, font: "pkmn"}), k.pos(10, 10)]);
+
 }

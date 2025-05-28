@@ -1,7 +1,5 @@
 import k from "../kaplayCtx";
-import { inventory, Box, Pack, whichPack, packs } from "../constants";
-import menu from "../menu";
-import { menuHeight, screenWidth, screenHeight } from "../menu";
+import { inventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff } from "../constants";
 
 export default function spinningScene() { // scene of wheel spinnin'
     menu("spinning");
@@ -27,6 +25,7 @@ export default function spinningScene() { // scene of wheel spinnin'
 
     spinbutton.onClick(() => { // when spinbutton clicked, speed it set between 180 and 200
         if (speed == 0) {
+            turnMenuOff();
             speed = Math.floor(Math.random() * 21 + 180);
             for (let i = 0; i < wheel.length; i++) {
                 const box = wheel[i];
@@ -55,7 +54,9 @@ export default function spinningScene() { // scene of wheel spinnin'
                     box.sprite.pos.x += 5 + ((i - 2) % 2) * 2.5;
                     box.sprite.pos.y += 3.75;
                 }
-            }    
+            }   
+            
+            turnMenuOn(); 
         }
         for (const box of wheel) { // move the boxes
             box.sprite.pos.x -= speed;
@@ -74,5 +75,5 @@ export default function spinningScene() { // scene of wheel spinnin'
 }
 
 function pickRandomItem() {
-    return packs[whichPack[0]].getRandom();
+    return packs[whichPack].getRandom();
 }
