@@ -2,7 +2,14 @@ import k from "./kaplayCtx";
 import { kScreenWidth, kScreenHeight } from "./kaplayCtx";
 
 export const inventory = [];
-export let money = 10000;
+export const packsowned = [0, 0, 0];
+export let money = 1346135;
+export function subtractMoney(amount) {
+    money -= amount;
+}
+export function addMoney(amount) {
+    money += amount;
+}
 
 export const menuHeight = 130;
 export const screenWidth = kScreenWidth
@@ -56,8 +63,11 @@ export function menu(current) {
     }
 
     // money display in top left
-    k.add([k.text("*" + money, { size: 18, font: "pkmn"}), k.pos(10, 10)]);
+    const moneydisplay = k.add([k.text("*" + money, { size: 18, font: "pkmn"}), k.pos(10, 10)]);
 
+    k.onUpdate(() => {
+        moneydisplay.text = "*" + money; // update money display
+    })
 }
 
 // item in a pack
@@ -75,9 +85,10 @@ export class Box {
 
 // pack of pokemon
 export class Pack {
-    constructor(index, name, items, weights) {
+    constructor(index, name, price, items, weights) {
         this.index = index;
         this.name = name;
+        this.price = price;
         this.items = items;
         this.weights = weights;
     }
@@ -107,9 +118,9 @@ export class Pack {
 
 // list of packs
 export const packs = [
-    new Pack(0, "Pack 1", [new Box(0), new Box(1), new Box(2), new Box(3), new Box(4), new Box(5), new Box(6)], [0.45, 0.3, 0.16, 0.03, 0.0077, 0.0014, 0.0004]),
-    new Pack(1, "Pack 2", [new Box(), new Box(), new Box()], [0.1, 0.3, 0.6]),
-    new Pack(2, "Pack 3", [new Box(), new Box(), new Box()], [0.1, 0.3, 0.6]),
+    new Pack(0, "Pack 1", 10, [new Box(0), new Box(1), new Box(2), new Box(3), new Box(4), new Box(5), new Box(6)], [0.45, 0.3, 0.16, 0.03, 0.0077, 0.0014, 0.0004]),
+    new Pack(1, "Pack 2", 10, [new Box(), new Box(), new Box()], [0.1, 0.3, 0.6]),
+    new Pack(2, "Pack 3", 10, [new Box(), new Box(), new Box()], [0.1, 0.3, 0.6]),
     ];
 export let whichPack = 0;
 

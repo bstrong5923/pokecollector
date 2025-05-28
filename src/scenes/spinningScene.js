@@ -1,8 +1,9 @@
 import k from "../kaplayCtx";
-import { inventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff } from "../constants";
+import { inventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney } from "../constants";
 
 export default function spinningScene() { // scene of wheel spinnin'
     menu("spinning");
+    console.log(whichPack);
 
     const wheelX = screenWidth / 2 - 403; // starting point for the boxes and wheel
     const wheelY = screenHeight / 2 - 175 + menuHeight; // starting point for the boxes and wheel
@@ -20,9 +21,34 @@ export default function spinningScene() { // scene of wheel spinnin'
         k.add([k.sprite("bgcolor"), k.pos(screenWidth / 2 + 404, screenHeight / 2 - 180 + menuHeight), k.layer("1")]),
     ];
     const wheelborder = k.add([k.sprite("wheelborder"), k.pos(screenWidth / 2 - 408, screenHeight / 2 - 180 + menuHeight), k.layer("1")]); // the wheel
-    const spinbutton = k.add([k.sprite("spinbutton"), k.pos(screenWidth / 2 - 75, screenHeight / 2 + 100 + menuHeight), k.area(), k.layer("1")]); // spin button
+    
+    let buymult = 1;
 
+    const buymultbutton = k.add([k.sprite("buymults", { frame: 0 }), k.pos(screenWidth / 2 - 243, screenHeight / 2 + 40 + menuHeight), k.area(), k.layer("1")]);
+    const buybutton = k.add([k.sprite("buybutton"), k.pos(screenWidth / 2 - 77, screenHeight / 2 + 40 + menuHeight), k.area(), k.layer("1")]);
+    const spinbutton = k.add([k.sprite("spinbutton"), k.pos(screenWidth / 2 + 89, screenHeight / 2 + 40 + menuHeight), k.area(), k.layer("1")]); // spin button
+    let pricedisplay = k.add([k.text("Price: *" + packs[whichPack].price, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 70 - Math.floor(Math.log10(packs[whichPack].price)) * 14, screenHeight / 2 + menuHeight + 140)]);
+    let owneddisplay = k.add([k.text("Owned: " + packsowned[whichPack], { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 75 - Math.floor(Math.log10(packsowned[whichPack] + 1)) * 12, screenHeight / 2 + menuHeight + 180)]);
 
+    buymultbutton.onClick(() => {
+        if (speed == 0) {
+            buymultbutton.frame++;
+            buymult = 10 ** buymultbutton.frame;
+            if (buymultbutton.frame == 5) {
+                buymult = Math.floor(money / packs[whichPack].price);
+            }
+            else if (buymultbutton.frame == 6) {
+                buymultbutton.frame = 0;
+                buymult = 1;
+            }
+        }
+    });
+    buybutton.onClick(() => {
+        if (speed == 0 && money >= buymult * packs[whichPack].price) {
+            packsowned[whichPack] += buymult;
+            subtractMoney(buymult * packs[whichPack].price);
+        }
+    });
     spinbutton.onClick(() => { // when spinbutton clicked, speed it set between 180 and 200
         if (speed == 0) {
             turnMenuOff();
@@ -39,6 +65,12 @@ export default function spinningScene() { // scene of wheel spinnin'
 
 
     k.onUpdate(() => {
+        // update text displays
+        pricedisplay.text = "Price: *" + (packs[whichPack].price * buymult);
+        pricedisplay.pos.x = screenWidth / 2 - 70 - Math.floor(Math.log10(packs[whichPack].price * buymult)) * 14;
+        owneddisplay.text = "Owned: " + packsowned[whichPack];
+        owneddisplay.pos.x = screenWidth / 2 - 75 - Math.floor(Math.log10(packsowned[whichPack] + 1)) * 12;
+
         if (speed < 0.15 && speed != 0) { // If speed is close enough to 0, set it to 0
             speed = 0;  
 
