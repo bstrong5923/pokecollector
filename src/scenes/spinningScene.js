@@ -3,7 +3,6 @@ import { inventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeigh
 
 export default function spinningScene() { // scene of wheel spinnin'
     menu("spinning");
-    console.log(whichPack);
 
     const wheelX = screenWidth / 2 - 403; // starting point for the boxes and wheel
     const wheelY = screenHeight / 2 - 175 + menuHeight; // starting point for the boxes and wheel
@@ -56,9 +55,8 @@ export default function spinningScene() { // scene of wheel spinnin'
             speed = Math.floor(Math.random() * 21 + 180);
             for (let i = 0; i < wheel.length; i++) {
                 const box = wheel[i];
-                if (box.sprite.pos.y != wheelY) {
-                    box.sprite.pos.x -= 5 + ((i - 2) % 2) * 2.5;
-                    box.sprite.pos.y -= 3.75;
+                if (box.y != wheelY) {
+                    box.move(-(5 + ((i - 2) % 2) * 2.5), -3.75); 
                 }
             }
         }
@@ -88,21 +86,20 @@ export default function spinningScene() { // scene of wheel spinnin'
                     
                 }
                 else {
-                    box.sprite.opacity = 0.4;
-                    box.sprite.scale = 0.95;
-                    box.sprite.pos.x += 5 + ((i - 2) % 2) * 2.5;
-                    box.sprite.pos.y += 3.75;
+                    box.setOpacity(0.4);
+                    boxsetScale(0.95);
+                    box.move(5 + ((i - 2) % 2) * 2.5, 3.75);
                 }
             }   
             
             turnMenuOn(); 
         }
         for (const box of wheel) { // move the boxes
-            box.sprite.pos.x -= speed;
+            box.move(-speed, 0);
         }
-        if (wheel[0].sprite.pos.x < wheelX - 200) { // if its outside the wheel:
-            const x = wheel[0].sprite.pos.x + 1010;
-            wheel[0].sprite.destroy(); // get rid of it
+        if (wheel[0].x < wheelX - 200) { // if its outside the wheel:
+            const x = wheel[0].x + 1010;
+            wheel[0].destroySprite(); // get rid of it
             wheel.shift();
             wheel.push(pickRandomItem()); // and add a new one to the right
             wheel[4].add(x, wheelY);

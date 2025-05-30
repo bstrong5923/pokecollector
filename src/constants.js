@@ -76,9 +76,40 @@ export class Box {
     constructor(rarity = Math.floor(Math.random() * 7), value) {
         this.rarity = rarity;
         this.value = value;
+        this.x = 0;
+        this.y = 0;
+        this.sprite = [];
     }
     add(x, y) {
-        this.sprite = k.add([k.sprite("boxes", { frame: this.rarity }), k.pos(x, y), k.opacity(1)]); // k.add
+        this.sprite = [
+            k.add([k.sprite("boxes", { frame: this.rarity }), k.pos(x, y), k.opacity(1)]),
+            k.add([k.text("*" + this.value, { size: 14, font: "pkmn" }), k.pos(x + 10, y + 128), k.opacity(1)]),
+        ];
+        this.x = x;
+        this.y = y;
+    }
+    move(changex, changey) {
+        for (const comp of this.sprite) {
+            comp.pos.x += changex;
+            comp.pos.y += changey;
+        }
+        this.x += changex;
+        this.y += changey;
+    }
+    destroySprite() {
+        for (const comp of this.sprite) {
+            comp.destroy();
+        }
+    }
+    setOpacity(val) {
+        for (const comp of this.sprite) {
+            comp.opacity = val;
+        }
+    }
+    setScale(val) {
+        for (const comp of this.sprite) {
+            comp.scale = val;
+        }
     }
     clone() {
         return new Box(this.rarity, this.value)
@@ -120,7 +151,7 @@ export class Pack {
 
 // list of packs
 export const packs = [
-    new Pack(0, "Pack 1", 30, [new Box(0, 36), new Box(1, 212), new Box(2, 1296), new Box(3, 4319), new Box(4, 26232), new Box(5, 115487), new Box(6, 742941)], [0.45, 0.3, 0.16, 0.03, 0.0077, 0.0014, 0.0004]),
+    new Pack(0, "Pack 1", 100, [new Box(0, 31), new Box(1, 86), new Box(2, 202), new Box(3, 764), new Box(4, 2181), new Box(5, 11587), new Box(6, 76189)], [0.45, 0.3, 0.16, 0.03, 0.0077, 0.0014, 0.0004]),
     ];
 export let whichPack = 0;
 
@@ -155,7 +186,7 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
         const item = items[i];
         item.add(x, y);
         x += width + spacing;
-        if (x > xmax) {
+        if (x > xmax - width - xindent) {
             y += height + spacing;
             x = xmin + xindent;
         }
