@@ -45,7 +45,7 @@ export function menu(current) {
     const fontSize = 30;
     for (let i = 0; i < scenes.length; i++) {
         const button = k.add([ // create the button
-            k.text(scenes[i], {size: fontSize, width: widths[i], font: "pkmn"}),  // text is the scene, size and width determine hitbox
+            k.text(scenes[i], {size: fontSize, width: widths[i], font: "pkmn", color: "red"}),  // text is the scene, size and width determine hitbox
             k.pos(nextX, (menuHeight - 10) / 2 - fontSize / 2),
             k.area() // hitbox
         ]);
@@ -59,6 +59,14 @@ export function menu(current) {
         });
 
         buttons.push(button); // add it to buttons
+
+        k.onUpdate(() => {
+            for (const button of buttons) {
+                if (button.isHovering()) {
+                    button.color = "red";
+                }
+            }
+        });
         
     }
 
@@ -151,7 +159,7 @@ export class Pack {
 
 // list of packs
 export const packs = [
-    new Pack(0, "Pack 1", 100, [new Box(0, 31), new Box(1, 86), new Box(2, 202), new Box(3, 764), new Box(4, 2181), new Box(5, 11587), new Box(6, 76189)], [0.45, 0.3, 0.16, 0.03, 0.0077, 0.0014, 0.0004]),
+    new Pack(0, "Pack 1", 100, [new Box(0, 31), new Box(1, 86), new Box(2, 202), new Box(3, 764), new Box(4, 2181), new Box(5, 11587), new Box(6, 76189)], [0.45, 0.3, 0.16, 0.05, 0.0077, 0.0014, 0.0004]),
     ];
 export let whichPack = 0;
 

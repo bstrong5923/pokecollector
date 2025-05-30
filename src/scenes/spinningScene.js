@@ -93,7 +93,7 @@ export default function spinningScene() { // scene of wheel spinnin'
                 }
                 else {
                     box.setOpacity(0.4);
-                    boxsetScale(0.95);
+                    box.setScale(0.95);
                     box.move(5 + ((i - 2) % 2) * 2.5, 3.75);
                 }
             }   
