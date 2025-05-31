@@ -1,6 +1,8 @@
 import k from "./kaplayCtx";
 import { kScreenWidth, kScreenHeight } from "./kaplayCtx";
 
+export const canvas = document.querySelector("canvas");
+
 export const inventory = [];
 export const packsowned = [0, 0, 0];
 export let money = 100000;
@@ -50,7 +52,6 @@ export function menu(current) {
             k.area() // hitbox
         ]);
         nextX += widths[i] + 150; // where the next one should start
-
         button.onClick(() => { // when the button is clicked:
             if (button.text != current && menuOn) { // if it is not the current scene
                 k.go(button.text + "Scene"); // run the scene associated with it
@@ -59,15 +60,6 @@ export function menu(current) {
         });
 
         buttons.push(button); // add it to buttons
-
-        k.onUpdate(() => {
-            for (const button of buttons) {
-                if (button.isHovering()) {
-                    button.color = "red";
-                }
-            }
-        });
-        
     }
 
     // money display in top left
@@ -75,6 +67,13 @@ export function menu(current) {
 
     k.onUpdate(() => {
         moneydisplay.text = "*" + money; // update money display
+
+        canvas.style.cursor = "default";
+            for (const button of buttons) {
+                if (button.isHovering()) {
+                    canvas.style.cursor = "pointer"; 
+                }
+            }
     })
 }
 
@@ -90,11 +89,16 @@ export class Box {
     }
     add(x, y) {
         this.sprite = [
-            k.add([k.sprite("boxes", { frame: this.rarity }), k.pos(x, y), k.opacity(1)]),
+            k.add([k.sprite("boxes", { frame: this.rarity }), k.pos(x, y), k.opacity(1), k.area()]),
             k.add([k.text("*" + this.value, { size: 14, font: "pkmn" }), k.pos(x + 10, y + 128), k.opacity(1)]),
         ];
         this.x = x;
         this.y = y;
+        this.sprite[0].onUpdate(() => {
+            if (this.sprite[0].isHovering()) {
+                canvas.style.cursor = "pointer";
+            }
+        });
     }
     move(changex, changey) {
         for (const comp of this.sprite) {
@@ -137,7 +141,12 @@ export class Pack {
         this.sprite = k.add([k.sprite("pack"), k.pos(x, y), k.area()]);
         this.sprite.onClick(() => {
             whichPack = this.index;
-            k.go("spinningScene")
+            k.go("spinningScene");
+        });
+        this.sprite.onUpdate(() => {
+            if (this.sprite.isHovering()) {
+                canvas.style.cursor = "pointer";
+            }
         });
     }
     getRandom() {

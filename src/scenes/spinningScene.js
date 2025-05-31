@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { inventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney } from "../constants";
+import { inventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney, canvas } from "../constants";
 
 export default function spinningScene() { // scene of wheel spinnin'
     menu("spinning");
@@ -80,6 +80,10 @@ export default function spinningScene() { // scene of wheel spinnin'
         }
         else {
             spinbutton.opacity = 1;
+        }
+
+        if (buybutton.isHovering() || buymultbutton.isHovering() || spinbutton.isHovering()) {
+            canvas.style.cursor = "pointer";
         }
 
         if (speed < 0.15 && speed != 0) { // If speed is close enough to 0, set it to 0
