@@ -2,6 +2,7 @@ import k from "./kaplayCtx";
 import spinningScene from "./scenes/spinningScene";
 import inventoryScene from "./scenes/inventoryScene";
 import packsScene from "./scenes/packsScene";
+import displayScene from "./scenes/displayScene";
 
 // set up layers
 k.layers(["5", "4", "3", "2", "1", "0"], "4"); 
@@ -19,6 +20,7 @@ k.loadSprite("buymults", "images/buymults.png", {
     sliceX: 2,
     sliceY: 3,
 });
+k.loadSprite("x", "images/x.png");
 
 k.loadSprite("pagearrowright", "images/pagearrow/right.png");
 k.loadSprite("pagearrowleft", "images/pagearrow/left.png");
@@ -29,6 +31,7 @@ k.loadSprite("pack", "images/pack.png");
 k.scene("spinningScene", () => spinningScene()); 
 k.scene("inventoryScene", () => inventoryScene());
 k.scene("packsScene", () => packsScene());
+k.scene("displayScene", () => displayScene());
 
 // load fonts
 k.loadFont("pkmn", "fonts/pkmnbydrizzee.ttf");

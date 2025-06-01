@@ -8,6 +8,8 @@ export default function spinningScene() { // scene of wheel spinnin'
     const wheelY = screenHeight / 2 - 175 + menuHeight; // starting point for the boxes and wheel
     let speed = 0;
 
+    k.add([k.text(packs[whichPack].name, { size: 60, font: "pkmn" }), k.pos(screenWidth / 2 - packs[whichPack].name.length * 27, wheelY - 108)]);
+
     let wheel = [];
     for (let x = 0; x <= 4; x++) { // wheel is a list of box objects
         wheel.push(pickRandomItem());

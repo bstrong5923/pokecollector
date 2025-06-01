@@ -18,6 +18,9 @@ export const screenWidth = kScreenWidth
 export const screenHeight = kScreenHeight - menuHeight;
 
 let page = 0;
+let currentScene = "packs";
+
+export let displayItem = null;
 
 // menu of pages to go to
 let menuOn = true;
@@ -56,6 +59,7 @@ export function menu(current) {
             if (button.text != current && menuOn) { // if it is not the current scene
                 k.go(button.text + "Scene"); // run the scene associated with it
                 page = 0;
+                currentScene = button.text;
             }
         });
 
@@ -80,25 +84,36 @@ export function menu(current) {
 
 // item in a pack
 export class Box {
-    constructor(rarity = Math.floor(Math.random() * 7), value) {
+    constructor(name, rarity, value) {
         this.rarity = rarity;
         this.value = value;
         this.x = 0;
         this.y = 0;
         this.sprite = [];
+        this.name = name;
     }
     add(x, y) {
         this.sprite = [
             k.add([k.sprite("boxes", { frame: this.rarity }), k.pos(x, y), k.opacity(1), k.area()]),
-            k.add([k.text("*" + this.value, { size: 14, font: "pkmn" }), k.pos(x + 10, y + 128), k.opacity(1)]),
+            k.add([k.text("*" + this.value, { size: 14, font: "pkmn" }), k.pos(x + 10, y + 128), k.opacity(1), k.layer("3")]),
         ];
         this.x = x;
         this.y = y;
         this.sprite[0].onUpdate(() => {
-            if (this.sprite[0].isHovering()) {
+            if (this.sprite[0].isHovering() && currentScene != "spinning") {
                 canvas.style.cursor = "pointer";
             }
         });
+        this.sprite[0].onClick(() => {
+            if (currentScene != "spinning") {
+                this.display();
+            }
+        });
+    }
+    display() {
+        displayItem = this;
+        k.go("displayScene");
+        currentScene = "display";
     }
     move(changex, changey) {
         for (const comp of this.sprite) {
@@ -120,11 +135,18 @@ export class Box {
     }
     setScale(val) {
         for (const comp of this.sprite) {
-            comp.scale = val;
+            if (comp == this.sprite[1]) {
+                comp.pos.x = this.sprite[0].pos.x + 10 * val;
+                comp.pos.y = this.sprite[0].pos.y + 128 * val;
+                comp.textSize = 14 * val;
+            }
+            else {
+                comp.scale = val;
+            }
         }
     }
     clone() {
-        return new Box(this.rarity, this.value)
+        return new Box(this.name, this.rarity, this.value)
     }
 }
 
@@ -142,6 +164,7 @@ export class Pack {
         this.sprite.onClick(() => {
             whichPack = this.index;
             k.go("spinningScene");
+            currentScene = "spinning";
         });
         this.sprite.onUpdate(() => {
             if (this.sprite.isHovering()) {
@@ -168,7 +191,7 @@ export class Pack {
 
 // list of packs
 export const packs = [
-    new Pack(0, "Pack 1", 100, [new Box(0, 31), new Box(1, 86), new Box(2, 202), new Box(3, 764), new Box(4, 2181), new Box(5, 11587), new Box(6, 76189)], [0.45, 0.3, 0.16, 0.05, 0.0077, 0.0014, 0.0004]),
+    new Pack(0, "Pack 1", 100, [new Box("Common", 0, 31), new Box("Uncommon", 1, 86), new Box("Rare", 2, 202), new Box("Starter", 3, 764), new Box("Pseudo Legendary", 4, 2181), new Box("Legendary", 5, 11587), new Box("Mythical", 6, 76189)], [0.45, 0.3, 0.16, 0.05, 0.0077, 0.0014, 0.0004]),
     ];
 export let whichPack = 0;
 
