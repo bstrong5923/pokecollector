@@ -5,7 +5,7 @@ import packsScene from "./scenes/packsScene";
 import displayScene from "./scenes/displayScene";
 
 // set up layers
-k.layers(["5", "4", "3", "2", "1", "0"], "4"); 
+k.setLayers(["5", "4", "3", "2", "1", "0"], "4"); 
 
 // load the sprites
 k.loadSprite("boxes", "images/allboxes.png", { 
@@ -20,7 +20,7 @@ k.loadSprite("buymults", "images/buymults.png", {
     sliceX: 2,
     sliceY: 3,
 });
-k.loadSprite("x", "images/x.png");
+k.loadSprite("closebutton", "images/closebutton.png");
 
 k.loadSprite("pagearrowright", "images/pagearrow/right.png");
 k.loadSprite("pagearrowleft", "images/pagearrow/left.png");

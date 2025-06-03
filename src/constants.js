@@ -3,6 +3,8 @@ import { kScreenWidth, kScreenHeight } from "./kaplayCtx";
 
 export const canvas = document.querySelector("canvas");
 
+let hoveringPriority = false;
+
 export const inventory = [];
 export const packsowned = [0, 0, 0];
 export let money = 100000;
@@ -19,6 +21,10 @@ export const screenHeight = kScreenHeight - menuHeight;
 
 let page = 0;
 let currentScene = "packs";
+export function go(scene) {
+    k.go(scene + "Scene");
+    currentScene = scene;
+}
 
 export let displayItem = null;
 
@@ -100,12 +106,12 @@ export class Box {
         this.x = x;
         this.y = y;
         this.sprite[0].onUpdate(() => {
-            if (this.sprite[0].isHovering() && currentScene != "spinning") {
+            if (this.sprite[0].isHovering() && currentScene != "spinning" && !hoveringPriority) {
                 canvas.style.cursor = "pointer";
             }
         });
         this.sprite[0].onClick(() => {
-            if (currentScene != "spinning") {
+            if (currentScene != "spinning" && !hoveringPriority) {
                 this.display();
             }
         });
@@ -162,12 +168,14 @@ export class Pack {
     add(x, y) {
         this.sprite = k.add([k.sprite("pack"), k.pos(x, y), k.area()]);
         this.sprite.onClick(() => {
-            whichPack = this.index;
-            k.go("spinningScene");
-            currentScene = "spinning";
+            if (!hoveringPriority) {
+                whichPack = this.index;
+                k.go("spinningScene");
+                currentScene = "spinning";
+            }
         });
         this.sprite.onUpdate(() => {
-            if (this.sprite.isHovering()) {
+            if (this.sprite.isHovering() && !hoveringPriority) {
                 canvas.style.cursor = "pointer";
             }
         });
@@ -194,6 +202,9 @@ export const packs = [
     new Pack(0, "Pack 1", 100, [new Box("Common", 0, 31), new Box("Uncommon", 1, 86), new Box("Rare", 2, 202), new Box("Starter", 3, 764), new Box("Pseudo Legendary", 4, 2181), new Box("Legendary", 5, 11587), new Box("Mythical", 6, 76189)], [0.45, 0.3, 0.16, 0.05, 0.0077, 0.0014, 0.0004]),
     ];
 export let whichPack = 0;
+for (let x = 0; x < 80; x++) {
+    inventory.push(new Box("Common", 0, 31));
+}
 
 
 // used in inventoryScene and packsScene and stuff to format items into rows and cols
@@ -205,20 +216,34 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
     const xindent = (xmax - xmin + spacing - itemsPerRow * (width + spacing)) / 2;
     const yindent = (ymax - ymin + spacing - rowsPerPage * (height + spacing)) / 2;
 
+    let pagearrowleft;
+    let pagearrowright;
     if (page != 0) {
-        const button = k.add([k.sprite("pagearrowleft"), k.pos(xmin + 10, (ymin + ymax) / 2 - 75), k.opacity(0.8), k.area(), k.layer("1")]);
-        button.onClick(() => { 
+        pagearrowleft = k.add([k.sprite("pagearrowleft"), k.pos(xmin + 10, (ymin + ymax) / 2 - 75), k.opacity(0.8), k.area(), k.layer("1")]);
+        pagearrowleft.onClick(() => { 
             page--;
             k.go(scene);
         });
     }
     if (items.length > (page + 1) * itemsPerPage) {
-        const button = k.add([k.sprite("pagearrowright"), k.pos(xmax - 160, (ymin + ymax) / 2 - 75), k.opacity(0.8), k.area(), k.layer("1")]);
-        button.onClick(() => { 
+        pagearrowright = k.add([k.sprite("pagearrowright"), k.pos(xmax - 160, (ymin + ymax) / 2 - 75), k.opacity(0.8), k.area(), k.layer("1")]);
+        pagearrowright.onClick(() => { 
             page++;
             k.go(scene);
         });
     }
+
+    k.onUpdate(() => {
+        hoveringPriority = false;
+        if (pagearrowleft != null && pagearrowleft.isHovering()) {
+            canvas.style.cursor = "pointer";
+            hoveringPriority = true;
+        }
+        if (pagearrowright != null && pagearrowright.isHovering()) {
+            canvas.style.cursor = "pointer";
+            hoveringPriority = true;
+        }
+    });
 
     let x = xmin + xindent;
     let y = ymin + yindent;
