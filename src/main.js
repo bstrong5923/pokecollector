@@ -21,6 +21,7 @@ k.loadSprite("buymults", "images/buymults.png", {
     sliceY: 3,
 });
 k.loadSprite("closebutton", "images/closebutton.png");
+k.loadSprite("sellbutton", "images/sellbutton.png");
 
 k.loadSprite("pagearrowright", "images/pagearrow/right.png");
 k.loadSprite("pagearrowleft", "images/pagearrow/left.png");
