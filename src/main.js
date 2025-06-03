@@ -22,6 +22,10 @@ k.loadSprite("buymults", "images/buymults.png", {
 });
 k.loadSprite("closebutton", "images/closebutton.png");
 k.loadSprite("sellbutton", "images/sellbutton.png");
+k.loadSprite("autospin", "images/autospin.png", {
+    sliceX: 1,
+    sliceY: 2,
+});
 
 k.loadSprite("pagearrowright", "images/pagearrow/right.png");
 k.loadSprite("pagearrowleft", "images/pagearrow/left.png");

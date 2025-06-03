@@ -202,10 +202,6 @@ export const packs = [
     new Pack(0, "Pack 1", 100, [new Box("Common", 0, 31), new Box("Uncommon", 1, 86), new Box("Rare", 2, 202), new Box("Starter", 3, 764), new Box("Pseudo Legendary", 4, 2181), new Box("Legendary", 5, 11587), new Box("Mythical", 6, 76189)], [0.45, 0.3, 0.16, 0.05, 0.0077, 0.0014, 0.0004]),
     ];
 export let whichPack = 0;
-inventory.push(new Box("SUPER ULTRA UBER DUPER RARE HOLY CANOLA", 6, 99999999999))
-for (let x = 0; x < 80; x++) {
-    inventory.push(packs[0].getRandom());
-}
 
 
 // used in inventoryScene and packsScene and stuff to format items into rows and cols

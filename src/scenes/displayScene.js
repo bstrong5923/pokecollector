@@ -28,4 +28,9 @@ export default function displayScene() {
         addMoney(displayItem.value);
         go("inventory");
     });
+    sellbutton.onUpdate(() => {
+        if (sellbutton.isHovering) {
+            canvas.style.cursor = "pointer";
+        }
+    });
 }

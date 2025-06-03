@@ -30,6 +30,15 @@ export default function spinningScene() { // scene of wheel spinnin'
     const spinbutton = k.add([k.sprite("spinbutton"), k.pos(screenWidth / 2 + 89, screenHeight / 2 + 40 + menuHeight), k.area(), k.layer("1"), k.opacity(1)]); // spin button
     let pricedisplay = k.add([k.text("Price: *" + packs[whichPack].price, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 70 - Math.floor(Math.log10(packs[whichPack].price + 1)) * 14, screenHeight / 2 + menuHeight + 140)]);
     let owneddisplay = k.add([k.text("Owned: " + packsowned[whichPack], { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 75 - Math.floor(Math.log10(packsowned[whichPack] + 1)) * 12, screenHeight / 2 + menuHeight + 180)]);
+    const autospin = k.add([k.sprite("autospin", { frame: 0 }), k.pos(screenWidth / 2 - 81, screenHeight / 2 + menuHeight + 220), k.scale(3), k.area()]);
+    autospin.onClick(() => {
+        if (autospin.frame == 0) {
+            autospin.frame = 1;
+        }
+        else {
+            autospin.frame = 0;
+        }
+    });
 
     buymultbutton.onClick(() => {
         if (speed == 0) {
