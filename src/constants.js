@@ -203,6 +203,11 @@ export const packs = [
     ];
 export let whichPack = 0;
 
+// // Fill inventory for testing
+// for (let i = 0; i < 100; i++) {
+//     inventory.push(packs[0].getRandom());
+// }
+
 
 // used in inventoryScene and packsScene and stuff to format items into rows and cols
 export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height, spacing) {
