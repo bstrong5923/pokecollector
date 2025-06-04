@@ -28,17 +28,22 @@ export default function spinningScene() { // scene of wheel spinnin'
     const buymultbutton = k.add([k.sprite("buymults", { frame: 0 }), k.pos(screenWidth / 2 - 243, screenHeight / 2 + 40 + menuHeight), k.area(), k.layer("1")]);
     const buybutton = k.add([k.sprite("buybutton"), k.pos(screenWidth / 2 - 77, screenHeight / 2 + 40 + menuHeight), k.area(), k.layer("1"), k.opacity(1)]); // buy button
     const spinbutton = k.add([k.sprite("spinbutton"), k.pos(screenWidth / 2 + 89, screenHeight / 2 + 40 + menuHeight), k.area(), k.layer("1"), k.opacity(1)]); // spin button
-    let pricedisplay = k.add([k.text("Price: *" + packs[whichPack].price, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 70 - Math.floor(Math.log10(packs[whichPack].price + 1)) * 14, screenHeight / 2 + menuHeight + 140)]);
-    let owneddisplay = k.add([k.text("Owned: " + packsowned[whichPack], { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 75 - Math.floor(Math.log10(packsowned[whichPack] + 1)) * 12, screenHeight / 2 + menuHeight + 180)]);
-    const autospin = k.add([k.sprite("autospin", { frame: 0 }), k.pos(screenWidth / 2 - 81, screenHeight / 2 + menuHeight + 220), k.scale(3), k.area()]);
-    autospin.onClick(() => {
-        if (autospin.frame == 0) {
-            autospin.frame = 1;
-        }
-        else {
-            autospin.frame = 0;
-        }
-    });
+    let pricedisplay = k.add([k.text("Price: *" + packs[whichPack].price, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 70 - Math.floor(Math.log10(packs[whichPack].price + 1)) * 14, spinbutton.pos.y + 100)]);
+    let owneddisplay = k.add([k.text("Owned: " + packsowned[whichPack], { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 75 - Math.floor(Math.log10(packsowned[whichPack] + 1)) * 12, pricedisplay.pos.y + 40)]);
+    const autospinbutton = [
+        k.add([k.text("Autospin", { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 50, owneddisplay.pos.y + 40), k.area()]),
+        k.add([k.sprite("checkbox", { frame: 0 }), k.pos(screenWidth / 2 - 80, owneddisplay.pos.y + 36), k.area(), k.scale(4)]),
+    ];
+    for (const comp of autospinbutton) {
+        comp.onClick(() => {
+            if (autospinbutton[1].frame == 0) {
+                autospinbutton[1].frame = 1;
+            }
+            else {
+                autospinbutton[1].frame = 0;
+            }
+        });
+    }
 
     buymultbutton.onClick(() => {
         if (speed == 0) {
@@ -112,8 +117,19 @@ export default function spinningScene() { // scene of wheel spinnin'
                     box.move(5 + ((i - 2) % 2) * 2.5, 3.75);
                 }
             }   
-
-            turnMenuOn(); 
+            if (autospinbutton[1].frame == 1 && packsowned[whichPack] > 0) {
+                packsowned[whichPack]--;
+                speed = Math.floor(Math.random() * 21 + 180);
+                for (let i = 0; i < wheel.length; i++) {
+                    const box = wheel[i];
+                    if (box.y != wheelY) {
+                        box.move(-(5 + ((i - 2) % 2) * 2.5), -3.75); 
+                    }
+                }
+            } 
+            else {
+                turnMenuOn();
+            }
         }
         for (const box of wheel) { // move the boxes
             box.move(-speed, 0);

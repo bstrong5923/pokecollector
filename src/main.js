@@ -5,7 +5,7 @@ import packsScene from "./scenes/packsScene";
 import displayScene from "./scenes/displayScene";
 
 // set up layers
-k.setLayers(["5", "4", "3", "2", "1", "0"], "4"); 
+k.layers(["5", "4", "3", "2", "1", "0"], "4"); 
 
 // load the sprites
 k.loadSprite("boxes", "images/allboxes.png", { 
@@ -22,7 +22,7 @@ k.loadSprite("buymults", "images/buymults.png", {
 });
 k.loadSprite("closebutton", "images/closebutton.png");
 k.loadSprite("sellbutton", "images/sellbutton.png");
-k.loadSprite("autospin", "images/autospin.png", {
+k.loadSprite("checkbox", "images/checkbox.png", {
     sliceX: 1,
     sliceY: 2,
 });
