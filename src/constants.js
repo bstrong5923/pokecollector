@@ -259,3 +259,29 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
         }
     }
 }
+
+// POKEMON DICTIONARY
+const pokemonNames = [];
+const pokedex = {};
+for (let x = 2; x <= 19; x++) {
+    let num = Math.floor(x / 2);
+    if (x % 2 == 1) {
+        num += "v";
+    }
+
+    console.log("images/pokemon/pokemon_icons_" + num + ".json");
+    const atlas = {}; // empty dictionary
+    fetch("images/pokemon/pokemon_icons_" + num + ".json") // chatgpt's work
+        .then((response) => response.json())  // chatgpt's work
+        .then((data) => { // chatgpt's work
+            const frames = data.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
+
+            for (const sprite of frames) { // for each pokemon sprite
+                pokedex[sprite.filename] = {
+                    name: 
+                };
+            }
+        });
+
+    k.loadSpriteAtlas("images/pokemon/pokemon_icons_" + num + ".png", atlas);
+}
