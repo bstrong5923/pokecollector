@@ -31,19 +31,27 @@ k.loadSprite("pagearrowright", "images/pagearrow/right.png");
 k.loadSprite("pagearrowleft", "images/pagearrow/left.png");
 k.loadSprite("pack", "images/pack.png");
 // loading the pokemon
-const atlas = {}; // empty dictionary
-fetch("images/pokemon/pokemon_icons_1.json") // chatgpt's work
-    .then((response) => response.json())  // chatgpt's work
-    .then((data) => { // chatgpt's work
-        const frames = data.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
+for (let x = 2; x <= 19; x++) {
+    let num = Math.floor(x / 2);
+    if (x % 2 == 1) {
+        num += "v";
+    }
 
-        for (const sprite of frames) { // for each pokemon sprite
-            // define it in the atlas, where keyword is the pokemon filename and the data is all the sprite data
-            atlas[sprite.filename] = { x: sprite.frame.x, y: sprite.frame.y, width: sprite.frame.w, height: sprite.frame.h };
-        }
-    });
+    console.log("images/pokemon/pokemon_icons_" + num + ".json");
+    const atlas = {}; // empty dictionary
+    fetch("images/pokemon/pokemon_icons_" + num + ".json") // chatgpt's work
+        .then((response) => response.json())  // chatgpt's work
+        .then((data) => { // chatgpt's work
+            const frames = data.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
 
-k.loadSpriteAtlas("images/pokemon/pokemon_icons_1.png", atlas);
+            for (const sprite of frames) { // for each pokemon sprite
+                // define it in the atlas, where keyword is the pokemon filename and the data is all the sprite data
+                atlas[sprite.filename] = { x: sprite.frame.x, y: sprite.frame.y, width: sprite.frame.w, height: sprite.frame.h };
+            }
+        });
+
+    k.loadSpriteAtlas("images/pokemon/pokemon_icons_" + num + ".png", atlas);
+}
 
 // create the scenes
 k.scene("spinningScene", () => spinningScene()); 
