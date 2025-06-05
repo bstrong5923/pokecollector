@@ -37,7 +37,6 @@ for (let x = 2; x <= 19; x++) {
         num += "v";
     }
 
-    console.log("images/pokemon/pokemon_icons_" + num + ".json");
     const atlas = {}; // empty dictionary
     fetch("images/pokemon/pokemon_icons_" + num + ".json") // chatgpt's work
         .then((response) => response.json())  // chatgpt's work
@@ -52,6 +51,7 @@ for (let x = 2; x <= 19; x++) {
 
     k.loadSpriteAtlas("images/pokemon/pokemon_icons_" + num + ".png", atlas);
 }
+k.onLoad(() => { console.log("atlas loaded."); }); //a 
 
 // create the scenes
 k.scene("spinningScene", () => spinningScene()); 

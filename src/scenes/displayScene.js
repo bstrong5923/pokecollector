@@ -19,7 +19,7 @@ export default function displayScene() {
     displayItem.add(screenWidth / 2 - 300, itemY);
     displayItem.setScale(3);
 
-    k.add([k.text(displayItem.name, { size: 48, width: 1200, font: "pkmn", align: "center" }), k.pos(screenWidth / 2 - 600, itemY + 480)]);
+    k.add([k.text(displayItem.pokemon.name, { size: 48, width: 1200, font: "pkmn", align: "center" }), k.pos(screenWidth / 2 - 600, itemY + 480)]);
 
     const sellbutton = k.add([k.sprite("sellbutton"), k.pos(screenWidth / 2 - 77, itemY + 650), k.area()])
     sellbutton.onClick(() => {

@@ -16,4 +16,8 @@ export default function inventoryScene() { // scene showin inventory
     }
 
     displayItems(inventory, "inventoryScene", 20, screenWidth - 20, menuHeight + 24, menuHeight + screenHeight - 50, 200, 150, 6);
+
+    for (const item of inventory) {
+        item.setScale(1);
+    }
 }
