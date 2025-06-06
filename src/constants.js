@@ -277,11 +277,27 @@ for (let x = 2; x <= 19; x++) {
             const frames = data.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
 
             for (const sprite of frames) { // for each pokemon sprite
+                let name = "";
+                let cutoff = sprite.filename.length; // figure out where the pokedex number ends
+                const possibleCutoffs = [sprite.filename.indexOf("-"), sprite.filename.indexOf("s"), sprite.filename.indexOf("_")];
+                for (const c of possibleCutoffs) {
+                    if (c != -1 && c < cutoff) {
+                        cutoff = c;
+                    }
+                }
+                name += pokemonNames[sprite.filename.subString(0, cutoff)];
+
+                const shinyLevel = 0; // figure out what level of shiny it is
+                if (sprite.filename.indexOf("s") == cutoff) {
+                    shinyLevel = 1;
+                }
+                else if (sprite.filename.indexOf("_") != -1) {
+                    shinyLevel = sprite.filename.indexOf("_");
+                }
+                
                 pokedex[sprite.filename] = {
-                    name: 
+                    name: name,
                 };
             }
         });
-
-    k.loadSpriteAtlas("images/pokemon/pokemon_icons_" + num + ".png", atlas);
 }
