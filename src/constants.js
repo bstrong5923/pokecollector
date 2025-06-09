@@ -157,10 +157,7 @@ for (let x = 2; x <= 19; x++) {
                     console.log("name: " + name);
                 }
 
-                let gender = "male";
-                if (Math.random() < 0.5) {
-                    gender = "female";
-                }
+                let gender = "50/50";
                 if (genderless.indexOf(index) != -1) {
                     gender = "genderless";
                 }
@@ -200,6 +197,13 @@ for (let x = 2; x <= 19; x++) {
                 };
             }
         });
+}
+
+function getPokemon(index) {
+    if (Math.random() * 512 == 0) {
+        
+    }
+    return pokedex[index + ]
 }
 
 
