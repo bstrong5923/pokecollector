@@ -117,15 +117,8 @@ for (let x = 2; x <= 19; x++) {
             const frames = data.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
 
             for (const sprite of frames) { // for each pokemon sprite
-                if (sprite.filename == "1") {
-                    console.log("go");
-                }
-
                 let name = "";
                 let cutoff = sprite.filename.length; // figure out where the pokedex number ends
-                if (sprite.filename == "1") {
-                    console.log("cutoff: " + cutoff);
-                }
 
                 const possibleCutoffs = [sprite.filename.indexOf("-"), sprite.filename.indexOf("s"), sprite.filename.indexOf("_")];
                 for (const c of possibleCutoffs) {
@@ -133,16 +126,20 @@ for (let x = 2; x <= 19; x++) {
                         cutoff = c;
                     }
                 }
-                if (sprite.filename == "1") {
-                    console.log("cutoff: " + cutoff);
-                }
 
-                const index = parseInt(sprite.filename.substring(0, cutoff));
-                name += pokemonNames[index - 1];
-                if (sprite.filename == "1") {
-                    console.log("index: " + index);
-                    console.log("name: " + name);
+                let regionalForm = "";
+                let index = parseInt(sprite.filename.substring(0, cutoff));
+                if (index > 2000) {
+                    regionalForm = "Alolan";
+                    if (index > 4000) {
+                        regionalForm = "Galarian";
+                        if (index > 600) {
+                            regionalForm = "Hisuian";
+                        }
+                    }
+                    index %= 1000;
                 }
+                name += regionalForm + " " + pokemonNames[index - 1];
 
                 let shinyLevel = 0; // figure out what level of shiny it is
                 if (sprite.filename.indexOf("s") == cutoff) {
@@ -152,12 +149,8 @@ for (let x = 2; x <= 19; x++) {
                     shinyLevel = sprite.filename.charAt(sprite.filename.indexOf("_") + 1);
                 }
                 name = shinyNames[shinyLevel] + " " + name;
-                if (sprite.filename == "1") {
-                    console.log("shinyLevel: " + shinyLevel);
-                    console.log("name: " + name);
-                }
 
-                let gender = "50/50";
+                let gender = "50";
                 if (genderless.indexOf(index) != -1) {
                     gender = "genderless";
                 }
@@ -175,10 +168,6 @@ for (let x = 2; x <= 19; x++) {
                         gender = "male";
                     }
                 }
-                if (sprite.filename == "1") {
-                    console.log("Gender: " + gender);
-                    console.log("Name: " + name);
-                }
 
                 let scale = 180 / sprite.frame.w;
                 if (scale > 130 / sprite.frame.h) {
@@ -189,34 +178,49 @@ for (let x = 2; x <= 19; x++) {
                 pokedex[sprite.filename] = {
                     name: name,
                     index: index,
+                    codename: sprite.filename,
                     shinyLevel: shinyLevel,
                     gender: gender,
                     scale: scale,
                     width: sprite.frame.w * scale,
                     height: sprite.frame.h * scale,
+                    regionalForm: regionalForm,
                 };
             }
         });
 }
 
 function getPokemon(index) {
-    if (Math.random() * 512 == 0) {
-        
+    let shinyText = "";
+    if (Math.random() * 512 < 1) {
+        shinyText = "s";
+        if (Math.random() * 8 < 3) {
+            shinyText = "_2";
+            if (Math.random() * 7 < 2) {
+                shinyText = "_3";
+            }
+        }
     }
-    return pokedex[index + ]
+    let result = pokedex[index + shinyText];
+    if (result.gender.length == 2) {
+        result.gender = "male";
+        if (Math.random() * 100 < parseInt(result.gender)) {
+            result.gender = "female";
+        }
+    }
+    return result;
 }
 
 
 // item in a pack
 export class Box {
-    constructor(codename, rarity, value) {
+    constructor(pokemon, rarity, value) {
         this.rarity = rarity;
         this.value = value;
         this.x = 0;
         this.y = 0;
         this.sprite = [];
-        this.codename = codename;
-        this.pokemon = pokedex[codename];
+        this.pokemon = pokemon;
         this.scale = 1;
         this.opacity = 1;
     }
@@ -224,7 +228,7 @@ export class Box {
         this.sprite = [
             k.add([k.sprite("boxes", { frame: this.rarity }), k.pos(x, y), k.opacity(this.opacity), k.area(), k.scale(this.scale)]),
             k.add([k.text("*" + this.value, { size: 14 * this.scale, font: "pkmn" }), k.pos(x + 10 * this.scale, y + 128 * this.scale), k.opacity(this.opacity), k.layer("3")]),
-            k.add([k.sprite(this.codename), k.pos(x + (200 - this.pokemon.width)  * this.scale / 2, y + (150 - this.pokemon.height)  * this.scale / 2), k.scale(this.pokemon.scale * this.scale), k.opacity(this.opacity)]),
+            k.add([k.sprite(this.pokemon.codename), k.pos(x + (200 - this.pokemon.width)  * this.scale / 2, y + (150 - this.pokemon.height)  * this.scale / 2), k.scale(this.pokemon.scale * this.scale), k.opacity(this.opacity)]),
         ];
         this.x = x;
         this.y = y;
@@ -267,19 +271,16 @@ export class Box {
         this.destroySprite();
         this.add(tempx, tempy);
     }
-    clone() {
-        return new Box(this.codename, this.rarity, this.value)
-    }
 }
 
 // pack of pokemon
 export class Pack {
-    constructor(index, name, price, items, weights) {
+    constructor(index, name, price, items, rarityWeights) {
         this.index = index;
         this.name = name;
         this.price = price;
         this.items = items;
-        this.weights = weights;
+        this.rarityWeights = rarityWeights;
     }
     add(x, y) {
         this.sprite = k.add([k.sprite("pack"), k.pos(x, y), k.area()]);
@@ -298,16 +299,31 @@ export class Pack {
     }
     getRandom() {
         let totalWeight = 0;
-        for (const weight of this.weights) {
+        for (const weight of this.rarityWeights) {
             totalWeight += weight;
         }
         const random = Math.random() * totalWeight;
         let cumulative = 0;
       
-        for (let i = 0; i < this.items.length; i++) {
-          cumulative += this.weights[i];
+        for (let i = 0; i < this.rarityWeights.length; i++) {
+          cumulative += this.rarityWeights[i];
           if (random < cumulative) {
-            return this.items[i].clone();
+            let totalWeightOfRarity = 0;
+            const itemsOfRarity = [];
+            for (const item of this.items) {
+                if (item[1] == i) {
+                    itemsOfRarity.push(item);
+                    totalWeightOfRarity += item[2];
+                }
+            }
+            const randomOfRarity = Math.random() * totalWeightOfRarity;
+            let cumulativeOfRarity = 0;
+            for (const item of itemsOfRarity) {
+                cumulativeOfRarity += item[2];
+                if (randomOfRarity < cumulativeOfRarity) {
+                    return new Box(getPokemon(item[0]), item[1], item[3]);
+                }
+            }
           }
         }
     }
@@ -315,7 +331,7 @@ export class Pack {
 
 // list of packs
 export const packs = [
-    new Pack(0, "Pack 1", 100, [new Box("1", 0, 31), new Box("2", 1, 86), new Box("3", 2, 202), new Box("4", 3, 764), new Box("5", 4, 2181), new Box("6", 5, 11587), new Box("7", 6, 76189)], [0.45, 0.3, 0.16, 0.05, 0.0077, 0.0014, 0.0004]),
+    new Pack(0, "Pack 1", 100, [[1, 3, 1, 1908], [4, 3, 1, 2091], [7, 3, 1, 1709], [10, 0, 1, 26], [25, 2, 1, 560], [27, 1, 1, 133], [147, 4, 1, 8736], [150, 5, 1, 57147], [151, 6, 1, 618322]], [0.45, 0.3, 0.16, 0.05, 0.0077, 0.0014, 0.0004]),
     ];
 export let whichPack = 0;
 
