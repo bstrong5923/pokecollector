@@ -15,7 +15,7 @@ export default function inventoryScene() { // scene showin inventory
         k.add([k.text("Total Value: *" + totalvalue, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 10 * ((totalvalue + 1) % 10 + 14), menuHeight + 24)]);
     }
 
-    displayItems(inventory, "inventoryScene", 20, screenWidth - 20, menuHeight + 24, menuHeight + screenHeight - 50, 200, 150, 6);
+    displayItems(inventory, "inventory", 20, screenWidth - 20, menuHeight + 24, menuHeight + screenHeight - 50, 200, 150, 6);
 
     for (const item of inventory) {
         item.setScale(1);

@@ -38,7 +38,7 @@ for (let x = 2; x <= 19; x++) {
     }
 
     const atlas = {}; // empty dictionary
-    fetch("images/pokemon/pokemon_icons_" + num + ".json") // chatgpt's work
+    await fetch("images/pokemon/pokemon_icons_" + num + ".json") // chatgpt's work
         .then((response) => response.json())  // chatgpt's work
         .then((data) => { // chatgpt's work
             const frames = data.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
@@ -49,7 +49,7 @@ for (let x = 2; x <= 19; x++) {
             }
         });
 
-    k.loadSpriteAtlas("images/pokemon/pokemon_icons_" + num + ".png", atlas)
+    await k.loadSpriteAtlas("images/pokemon/pokemon_icons_" + num + ".png", atlas)
         .then(() => { console.log("atlas loading " + (x - 1) + "/18"); });
 }
 

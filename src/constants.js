@@ -63,9 +63,8 @@ export function menu(current) {
         nextX += widths[i] + 150; // where the next one should start
         button.onClick(() => { // when the button is clicked:
             if (button.text != current && menuOn) { // if it is not the current scene
-                k.go(button.text + "Scene"); // run the scene associated with it
                 page = 0;
-                currentScene = button.text;
+                go(button.text); // run the scene associated with it
             }
         });
 
@@ -111,7 +110,7 @@ for (let x = 2; x <= 19; x++) {
         num += "v";
     }
 
-    fetch("images/pokemon/pokemon_icons_" + num + ".json") // chatgpt's work
+    await fetch("images/pokemon/pokemon_icons_" + num + ".json") // chatgpt's work
         .then((response) => response.json())  // chatgpt's work
         .then((data) => { // chatgpt's work
             const frames = data.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
@@ -174,9 +173,6 @@ for (let x = 2; x <= 19; x++) {
                     scale = 115 / sprite.frame.h;
                 }
                 scale -= (scale - 5) / 2.5;
-                if (index < 20) {
-                    console.log(name + " " + scale);
-                }
                 
                 pokedex[sprite.filename] = {
                     name: name,
@@ -196,7 +192,7 @@ for (let x = 2; x <= 19; x++) {
 
 function getPokemon(index) {
     let shinyText = "";
-    if (Math.random() * 12 < 1 && pokedex[index + "s"] != null) {
+    if (Math.random() * 512 < 1 && pokedex[index + "s"] != null) {
         shinyText = "s";
         if (Math.random() * 7 < 3 && pokedex[index + "_2"] != null) {
             shinyText = "_2";
@@ -363,14 +359,14 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
         pagearrowleft = k.add([k.sprite("pagearrowleft"), k.pos(xmin + 10, (ymin + ymax) / 2 - 75), k.opacity(0.8), k.area(), k.layer("1")]);
         pagearrowleft.onClick(() => { 
             page--;
-            k.go(scene);
+            go(scene);
         });
     }
     if (items.length > (page + 1) * itemsPerPage) {
         pagearrowright = k.add([k.sprite("pagearrowright"), k.pos(xmax - 160, (ymin + ymax) / 2 - 75), k.opacity(0.8), k.area(), k.layer("1")]);
         pagearrowright.onClick(() => { 
             page++;
-            k.go(scene);
+            go(scene);
         });
     }
 
