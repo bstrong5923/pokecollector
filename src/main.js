@@ -49,9 +49,10 @@ for (let x = 2; x <= 19; x++) {
             }
         });
 
-    k.loadSpriteAtlas("images/pokemon/pokemon_icons_" + num + ".png", atlas);
+    k.loadSpriteAtlas("images/pokemon/pokemon_icons_" + num + ".png", atlas)
+        .then(() => { console.log("atlas loading " + (x - 1) + "/18"); });
 }
-k.onLoad(() => { console.log("atlas loaded."); }); //a 
+
 
 // create the scenes
 k.scene("spinningScene", () => spinningScene()); 
