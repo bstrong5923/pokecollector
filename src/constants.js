@@ -127,19 +127,19 @@ for (let x = 2; x <= 19; x++) {
                     }
                 }
 
-                let regionalForm = "";
+                let regionalForm = " ";
                 let index = parseInt(sprite.filename.substring(0, cutoff));
                 if (index > 2000) {
-                    regionalForm = "Alolan";
+                    regionalForm = "Alolan ";
                     if (index > 4000) {
-                        regionalForm = "Galarian";
+                        regionalForm = "Galarian ";
                         if (index > 600) {
-                            regionalForm = "Hisuian";
+                            regionalForm = "Hisuian ";
                         }
                     }
                     index %= 1000;
                 }
-                name += regionalForm + " " + pokemonNames[index - 1];
+                name += regionalForm + pokemonNames[index - 1];
 
                 let shinyLevel = 0; // figure out what level of shiny it is
                 if (sprite.filename.indexOf("s") == cutoff) {
@@ -173,7 +173,6 @@ for (let x = 2; x <= 19; x++) {
                 if (scale > 130 / sprite.frame.h) {
                     scale = 130 / sprite.frame.h;
                 }
-                scale = Math.floor(scale);
                 
                 pokedex[sprite.filename] = {
                     name: name,
@@ -192,11 +191,11 @@ for (let x = 2; x <= 19; x++) {
 
 function getPokemon(index) {
     let shinyText = "";
-    if (Math.random() * 512 < 1) {
+    if (Math.random() * 12 < 1 && pokedex[index + "s"] != null) {
         shinyText = "s";
-        if (Math.random() * 8 < 3) {
+        if (Math.random() * 7 < 3 && pokedex[index + "_2"] != null) {
             shinyText = "_2";
-            if (Math.random() * 7 < 2) {
+            if (Math.random() * 7 < 2 && pokedex[index + "_3"] != null) {
                 shinyText = "_3";
             }
         }
