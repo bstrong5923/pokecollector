@@ -22,8 +22,8 @@ export const screenHeight = kScreenHeight - menuHeight;
 let page = 0;
 let currentScene = "packs";
 export function go(scene) {
-    k.go(scene + "Scene");
     currentScene = scene;
+    k.go(scene + "Scene");
 }
 
 export let displayItem = null;
@@ -192,7 +192,7 @@ for (let x = 2; x <= 19; x++) {
 
 function getPokemon(index) {
     let shinyText = "";
-    if (Math.random() * 512 < 1 && pokedex[index + "s"] != null) {
+    if (Math.random() * 8192 < 1 && pokedex[index + "s"] != null) {
         shinyText = "s";
         if (Math.random() * 7 < 3 && pokedex[index + "_2"] != null) {
             shinyText = "_2";
@@ -245,8 +245,7 @@ export class Box {
     }
     display() {
         displayItem = this;
-        k.go("displayScene");
-        currentScene = "display";
+        go("display");
     }
     move(changex, changey) {
         for (const comp of this.sprite) {
@@ -287,12 +286,12 @@ export class Pack {
         this.sprite.onClick(() => {
             if (!hoveringPriority) {
                 whichPack = this.index;
-                k.go("spinningScene");
+                go("spinning");
                 currentScene = "spinning";
             }
         });
         this.sprite.onUpdate(() => {
-            if (this.sprite.isHovering() && !hoveringPriority) {
+            if (this.sprite.isHovering()) {
                 canvas.style.cursor = "pointer";
             }
         });
@@ -330,11 +329,11 @@ export class Pack {
 }
 
 // list of packs
-const standardRarityWeights = [0.48, 0.3, 0.12, 0.031, 0.003, 0.0007, 0.00005];
+const standardRarityWeights = [0.48, 0.32, 0.13, 0.031, 0.003, 0.0007, 0.00005];
 export const packs = [
-    new Pack(0, "Pack 1", 100, [[1, 3, 1, 1180], [10, 0, 1, 26], [23, 0, 1, 39], [25, 2, 3, 477], [27, 0, 1, 41], [35, 0, 1, 36], [41, 0, 1, 38], [48, 0, 1, 28], [54, 1, 1, 108], [60, 0, 1, 23], [74, 0, 1, 31], [63, 1, 1, 103], [84, 0, 1, 31], [88, 1, 1, 108], [83, 2, 1, 426], [96, 1, 1, 112], [102, 1, 1, 91], [109, 1, 1, 109], [116, 2, 1, 396], [120, 1, 1, 96], [132, 1, 1, 100], [133, 0, 1, 30], [125, 2, 1, 438], [128, 2, 1, 438], [137, 2, 1, 471], [145, 5, 1, 52032], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
-    new Pack(1, "Pack 2", 100, [[4, 3, 1, 1226], [13, 0, 1, 27], [21, 0, 1, 34], [25, 2, 3, 477], [29, 0, 1, 33], [37, 0, 1, 34], [43, 0, 1, 21], [50, 0, 1, 30], [56, 1, 1, 109], [66, 0, 1, 39], [77, 0, 1, 35], [72, 1, 1, 111], [86, 0, 1, 27], [92, 1, 1, 113], [111, 2, 1, 468], [98, 1, 1, 105], [104, 1, 1, 102], [114, 1, 1, 106], [123, 2, 1, 511], [137, 1, 1, 105], [132, 1, 1, 100], [133, 0, 1, 30], [126, 2, 1, 432], [131, 2, 1, 502], [142, 2, 1, 650], [146, 5, 1, 52803], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
-    new Pack(2, "Pack 3", 100, [[7, 3, 1, 1109], [16, 0, 1, 32], [19, 0, 1, 29], [25, 2, 3, 477], [32, 0, 1, 33], [39, 0, 1, 35], [46, 0, 1, 27], [52, 0, 1, 37], [58, 1, 1, 118], [69, 0, 1, 25], [79, 0, 1, 34], [81, 1, 1, 107], [90, 0, 1, 30], [95, 1, 1, 121], [115, 2, 1, 441], [100, 1, 1, 103], [108, 1, 1, 114], [118, 1, 1, 102], [124, 2, 1, 386], [138, 1, 1, 98], [132, 1, 1, 100], [133, 0, 1, 30], [127, 2, 1, 461], [140, 2, 1, 447], [143, 2, 1, 578], [144, 5, 1, 51894], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
+    new Pack(0, "Pack 1", 100, [[1, 3, 1, 1180], [10, 0, 1, 26], [23, 0, 1, 39], [25, 2, 1, 477], [27, 0, 1, 41], [35, 1, 1, 109], [41, 0, 1, 38], [48, 0, 1, 28], [54, 1, 1, 108], [60, 0, 1, 23], [74, 0, 1, 31], [63, 1, 1, 103], [84, 0, 1, 31], [88, 1, 1, 108], [83, 2, 1, 426], [96, 1, 1, 112], [102, 1, 1, 91], [109, 1, 1, 109], [116, 2, 1, 396], [120, 1, 1, 96], [132, 1, 1, 100], [133, 0, 1, 30], [125, 2, 1, 438], [128, 2, 1, 438], [137, 2, 1, 471], [145, 5, 1, 52032], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
+    new Pack(1, "Pack 2", 100, [[4, 3, 1, 1226], [13, 0, 1, 27], [21, 0, 1, 34], [25, 2, 1, 477], [29, 0, 1, 33], [37, 1, 1, 108], [43, 0, 1, 21], [50, 0, 1, 30], [56, 1, 1, 109], [66, 0, 1, 39], [77, 0, 1, 35], [72, 1, 1, 111], [86, 0, 1, 27], [92, 1, 1, 113], [111, 2, 1, 468], [98, 1, 1, 105], [104, 1, 1, 102], [114, 1, 1, 106], [123, 2, 1, 511], [137, 1, 1, 105], [132, 1, 1, 100], [133, 0, 1, 30], [126, 2, 1, 432], [131, 2, 1, 502], [142, 2, 1, 650], [146, 5, 1, 52803], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
+    new Pack(2, "Pack 3", 100, [[7, 3, 1, 1109], [16, 0, 1, 32], [19, 0, 1, 29], [25, 2, 1, 477], [32, 0, 1, 33], [39, 1, 1, 114], [46, 0, 1, 27], [52, 0, 1, 37], [58, 1, 1, 118], [69, 0, 1, 25], [79, 0, 1, 34], [81, 1, 1, 107], [90, 0, 1, 30], [95, 1, 1, 121], [115, 2, 1, 441], [100, 1, 1, 103], [108, 1, 1, 114], [118, 1, 1, 102], [124, 2, 1, 386], [138, 1, 1, 98], [132, 1, 1, 100], [133, 0, 1, 30], [127, 2, 1, 461], [140, 2, 1, 447], [143, 2, 1, 578], [144, 5, 1, 51894], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
 ];
 export let whichPack = 0;
 
@@ -384,9 +383,18 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
 
     let x = xmin + xindent;
     let y = ymin + yindent;
+    console.log("page: " + page);
+    console.log("start: " + (page * itemsPerPage));
+    console.log("end: " + ((page + 1) * itemsPerPage));
     for (let i = page * itemsPerPage; i < items.length && i < (page + 1) * itemsPerPage; i++) {
         const item = items[i];
         item.add(x, y);
+        if (currentScene == "inventory") {
+            item.setScale(1);
+        }
+        if (currentScene == "inventory") {
+            console.log(i + ": " + item.pokemon.name);
+        }
         x += width + spacing;
         if (x > xmax - width - xindent) {
             y += height + spacing;
