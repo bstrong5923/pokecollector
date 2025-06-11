@@ -98,7 +98,7 @@ const pokemonNames = [
     "Grookey", "Thwackey", "Rillaboom", "Scorbunny", "Raboot", "Cinderace", "Sobble", "Drizzile", "Inteleon", "Skwovet", "Greedent", "Rookidee", "Corvisquire", "Corviknight", "Blipbug", "Dottler", "Orbeetle", "Nickit", "Thievul", "Gossifleur", "Eldegoss", "Wooloo", "Dubwool", "Chewtle", "Drednaw", "Yamper", "Boltund", "Rolycoly", "Carkol", "Coalossal", "Applin", "Flapple", "Appletun", "Silicobra", "Sandaconda", "Cramorant", "Arrokuda", "Barraskewda", "Toxel", "Toxtricity", "Sizzlipede", "Centiskorch", "Clobbopus", "Grapploct", "Sinistea", "Polteageist", "Hatenna", "Hattrem", "Hatterene", "Impidimp", "Morgrem", "Grimmsnarl", "Obstagoon", "Perrserker", "Cursola", "Sirfetch’d", "Mr. Rime", "Runerigus", "Milcery", "Alcremie", "Falinks", "Pincurchin", "Snom", "Frosmoth", "Stonjourner", "Eiscue", "Indeedee", "Morpeko", "Cufant", "Copperajah", "Dracozolt", "Arctozolt", "Dracovish", "Arctovish", "Duraludon", "Dreepy", "Drakloak", "Dragapult", "Zacian", "Zamazenta", "Eternatus", "Kubfu", "Urshifu", "Zarude", "Regieleki", "Regidrago", "Glastrier", "Spectrier", "Calyrex", "Wyrdeer", "Kleavor", "Ursaluna", "Basculegion", "Sneasler", "Overqwil", "Enamorus", // GEN 8
     "Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Crocalor", "Skeledirge", "Quaxly", "Quaxwell", "Quaquaval", "Lechonk", "Oinkologne", "Tarountula", "Spidops", "Nymble", "Lokix", "Hoppip", "Skiploom", "Jumpluff", "Fletchling", "Fletchinder", "Talonflame", "Pawmi", "Pawmo", "Pawmot", "Tandemaus", "Maushold", "Tauruntula", "Spidops", "Nacli", "Naclstack", "Garganacl", "Charcadet", "Armarouge", "Ceruledge", "Tadbulb", "Bellibolt", "Wattrel", "Kilowattrel", "Maschiff", "Mabosstiff", "Shroodle", "Grafaiai", "Bramblin", "Brambleghast", "Toedscool", "Toedscruel", "Klawf", "Capsakid", "Scovillain", "Rellor", "Rabsca", "Flittle", "Espathra", "Tinkatink", "Tinkatuff", "Tinkaton", "Wiglett", "Wugtrio", "Bombirdier", "Finizen", "Palafin", "Varoom", "Revavroom", "Cyclizar", "Orthworm", "Glimmet", "Glimmora", "Greavard", "Houndstone", "Flamigo", "Cetoddle", "Cetitan", "Veluza", "Dondozo", "Tatsugiri", "Annihilape", "Clodsire", "Farigiraf", "Dudunsparce", "Kingambit", "Great Tusk", "Scream Tail", "Brute Bonnet", "Flutter Mane", "Slither Wing", "Sandy Shocks", "Iron Treads", "Iron Bundle", "Iron Hands", "Iron Jugulis", "Iron Moth", "Iron Thorns", "Frigibax", "Arctibax", "Baxcalibur", "Gimmighoul", "Gholdengo", "Wo-Chien", "Chien-Pao", "Ting-Lu", "Chi-Yu", "Roaring Moon", "Iron Valiant", "Koraidon", "Miraidon", "Walking Wake", "Iron Leaves", "Dipplin", "Poltchageist", "Sinistcha", "Okidogi", "Munkidori", "Fezandipiti", "Ogerpon", "Archaludon", "Hydrapple", "Gouging Fire", "Raging Bolt", "Iron Boulder", "Iron Crown", "Terapagos", "Pecharunt", // GEN 9
 ];
-const shinyNames = ["", "Shiny", "Rare Shiny", "Epic Shiny"];
+const shinyNames = ["", "Shiny ", "Rare Shiny ", "Epic Shiny "];
 const genderless = [81, 82, 100, 101, 120, 121, 132, 137, 144, 145, 146, 150, 151, 201, 233, 243, 244, 245, 249, 250, 251, 299, 343, 344, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 436, 437, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 599, 600, 601, 615, 622, 623, 646, 647, 648, 649, 703, 707, 716, 717, 718, 719, 720, 721, 772, 773, 774, 777, 781, 801, 802, 807, 808, 809, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 905, 906, 907, 908, 909, 910, 911, 1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025]; // indexes of genderless pokemon
 const maleonlys = [32, 33, 34, 106, 128, 383, 534, 538, 539, 641, 1007]; // indexes of always-male pokemon
 const femaleonlys = [29, 30, 31, 113, 115, 124, 241, 380, 488, 549, 629, 640, 1008]; // indexes of always-female pokemon
@@ -140,14 +140,33 @@ for (let x = 2; x <= 19; x++) {
                 }
                 name += regionalForm + pokemonNames[index - 1];
 
+                let scale = 160 / sprite.frame.w;
+                if (scale > 115 / sprite.frame.h) {
+                    scale = 115 / sprite.frame.h;
+                }
+                scale -= (scale - 5) / 2.5;
+
                 let shinyLevel = 0; // figure out what level of shiny it is
-                if (sprite.filename.indexOf("s") == cutoff) {
+                let i = sprite.filename.indexOf("s");
+                let i2 = sprite.filename.indexOf("_");
+                if (i == cutoff) {
                     shinyLevel = 1;
                 }
-                else if (sprite.filename.indexOf("_") != -1) {
-                    shinyLevel = sprite.filename.charAt(sprite.filename.indexOf("_") + 1);
+                else if (i2 != -1) {
+                    shinyLevel = parseInt(sprite.filename.charAt(i2 + 1));
+                    const baseform = pokedex[sprite.filename.substring(0, i2) + sprite.filename.substring(i2 + 2)];
+                    scale = baseform.scale;
                 }
-                name = shinyNames[shinyLevel] + " " + name;
+                name = shinyNames[shinyLevel] + name;
+
+                let w = sprite.frame.w * scale;
+                let h = sprite.frame.h * scale;
+                if (i2 != -1) {
+                    h += scale ** 3.3 / 8;
+                    if (index == 41) {
+                        h -= 20;
+                    }
+                }
 
                 let gender = "50";
                 if (genderless.indexOf(index) != -1) {
@@ -167,12 +186,6 @@ for (let x = 2; x <= 19; x++) {
                         gender = "male";
                     }
                 }
-
-                let scale = 160 / sprite.frame.w;
-                if (scale > 115 / sprite.frame.h) {
-                    scale = 115 / sprite.frame.h;
-                }
-                scale -= (scale - 5) / 2.5;
                 
                 pokedex[sprite.filename] = {
                     name: name,
@@ -181,8 +194,8 @@ for (let x = 2; x <= 19; x++) {
                     shinyLevel: shinyLevel,
                     gender: gender,
                     scale: scale,
-                    width: sprite.frame.w * scale,
-                    height: sprite.frame.h * scale,
+                    width: w,
+                    height: h,
                     regionalForm: regionalForm,
                 };
             }
@@ -192,8 +205,11 @@ for (let x = 2; x <= 19; x++) {
 
 function getPokemon(index) {
     let shinyText = "";
-    if (Math.random() * 8192 < 1 && pokedex[index + "s"] != null) {
+    if (Math.random() * 4096 < 1 && pokedex[index + "s"] != null) {
         shinyText = "s";
+        if (pokedex[index + "_1"] != null && Math.random() * 2 < 1) {
+            shinyText = "_1";
+        }
         if (Math.random() * 7 < 3 && pokedex[index + "_2"] != null) {
             shinyText = "_2";
             if (Math.random() * 7 < 2 && pokedex[index + "_3"] != null) {
@@ -383,17 +399,11 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
 
     let x = xmin + xindent;
     let y = ymin + yindent;
-    console.log("page: " + page);
-    console.log("start: " + (page * itemsPerPage));
-    console.log("end: " + ((page + 1) * itemsPerPage));
     for (let i = page * itemsPerPage; i < items.length && i < (page + 1) * itemsPerPage; i++) {
         const item = items[i];
         item.add(x, y);
         if (currentScene == "inventory") {
             item.setScale(1);
-        }
-        if (currentScene == "inventory") {
-            console.log(i + ": " + item.pokemon.name);
         }
         x += width + spacing;
         if (x > xmax - width - xindent) {
