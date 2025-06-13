@@ -206,8 +206,9 @@ for (let x = 2; x <= 19; x++) {
 function getPokemon(index) {
     let shinyText = "";
     if (Math.random() * 4096 < 1 && pokedex[index + "s"] != null) {
+        console.log("Shiny went by!");
         shinyText = "s";
-        if (pokedex[index + "_1"] != null && Math.random() * 2 < 1) {
+        if (pokedex[index + "_1"] != null && Math.random() * 2 < 1) { 
             shinyText = "_1";
         }
         if (Math.random() * 7 < 3 && pokedex[index + "_2"] != null) {
@@ -228,17 +229,20 @@ function getPokemon(index) {
 }
 
 
+const shinyMults = [1, 777, 3333, 17777];
+
 // item in a pack
 export class Box {
-    constructor(pokemon, rarity, value) {
+    constructor(pokemon, rarity, basevalue) {
         this.rarity = rarity;
-        this.value = value;
         this.x = 0;
         this.y = 0;
         this.sprite = [];
         this.pokemon = pokemon;
         this.scale = 1;
         this.opacity = 1;
+
+        this.value = basevalue * shinyMults[this.pokemon.shinyLevel];
     }
     add(x, y) {
         this.sprite = [
@@ -246,6 +250,9 @@ export class Box {
             k.add([k.text("*" + this.value, { size: 14 * this.scale, font: "pkmn" }), k.pos(x + 10 * this.scale, y + 128 * this.scale), k.opacity(this.opacity), k.layer("3")]),
             k.add([k.sprite(this.pokemon.codename), k.pos(x + (200 - this.pokemon.width)  * this.scale / 2, y + (150 - this.pokemon.height)  * this.scale / 2), k.scale(this.pokemon.scale * this.scale), k.opacity(this.opacity)]),
         ];
+        if (this.pokemon.shinyLevel > 0) {
+            this.sprite.push(k.add([k.sprite("shinies", { frame: this.pokemon.shinyLevel - 1 }), k.pos(x + 160 * this.scale, y + 9 * this.scale), k.opacity(this.opacity), k.scale(this.scale * 2)]));
+        }
         this.x = x;
         this.y = y;
         this.sprite[0].onUpdate(() => {

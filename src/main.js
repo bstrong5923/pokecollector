@@ -30,6 +30,11 @@ k.loadSprite("checkbox", "images/buttons/checkbox.png", {
 k.loadSprite("pagearrowright", "images/pagearrow/right.png");
 k.loadSprite("pagearrowleft", "images/pagearrow/left.png");
 k.loadSprite("pack", "images/pack.png");
+k.loadSprite("shinies", "images/shinies.png", {
+    sliceX: 3,
+    sliceY: 1,
+});
+
 // loading the pokemon
 for (let x = 2; x <= 19; x++) {
     let num = Math.floor(x / 2);
