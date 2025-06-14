@@ -29,6 +29,8 @@ k.loadSprite("checkbox", "images/buttons/checkbox.png", {
 });
 k.loadSprite("pagearrowright", "images/pagebuttons/right.png");
 k.loadSprite("pagearrowleft", "images/pagebuttons/left.png");
+k.loadSprite("small_left", "images/pagebuttons/small_left.png");
+k.loadSprite("small_right", "images/pagebuttons/small_right.png");
 k.loadSprite("pack", "images/pack.png");
 k.loadSprite("shinies", "images/shinies.png", {
     sliceX: 3,

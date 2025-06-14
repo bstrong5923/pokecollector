@@ -6,6 +6,63 @@ export const canvas = document.querySelector("canvas");
 let hoveringPriority = false;
 
 export const inventory = [];
+export let inventorySorted = [];
+export let sortStyle = "Time ^";
+export function setSortStyle(style) {
+    sortStyle = style;
+}
+function sortInventoryOldest() {
+    inventorySorted = [...inventory]; // copies array without reference
+}
+function sortInventoryNewest() {
+    inventorySorted = [];
+    for (const item of inventory) {
+        inventorySorted.unshift(item);
+    }
+}
+function sortInventoryMostExpensive() {
+    inventorySorted = [...inventory]; // copies array without reference
+    for (let i = 0; i < inventorySorted.length; i++) {
+        let max = i;
+        for (let j = i + 1; j < inventorySorted.length; j++) {
+            if (inventorySorted[j].value > inventorySorted[max].value) {
+                max = j;
+            }
+        }
+        let temp = inventorySorted[i];
+        inventorySorted[i] = inventorySorted[max];
+        inventorySorted[max] = temp;
+    }
+}
+function sortInventoryLeastExpensive() {
+    inventorySorted = [...inventory]; // copies array without reference
+    for (let i = 0; i < inventorySorted.length; i++) {
+        let min = i;
+        for (let j = i + 1; j < inventorySorted.length; j++) {
+            if (inventorySorted[j].value < inventorySorted[min].value) {
+                min = j;
+            }
+        }
+        let temp = inventorySorted[i];
+        inventorySorted[i] = inventorySorted[min];
+        inventorySorted[min] = temp;
+    }
+}
+export function sortInventory() {
+    if (sortStyle == "Time ^") {
+        sortInventoryOldest();
+    }
+    else if (sortStyle == "Time v") {
+        sortInventoryNewest();
+    }
+    else if (sortStyle == "Value ^") {
+        sortInventoryMostExpensive();
+    }
+    else {
+        sortInventoryLeastExpensive();
+    }
+}
+
 export const packsowned = [0, 0, 0];
 export let money = 100000;
 export function subtractMoney(amount) {
@@ -19,7 +76,7 @@ export const menuHeight = 130;
 export const screenWidth = kScreenWidth
 export const screenHeight = kScreenHeight - menuHeight;
 
-let page = 0;
+export let page = 0;
 let currentScene = "packs";
 export function go(scene) {
     currentScene = scene;
@@ -115,7 +172,7 @@ for (let x = 2; x <= 19; x++) {
 
     await fetch("images/pokemon/pokemon_icons_" + num + ".json") // chatgpt's work
         .then((response) => response.json())  // chatgpt's work
-        .then((data) => { // chatgpt's work
+        .then((data) => { // fill pokedex with pokemon data
             const frames = data.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
 
             for (const sprite of frames) { // for each pokemon sprite
@@ -370,7 +427,7 @@ export let whichPack = 0;
 
 
 // used in inventoryScene and packsScene and stuff to format items into rows and cols
-export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height, spacing) {
+export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height, spacing, pageArrowName, pageArrowScale, leftX, leftY, rightX, rightY) {
     const itemsPerRow = Math.floor((xmax - xmin + spacing) / (width + spacing));
     const rowsPerPage = Math.floor((ymax - ymin + spacing) / (height + spacing));
     const itemsPerPage = itemsPerRow * rowsPerPage;
@@ -381,14 +438,14 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
     let pagearrowleft;
     let pagearrowright;
     if (page != 0) {
-        pagearrowleft = k.add([k.sprite("pagearrowleft"), k.pos(xmin + 10, (ymin + ymax) / 2 - 55), k.opacity(0.8), k.area(), k.layer("1")]);
+        pagearrowleft = k.add([k.sprite(pageArrowName + "left"), k.pos(leftX, leftY), k.area(), k.layer("1"), k.scale(pageArrowScale)]);
         pagearrowleft.onClick(() => { 
             page--;
             go(scene);
         });
     }
     if (items.length > (page + 1) * itemsPerPage) {
-        pagearrowright = k.add([k.sprite("pagearrowright"), k.pos(xmax - 120, (ymin + ymax) / 2 - 55), k.opacity(0.8), k.area(), k.layer("1")]);
+        pagearrowright = k.add([k.sprite(pageArrowName + "right"), k.pos(rightX, rightY), k.area(), k.layer("1"), k.scale(pageArrowScale)]);
         pagearrowright.onClick(() => { 
             page++;
             go(scene);
