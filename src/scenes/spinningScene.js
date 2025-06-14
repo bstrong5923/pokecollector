@@ -36,8 +36,8 @@ export default function spinningScene() { // scene of wheel spinnin'
     let pricedisplay = k.add([k.text("Price: *" + packs[whichPack].price, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 70 - Math.floor(Math.log10(packs[whichPack].price + 1)) * 14, spinbutton.pos.y + 100)]);
     let owneddisplay = k.add([k.text("Owned: " + packsowned[whichPack], { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 75 - Math.floor(Math.log10(packsowned[whichPack] + 1)) * 12, pricedisplay.pos.y + 40)]);
     const autospinbutton = [
-        k.add([k.text("Autospin", { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 50, owneddisplay.pos.y + 40), k.area()]),
-        k.add([k.sprite("checkbox", { frame: 0 }), k.pos(screenWidth / 2 - 80, owneddisplay.pos.y + 36), k.area(), k.scale(4)]),
+        k.add([k.text("Autospin", { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 55, owneddisplay.pos.y + 40), k.area()]),
+        k.add([k.sprite("checkbox", { frame: 0 }), k.pos(screenWidth / 2 - 87, owneddisplay.pos.y + 36), k.area(), k.scale(4)]),
     ];
     for (const comp of autospinbutton) {
         comp.onClick(() => {

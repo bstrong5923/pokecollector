@@ -26,7 +26,10 @@ export function go(scene) {
     k.go(scene + "Scene");
 }
 
-export let displayItem = null;
+export let displayIndex = null;
+export function changeDisplayIndex(num) {
+    displayIndex += num;
+}
 
 // menu of pages to go to
 let menuOn = true;
@@ -205,7 +208,7 @@ for (let x = 2; x <= 19; x++) {
 
 function getPokemon(index) {
     let shinyText = "";
-    if (Math.random() * 4096 < 1 && pokedex[index + "s"] != null) {
+    if (Math.random() * 2048 < 1 && pokedex[index + "s"] != null) {
         console.log("Shiny went by!");
         shinyText = "s";
         if (pokedex[index + "_1"] != null && Math.random() * 2 < 1) { 
@@ -267,7 +270,7 @@ export class Box {
         });
     }
     display() {
-        displayItem = this;
+        displayIndex = inventory.indexOf(this);
         go("display");
     }
     move(changex, changey) {
@@ -378,14 +381,14 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
     let pagearrowleft;
     let pagearrowright;
     if (page != 0) {
-        pagearrowleft = k.add([k.sprite("pagearrowleft"), k.pos(xmin + 10, (ymin + ymax) / 2 - 75), k.opacity(0.8), k.area(), k.layer("1")]);
+        pagearrowleft = k.add([k.sprite("pagearrowleft"), k.pos(xmin + 10, (ymin + ymax) / 2 - 55), k.opacity(0.8), k.area(), k.layer("1")]);
         pagearrowleft.onClick(() => { 
             page--;
             go(scene);
         });
     }
     if (items.length > (page + 1) * itemsPerPage) {
-        pagearrowright = k.add([k.sprite("pagearrowright"), k.pos(xmax - 160, (ymin + ymax) / 2 - 75), k.opacity(0.8), k.area(), k.layer("1")]);
+        pagearrowright = k.add([k.sprite("pagearrowright"), k.pos(xmax - 120, (ymin + ymax) / 2 - 55), k.opacity(0.8), k.area(), k.layer("1")]);
         pagearrowright.onClick(() => { 
             page++;
             go(scene);

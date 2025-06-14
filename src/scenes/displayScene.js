@@ -1,10 +1,12 @@
 import k from "../kaplayCtx";
-import { displayItem, menu, menuHeight, screenHeight, screenWidth, canvas, go, inventory, addMoney } from "../constants";
+import { displayIndex, menu, menuHeight, screenHeight, screenWidth, canvas, go, inventory, addMoney, changeDisplayIndex } from "../constants";
 
 export default function displayScene() {
     menu();
 
-    const closebutton = k.add([k.sprite("closebutton"), k.pos(screenWidth - 130, menuHeight + 30), k.area()]);
+    const displayItem = inventory[displayIndex];
+
+    const closebutton = k.add([k.sprite("closebutton"), k.pos(screenWidth - 140, menuHeight + 30), k.area()]);
     closebutton.onUpdate(() => {
         if (closebutton.isHovering()) {
             canvas.style.cursor = "pointer";
@@ -12,6 +14,29 @@ export default function displayScene() {
     });
     closebutton.onClick(() => {
         go("inventory");
+    });
+
+    let pagearrowleft;
+    let pagearrowright;
+    if (displayIndex != 0) {
+        pagearrowleft = k.add([k.sprite("pagearrowleft"), k.pos(10, screenHeight / 2 + menuHeight - 55), k.area(), k.layer("1")]);
+        pagearrowleft.onClick(() => {
+            changeDisplayIndex(-1);
+            go("display");
+        });
+    }
+    if (displayIndex != inventory.length - 1) {
+        pagearrowright = k.add([k.sprite("pagearrowright"), k.pos(screenWidth - 120, screenHeight / 2 + menuHeight - 55), k.area(), k.layer("1")]);
+        pagearrowright.onClick(() => {
+            changeDisplayIndex(1);
+            go("display");
+        });
+    }
+
+    k.onUpdate(() => {
+        if ((pagearrowleft != null && pagearrowleft.isHovering()) || (pagearrowright != null && pagearrowright.isHovering())) {
+            canvas.style.cursor = "pointer";
+        }
     });
 
     const itemY = screenHeight / 2 + menuHeight - 300

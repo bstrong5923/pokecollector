@@ -21,14 +21,14 @@ k.loadSprite("buymults", "images/buttons/buymults.png", {
     sliceX: 2,
     sliceY: 3,
 });
-k.loadSprite("closebutton", "images/buttons/closebutton.png");
+k.loadSprite("closebutton", "images/pagebuttons/close.png");
 k.loadSprite("sellbutton", "images/buttons/sellbutton.png");
 k.loadSprite("checkbox", "images/buttons/checkbox.png", {
     sliceX: 1,
     sliceY: 2,
 });
-k.loadSprite("pagearrowright", "images/pagearrow/right.png");
-k.loadSprite("pagearrowleft", "images/pagearrow/left.png");
+k.loadSprite("pagearrowright", "images/pagebuttons/right.png");
+k.loadSprite("pagearrowleft", "images/pagebuttons/left.png");
 k.loadSprite("pack", "images/pack.png");
 k.loadSprite("shinies", "images/shinies.png", {
     sliceX: 3,
