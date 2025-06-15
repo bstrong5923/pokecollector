@@ -12,16 +12,15 @@ export function setSortStyle(style) {
     sortStyle = style;
 }
 function sortInventoryOldest() {
-    inventorySorted = [...inventory]; // copies array without reference
 }
 function sortInventoryNewest() {
+    const temp = [...inventorySorted]
     inventorySorted = [];
-    for (const item of inventory) {
+    for (const item of temp) {
         inventorySorted.unshift(item);
     }
 }
 function sortInventoryMostExpensive() {
-    inventorySorted = [...inventory]; // copies array without reference
     for (let i = 0; i < inventorySorted.length; i++) {
         let max = i;
         for (let j = i + 1; j < inventorySorted.length; j++) {
@@ -35,7 +34,6 @@ function sortInventoryMostExpensive() {
     }
 }
 function sortInventoryLeastExpensive() {
-    inventorySorted = [...inventory]; // copies array without reference
     for (let i = 0; i < inventorySorted.length; i++) {
         let min = i;
         for (let j = i + 1; j < inventorySorted.length; j++) {
@@ -49,17 +47,31 @@ function sortInventoryLeastExpensive() {
     }
 }
 export function sortInventory() {
+    inventorySorted = [];
+    for (let i = 0; i < inventory.length; i++) {
+        let add = true;
+        for (let j = 0; j < inventorySorted.length; j++) {
+            if (inventory[i].pokemon.name == inventorySorted[j].pokemon.name && inventory[i].value == inventorySorted[j].value) {
+                inventorySorted[j].duplicates++;
+                add = false;
+                break;
+            }
+        }
+        if (add) {
+            inventorySorted.push(inventory[i]);
+        }
+    }
     if (sortStyle == "Time ^") {
         sortInventoryOldest();
     }
     else if (sortStyle == "Time v") {
         sortInventoryNewest();
     }
-    else if (sortStyle == "Value ^") {
-        sortInventoryMostExpensive();
+    else if (sortStyle == "Value v") {
+        sortInventoryLeastExpensive();
     }
     else {
-        sortInventoryLeastExpensive();
+        sortInventoryMostExpensive();
     }
 }
 
@@ -266,12 +278,11 @@ for (let x = 2; x <= 19; x++) {
 function getPokemon(index) {
     let shinyText = "";
     if (Math.random() * 2048 < 1 && pokedex[index + "s"] != null) {
-        console.log("Shiny went by!");
         shinyText = "s";
         if (pokedex[index + "_1"] != null && Math.random() * 2 < 1) { 
             shinyText = "_1";
         }
-        if (Math.random() * 7 < 3 && pokedex[index + "_2"] != null) {
+        if (Math.random() * 7 < 2 && pokedex[index + "_2"] != null) {
             shinyText = "_2";
             if (Math.random() * 7 < 2 && pokedex[index + "_3"] != null) {
                 shinyText = "_3";
@@ -301,6 +312,7 @@ export class Box {
         this.pokemon = pokemon;
         this.scale = 1;
         this.opacity = 1;
+        this.duplicates = 1;
 
         this.value = basevalue * shinyMults[this.pokemon.shinyLevel];
     }
@@ -312,6 +324,9 @@ export class Box {
         ];
         if (this.pokemon.shinyLevel > 0) {
             this.sprite.push(k.add([k.sprite("shinies", { frame: this.pokemon.shinyLevel - 1 }), k.pos(x + 160 * this.scale, y + 9 * this.scale), k.opacity(this.opacity), k.scale(this.scale * 2)]));
+        }
+        if (this.duplicates > 1) {
+            this.sprite.push( k.add([k.text("x" + this.duplicates, { size: 14 * this.scale, font: "pkmn" }), k.pos(x + (168 - Math.floor(Math.log10(this.duplicates)) * 14) * this.scale, y + 128 * this.scale), k.opacity(this.opacity), k.layer("3")]));
         }
         this.x = x;
         this.y = y;
@@ -412,11 +427,11 @@ export class Pack {
 }
 
 // list of packs
-const standardRarityWeights = [0.48, 0.32, 0.13, 0.031, 0.003, 0.0007, 0.00005];
+const standardRarityWeights = [0.49, 0.32, 0.14, 0.015, 0.004, 0.0007, 0.00005];
 export const packs = [
-    new Pack(0, "Pack 1", 100, [[1, 3, 1, 1180], [10, 0, 1, 26], [23, 0, 1, 39], [25, 2, 1, 477], [27, 0, 1, 41], [35, 1, 1, 109], [41, 0, 1, 38], [48, 0, 1, 28], [54, 1, 1, 108], [60, 0, 1, 23], [74, 0, 1, 31], [63, 1, 1, 103], [84, 0, 1, 31], [88, 1, 1, 108], [83, 2, 1, 426], [96, 1, 1, 112], [102, 1, 1, 91], [109, 1, 1, 109], [116, 2, 1, 396], [120, 1, 1, 96], [132, 1, 1, 100], [133, 0, 1, 30], [125, 2, 1, 438], [128, 2, 1, 438], [137, 2, 1, 471], [145, 5, 1, 52032], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
-    new Pack(1, "Pack 2", 100, [[4, 3, 1, 1226], [13, 0, 1, 27], [21, 0, 1, 34], [25, 2, 1, 477], [29, 0, 1, 33], [37, 1, 1, 108], [43, 0, 1, 21], [50, 0, 1, 30], [56, 1, 1, 109], [66, 0, 1, 39], [77, 0, 1, 35], [72, 1, 1, 111], [86, 0, 1, 27], [92, 1, 1, 113], [111, 2, 1, 468], [98, 1, 1, 105], [104, 1, 1, 102], [114, 1, 1, 106], [123, 2, 1, 511], [137, 1, 1, 105], [132, 1, 1, 100], [133, 0, 1, 30], [126, 2, 1, 432], [131, 2, 1, 502], [142, 2, 1, 650], [146, 5, 1, 52803], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
-    new Pack(2, "Pack 3", 100, [[7, 3, 1, 1109], [16, 0, 1, 32], [19, 0, 1, 29], [25, 2, 1, 477], [32, 0, 1, 33], [39, 1, 1, 114], [46, 0, 1, 27], [52, 0, 1, 37], [58, 1, 1, 118], [69, 0, 1, 25], [79, 0, 1, 34], [81, 1, 1, 107], [90, 0, 1, 30], [95, 1, 1, 121], [115, 2, 1, 441], [100, 1, 1, 103], [108, 1, 1, 114], [118, 1, 1, 102], [124, 2, 1, 386], [138, 1, 1, 98], [132, 1, 1, 100], [133, 0, 1, 30], [127, 2, 1, 461], [140, 2, 1, 447], [143, 2, 1, 578], [144, 5, 1, 51894], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
+    new Pack(0, "Pack 1", 100, [[1, 3, 1, 1180], [10, 0, 1, 26], [23, 0, 1, 39], [25, 2, 1, 477], [27, 0, 1, 41], [35, 1, 1, 109], [41, 0, 1, 38], [48, 0, 1, 28], [54, 1, 1, 108], [60, 0, 1, 23], [74, 0, 1, 31], [63, 1, 1, 103], [84, 0, 1, 31], [88, 1, 1, 108], [83, 2, 1, 426], [96, 1, 1, 112], [102, 1, 1, 91], [109, 1, 1, 109], [116, 2, 1, 396], [120, 1, 1, 96], [132, 2, 1, 300], [133, 0, 1, 30], [125, 2, 1, 438], [128, 2, 1, 438], [137, 2, 1, 471], [145, 5, 1, 52032], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
+    new Pack(1, "Pack 2", 100, [[4, 3, 1, 1226], [13, 0, 1, 27], [21, 0, 1, 34], [25, 2, 1, 477], [29, 0, 1, 33], [37, 1, 1, 108], [43, 0, 1, 21], [50, 0, 1, 30], [56, 1, 1, 109], [66, 0, 1, 39], [77, 0, 1, 35], [72, 1, 1, 111], [86, 0, 1, 27], [92, 1, 1, 113], [111, 2, 1, 468], [98, 1, 1, 105], [104, 1, 1, 102], [114, 1, 1, 106], [123, 2, 1, 511], [137, 1, 1, 105], [132, 2, 1, 300], [133, 0, 1, 30], [126, 2, 1, 432], [131, 2, 1, 502], [142, 2, 1, 650], [146, 5, 1, 52803], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
+    new Pack(2, "Pack 3", 100, [[7, 3, 1, 1109], [16, 0, 1, 32], [19, 0, 1, 29], [25, 2, 1, 477], [32, 0, 1, 33], [39, 1, 1, 114], [46, 0, 1, 27], [52, 0, 1, 37], [58, 1, 1, 118], [69, 0, 1, 25], [79, 0, 1, 34], [81, 1, 1, 107], [90, 0, 1, 30], [95, 1, 1, 121], [115, 2, 1, 441], [100, 1, 1, 103], [108, 1, 1, 114], [118, 1, 1, 102], [124, 2, 1, 386], [138, 1, 1, 98], [132, 2, 1, 300], [133, 0, 1, 30], [127, 2, 1, 461], [140, 2, 1, 447], [143, 2, 1, 578], [144, 5, 1, 51894], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
 ];
 export let whichPack = 0;
 

@@ -4,10 +4,10 @@ import { inventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeigh
 export default function spinningScene() { // scene of wheel spinnin'
     menu("spinning");
 
-    // // Fill inventory for testing 
-    // for (let i = 0; i < 250; i++) {
-    //     inventory.push(packs[Math.floor(Math.random() * packs.length)].getRandom());
-    // }
+    // Fill inventory for testing 
+    for (let i = 0; i < 250; i++) {
+        inventory.push(packs[0].getRandom());
+    }
 
     const wheelX = screenWidth / 2 - 403; // starting point for the boxes and wheel
     const wheelY = screenHeight / 2 - 175 + menuHeight; // starting point for the boxes and wheel

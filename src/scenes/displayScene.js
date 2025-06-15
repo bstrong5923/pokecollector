@@ -44,14 +44,24 @@ export default function displayScene() {
     displayItem.add(screenWidth / 2 - 300, itemY);
     displayItem.setScale(3);
 
-    k.add([k.text(displayItem.pokemon.name, { size: 48, width: 1200, font: "pkmn", align: "center" }), k.pos(screenWidth / 2 - 600, itemY + 480)]);
+    let name = displayItem.pokemon.name;
+    if (displayItem.duplicates > 1) {
+        name += " x" + displayItem.duplicates;
+    }
+    k.add([k.text(name, { size: 48, width: 1200, font: "pkmn", align: "center" }), k.pos(screenWidth / 2 - 600, itemY + 480)]);
 
     const sellbutton = k.add([k.sprite("sellbutton"), k.pos(screenWidth / 2 - 77, itemY + 650), k.area()])
     sellbutton.onClick(() => {
-        console.log(inventory.indexOf(displayItem));
-        inventory.splice(inventory.indexOf(displayItem), 1);
-        addMoney(displayItem.value);
-        go("inventory");
+        inventory[displayIndex].duplicates--;
+                addMoney(displayItem.value);
+        if (inventory[displayIndex].duplicates == 0) {
+            inventory.splice(inventory.indexOf(displayItem), 1);
+            go("inventory");
+        }
+        else {
+            go("display");
+        }
+
     });
     sellbutton.onUpdate(() => {
         if (sellbutton.isHovering) {
