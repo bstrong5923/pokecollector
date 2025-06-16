@@ -57,7 +57,7 @@ for (let x = 0; x <= 19; x++) {
         });
 
     await k.loadSpriteAtlas("images/pokemon/pokemon_icons_" + num + ".png", atlas)
-        .then(() => { console.log("atlas loading " + x + "/19"); });
+        .then(() => { console.log("atlas loading " + (x + 1) + "/20"); });
 }
 
 

@@ -21,6 +21,8 @@ export function toggleStacking() {
         stacking = 0;
     }
 }
+export let stackedIndexes = [];
+
 function sortInventoryOldest() {
     for (let i = 0; i < inventory.length; i++) {
         let min = i;
@@ -86,15 +88,32 @@ export function sortInventory() {
     else {
         sortInventoryMostExpensive();
     }
-    // if (stacking == 1) {
-    //     for (let i = 0; i < inventory.length; i++) {
-    //         for (let j = i + 1; j < inventory.length; j++) {
-    //             if (inventory[i].stacksWith(inventory[j])) {
 
-    //             }
-    //         }
+    stackedIndexes = [];
+    if (stacking == 1) {
+        for (let i = 0; i < inventory.length; i++) {
+            let add = true;
+            for (let j = 0; j < stackedIndexes.length; j++) {
+                if (inventory[i].stacksWith(inventory[stackedIndexes[j][0]])) {
+                    stackedIndexes[j].push(i);
+                    add = false;
+                    break;
+                }
+            }
+            if (add) {
+                stackedIndexes.push([i])
+            }
+        }
+    }
+
+    // // Print inventory for testing
+    // let print = "";
+    //     let i = 0;
+    //     for (const item of inventory) {
+    //         print += i + ": " + item.name + ", ";
+    //         i++;
     //     }
-    // }
+    //     console.log(print);
 }
 
 export const packsowned = [0, 0, 0];
@@ -294,7 +313,7 @@ for (let x = 0; x <= 19; x++) {
                 };
             }
         })
-        .then(() => { console.log("pokedex loading " + x + "/19"); });
+        .then(() => { console.log("pokedex loading " + (x + 1) + "/20"); });
 }
 
 function getPokemon(index) {
@@ -513,6 +532,9 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
         item.add(x, y);
         if (currentScene == "inventory") {
             item.setScale(1);
+            if (stacking && stackedIndexes[i].length > 1) {
+                k.add([k.text("x" + stackedIndexes[i].length, { size: 14, font: "pkmn" }), k.pos(x + 168 - 14 * Math.floor(Math.log10(stackedIndexes[i].length)), y + 128), k.layer("3")])
+            }
         }
         x += width + spacing;
         if (x > xmax - width - xindent) {
