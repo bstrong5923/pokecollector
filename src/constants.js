@@ -11,6 +11,16 @@ export let sortStyle = "Time ^";
 export function setSortStyle(style) {
     sortStyle = style;
 }
+
+export let stacking = 1;
+export function toggleStacking() {
+    if (stacking == 0) {
+        stacking = 1;
+    }
+    else {
+        stacking = 0;
+    }
+}
 function sortInventoryOldest() {
     for (let i = 0; i < inventory.length; i++) {
         let min = i;
@@ -64,22 +74,6 @@ function sortInventoryLeastExpensive() {
     }
 }
 export function sortInventory() {
-    // inventorySorted = [];
-    // inventoryDuplicates = [];
-    // for (let i = 0; i < inventory.length; i++) {
-    //     let add = true;
-    //     for (let j = 0; j < inventorySorted.length; j++) {
-    //         if (inventory[i].pokemon.name == inventorySorted[j].pokemon.name && inventory[i].value == inventorySorted[j].value) {
-    //             inventoryDuplicates[j]++;
-    //             add = false;
-    //             break;
-    //         }
-    //     }
-    //     if (add) {
-    //         inventorySorted.push(inventory[i]);
-    //         inventoryDuplicates.push(1);
-    //     }
-    // }
     if (sortStyle == "Time ^") {
         sortInventoryOldest();
     }
@@ -92,6 +86,15 @@ export function sortInventory() {
     else {
         sortInventoryMostExpensive();
     }
+    // if (stacking == 1) {
+    //     for (let i = 0; i < inventory.length; i++) {
+    //         for (let j = i + 1; j < inventory.length; j++) {
+    //             if (inventory[i].stacksWith(inventory[j])) {
+
+    //             }
+    //         }
+    //     }
+    // }
 }
 
 export const packsowned = [0, 0, 0];
@@ -195,7 +198,7 @@ const maleonlys = [32, 33, 34, 106, 128, 383, 534, 538, 539, 641, 1007]; // inde
 const femaleonlys = [29, 30, 31, 113, 115, 124, 241, 380, 488, 549, 629, 640, 1008]; // indexes of always-female pokemon
 const genderImportant = [84, 85, 154, 198, 255, 256, 257, 449, 450, 521, 592, 593, 668, 678, 876, 902, 916]; // indexes of pokemon that have different gender forms
 const pokedex = {};
-for (let x = 2; x <= 19; x++) {
+for (let x = 0; x <= 19; x++) {
     let num = Math.floor(x / 2);
     if (x % 2 == 1) {
         num += "v";
@@ -245,7 +248,7 @@ for (let x = 2; x <= 19; x++) {
                 }
                 else if (i2 != -1) {
                     shinyLevel = parseInt(sprite.filename.charAt(i2 + 1));
-                    const baseform = pokedex[sprite.filename.substring(0, i2) + sprite.filename.substring(i2 + 2)];
+                    const baseform = pokedex[sprite.filename.substring(0, i2)];
                     scale = baseform.scale;
                 }
                 name = shinyNames[shinyLevel] + name;
@@ -291,7 +294,7 @@ for (let x = 2; x <= 19; x++) {
                 };
             }
         })
-        .then(() => { console.log("pokedex loading " + (x - 1) + "/18"); });
+        .then(() => { console.log("pokedex loading " + x + "/19"); });
 }
 
 function getPokemon(index) {
@@ -329,6 +332,7 @@ export class Box {
         this.y = 0;
         this.sprite = [];
         this.pokemon = pokemon;
+        this.name = pokemon.name;
         this.scale = 1;
         this.opacity = 1;
         this.basevalue = basevalue;
@@ -384,6 +388,12 @@ export class Box {
         const tempy = this.y;
         this.destroySprite();
         this.add(tempx, tempy);
+    }
+    stacksWith(other) {
+        if (other.pokemon.name == this.pokemon.name && other.name == this.name && other.value == this.value) {
+            return true;
+        }
+        return false;
     }
 }
 

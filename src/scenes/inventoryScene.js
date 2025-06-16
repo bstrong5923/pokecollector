@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { inventory, displayItems, menu, menuHeight, screenWidth, screenHeight, page, sortStyle, go, canvas, sortInventory, setSortStyle } from "../constants";
+import { inventory, displayItems, menu, menuHeight, screenWidth, screenHeight, page, sortStyle, go, canvas, sortInventory, setSortStyle, toggleStacking, stacking } from "../constants";
 
 export default function inventoryScene() { // scene showin inventory
     menu("inventory");
@@ -38,17 +38,12 @@ export default function inventoryScene() { // scene showin inventory
         }
     })
     const stackbutton = [
-        k.add([k.text("Stacks", { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 700, menuHeight + 24), k.area()]),
-        k.add([k.sprite("checkbox", { frame: 0 }), k.pos(screenWidth / 2 - 732, menuHeight + 20), k.area(), k.scale(4)]),
+        k.add([k.text("Stacking", { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 700, menuHeight + 24), k.area()]),
+        k.add([k.sprite("checkbox", { frame: stacking }), k.pos(screenWidth / 2 - 733, menuHeight + 20), k.area(), k.scale(4)]),
     ];
     for (const comp of stackbutton) {
         comp.onClick(() => {
-            if (stackbutton[1].frame == 0) {
-                stackbutton[1].frame = 1;
-            }
-            else {
-                stackbutton[1].frame = 0;
-            }
+            toggleStacking();
             go("inventory");
         });
     }

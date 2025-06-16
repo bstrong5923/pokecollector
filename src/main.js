@@ -38,7 +38,7 @@ k.loadSprite("shinies", "images/shinies.png", {
 });
 
 // loading the pokemon
-for (let x = 2; x <= 19; x++) {
+for (let x = 0; x <= 19; x++) {
     let num = Math.floor(x / 2);
     if (x % 2 == 1) {
         num += "v";
@@ -57,7 +57,7 @@ for (let x = 2; x <= 19; x++) {
         });
 
     await k.loadSpriteAtlas("images/pokemon/pokemon_icons_" + num + ".png", atlas)
-        .then(() => { console.log("atlas loading " + (x - 1) + "/18"); });
+        .then(() => { console.log("atlas loading " + x + "/19"); });
 }
 
 

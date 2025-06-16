@@ -1,5 +1,5 @@
 import k, { kScreenWidth } from "../kaplayCtx";
-import { packs, displayItems, menu, menuHeight, screenWidth, screenHeight } from "../constants";
+import { packs, displayItems, menu, menuHeight, screenWidth, screenHeight, Box } from "../constants";
 
 export default function packsScene() {
     menu("packs");
