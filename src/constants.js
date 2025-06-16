@@ -1,75 +1,85 @@
 import k from "./kaplayCtx";
 import { kScreenWidth, kScreenHeight } from "./kaplayCtx";
+import { format } from "date-fns";
 
 export const canvas = document.querySelector("canvas");
 
 let hoveringPriority = false;
 
 export const inventory = [];
-export let inventorySorted = [];
-export let inventoryDuplicates = [];
 export let sortStyle = "Time ^";
 export function setSortStyle(style) {
     sortStyle = style;
 }
 function sortInventoryOldest() {
-}
-function sortInventoryNewest() {
-    const temp = [...inventorySorted]
-    inventorySorted = [];
-    for (const item of temp) {
-        inventorySorted.unshift(item);
-    }
-}
-function sortInventoryMostExpensive() {
-    for (let i = 0; i < inventorySorted.length; i++) {
-        let max = i;
-        for (let j = i + 1; j < inventorySorted.length; j++) {
-            if (inventorySorted[j].value > inventorySorted[max].value) {
-                max = j;
-            }
-        }
-        let temp = inventorySorted[i];
-        inventorySorted[i] = inventorySorted[max];
-        inventorySorted[max] = temp;
-    }
-}
-function sortInventoryLeastExpensive() {
-    for (let i = 0; i < inventorySorted.length; i++) {
+    for (let i = 0; i < inventory.length; i++) {
         let min = i;
-        for (let j = i + 1; j < inventorySorted.length; j++) {
-            if (inventorySorted[j].value < inventorySorted[min].value) {
+        for (let j = i + 1; j < inventory.length; j++) {
+            if (inventory[j].dateCreated < inventory[min].dateCreated) {
                 min = j;
             }
         }
-        let temp = inventorySorted[i];
-        inventorySorted[i] = inventorySorted[min];
-        inventorySorted[min] = temp;
+        let temp = inventory[i];
+        inventory[i] = inventory[min];
+        inventory[min] = temp;
+    }
+}
+function sortInventoryNewest() {
+    for (let i = 0; i < inventory.length; i++) {
+        let max = i;
+        for (let j = i + 1; j < inventory.length; j++) {
+            if (inventory[j].dateCreated > inventory[max].dateCreated) {
+                max = j;
+            }
+        }
+        let temp = inventory[i];
+        inventory[i] = inventory[max];
+        inventory[max] = temp;
+    }
+}
+function sortInventoryMostExpensive() {
+    for (let i = 0; i < inventory.length; i++) {
+        let max = i;
+        for (let j = i + 1; j < inventory.length; j++) {
+            if (inventory[j].value > inventory[max].value) {
+                max = j;
+            }
+        }
+        let temp = inventory[i];
+        inventory[i] = inventory[max];
+        inventory[max] = temp;
+    }
+}
+function sortInventoryLeastExpensive() {
+    for (let i = 0; i < inventory.length; i++) {
+        let min = i;
+        for (let j = i + 1; j < inventory.length; j++) {
+            if (inventory[j].value < inventory[min].value) {
+                min = j;
+            }
+        }
+        let temp = inventory[i];
+        inventory[i] = inventory[min];
+        inventory[min] = temp;
     }
 }
 export function sortInventory() {
-    inventorySorted = [];
-    inventoryDuplicates = [];
-    for (let i = 0; i < inventory.length; i++) {
-        let add = true;
-        for (let j = 0; j < inventorySorted.length; j++) {
-            if (inventory[i].pokemon.name == inventorySorted[j].pokemon.name && inventory[i].value == inventorySorted[j].value) {
-                inventoryDuplicates[j]++;
-                add = false;
-                break;
-            }
-        }
-        if (add) {
-            inventorySorted.push(inventory[i]);
-            inventoryDuplicates.push(1);
-        }
-    }
-    let print = "";
-    for (const item of inventory) {
-        print += item.pokemon.name + ", ";
-    }
-    console.log(print);
-    console.log(inventoryDuplicates);
+    // inventorySorted = [];
+    // inventoryDuplicates = [];
+    // for (let i = 0; i < inventory.length; i++) {
+    //     let add = true;
+    //     for (let j = 0; j < inventorySorted.length; j++) {
+    //         if (inventory[i].pokemon.name == inventorySorted[j].pokemon.name && inventory[i].value == inventorySorted[j].value) {
+    //             inventoryDuplicates[j]++;
+    //             add = false;
+    //             break;
+    //         }
+    //     }
+    //     if (add) {
+    //         inventorySorted.push(inventory[i]);
+    //         inventoryDuplicates.push(1);
+    //     }
+    // }
     if (sortStyle == "Time ^") {
         sortInventoryOldest();
     }
@@ -322,6 +332,7 @@ export class Box {
         this.scale = 1;
         this.opacity = 1;
         this.basevalue = basevalue;
+        this.dateCreated = format(new Date(), 'yyyyMMddHHmmss');
 
         this.value = basevalue * shinyMults[this.pokemon.shinyLevel];
     }
@@ -333,9 +344,6 @@ export class Box {
         ];
         if (this.pokemon.shinyLevel > 0) {
             this.sprite.push(k.add([k.sprite("shinies", { frame: this.pokemon.shinyLevel - 1 }), k.pos(x + 160 * this.scale, y + 9 * this.scale), k.opacity(this.opacity), k.scale(this.scale * 2)]));
-        }
-        if (this.duplicates > 1) {
-            this.sprite.push( k.add([k.text("x" + this.duplicates, { size: 14 * this.scale, font: "pkmn" }), k.pos(x + (168 - Math.floor(Math.log10(this.duplicates)) * 14) * this.scale, y + 128 * this.scale), k.opacity(this.opacity), k.layer("3")]));
         }
         this.x = x;
         this.y = y;
@@ -351,7 +359,7 @@ export class Box {
         });
     }
     display() {
-        displayIndex = inventorySorted.indexOf(this);
+        displayIndex = inventory.indexOf(this);
         go("display");
     }
     move(changex, changey) {
@@ -376,10 +384,6 @@ export class Box {
         const tempy = this.y;
         this.destroySprite();
         this.add(tempx, tempy);
-    }
-    clone() {
-        const result = new Box(this.pokemon, this.rarity, this.basevalue);
-        return result;
     }
 }
 

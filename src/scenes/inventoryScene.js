@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { inventory, displayItems, menu, menuHeight, screenWidth, screenHeight, page, inventorySorted, sortStyle, go, canvas, sortInventory, setSortStyle } from "../constants";
+import { inventory, displayItems, menu, menuHeight, screenWidth, screenHeight, page, sortStyle, go, canvas, sortInventory, setSortStyle } from "../constants";
 
 export default function inventoryScene() { // scene showin inventory
     menu("inventory");
@@ -55,5 +55,5 @@ export default function inventoryScene() { // scene showin inventory
 
     sortInventory();
 
-    displayItems(inventorySorted, "inventory", 20, screenWidth - 20, menuHeight + 24, menuHeight + screenHeight - 50, 200, 150, 6, "small_", 3, screenWidth / 2 - 138, menuHeight + 24, screenWidth / 2 + 61, menuHeight + 24);
+    displayItems(inventory, "inventory", 20, screenWidth - 20, menuHeight + 24, menuHeight + screenHeight - 50, 200, 150, 6, "small_", 3, screenWidth / 2 - 138, menuHeight + 24, screenWidth / 2 + 61, menuHeight + 24);
 }
