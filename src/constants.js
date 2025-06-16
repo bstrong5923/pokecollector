@@ -7,6 +7,7 @@ let hoveringPriority = false;
 
 export const inventory = [];
 export let inventorySorted = [];
+export let inventoryDuplicates = [];
 export let sortStyle = "Time ^";
 export function setSortStyle(style) {
     sortStyle = style;
@@ -48,19 +49,27 @@ function sortInventoryLeastExpensive() {
 }
 export function sortInventory() {
     inventorySorted = [];
+    inventoryDuplicates = [];
     for (let i = 0; i < inventory.length; i++) {
         let add = true;
         for (let j = 0; j < inventorySorted.length; j++) {
             if (inventory[i].pokemon.name == inventorySorted[j].pokemon.name && inventory[i].value == inventorySorted[j].value) {
-                inventorySorted[j].duplicates++;
+                inventoryDuplicates[j]++;
                 add = false;
                 break;
             }
         }
         if (add) {
             inventorySorted.push(inventory[i]);
+            inventoryDuplicates.push(1);
         }
     }
+    let print = "";
+    for (const item of inventory) {
+        print += item.pokemon.name + ", ";
+    }
+    console.log(print);
+    console.log(inventoryDuplicates);
     if (sortStyle == "Time ^") {
         sortInventoryOldest();
     }
@@ -312,7 +321,7 @@ export class Box {
         this.pokemon = pokemon;
         this.scale = 1;
         this.opacity = 1;
-        this.duplicates = 1;
+        this.basevalue = basevalue;
 
         this.value = basevalue * shinyMults[this.pokemon.shinyLevel];
     }
@@ -336,13 +345,13 @@ export class Box {
             }
         });
         this.sprite[0].onClick(() => {
-            if (currentScene != "spinning" && !hoveringPriority) {
+            if (currentScene == "inventory" && !hoveringPriority) {
                 this.display();
             }
         });
     }
     display() {
-        displayIndex = inventory.indexOf(this);
+        displayIndex = inventorySorted.indexOf(this);
         go("display");
     }
     move(changex, changey) {
@@ -367,6 +376,10 @@ export class Box {
         const tempy = this.y;
         this.destroySprite();
         this.add(tempx, tempy);
+    }
+    clone() {
+        const result = new Box(this.pokemon, this.rarity, this.basevalue);
+        return result;
     }
 }
 

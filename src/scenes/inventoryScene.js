@@ -37,28 +37,23 @@ export default function inventoryScene() { // scene showin inventory
             canvas.style.cursor = "pointer";
         }
     })
-
-    console.log(inventory);
-    let total = 0;
-    for (const item of inventory) {  
-        total += item.duplicates;
+    const stackbutton = [
+        k.add([k.text("Stacks", { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 700, menuHeight + 24), k.area()]),
+        k.add([k.sprite("checkbox", { frame: 0 }), k.pos(screenWidth / 2 - 732, menuHeight + 20), k.area(), k.scale(4)]),
+    ];
+    for (const comp of stackbutton) {
+        comp.onClick(() => {
+            if (stackbutton[1].frame == 0) {
+                stackbutton[1].frame = 1;
+            }
+            else {
+                stackbutton[1].frame = 0;
+            }
+            go("inventory");
+        });
     }
-    console.log(total);
 
     sortInventory();
-
-    console.log(inventorySorted);
-    total = 0;
-    for (const item of inventorySorted) {  
-        total += item.duplicates;
-    }
-    console.log(total);
-    console.log(inventory);
-    total = 0;
-    for (const item of inventory) {  
-        total += item.duplicates;
-    }
-    console.log(total);
 
     displayItems(inventorySorted, "inventory", 20, screenWidth - 20, menuHeight + 24, menuHeight + screenHeight - 50, 200, 150, 6, "small_", 3, screenWidth / 2 - 138, menuHeight + 24, screenWidth / 2 + 61, menuHeight + 24);
 }

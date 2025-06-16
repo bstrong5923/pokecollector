@@ -1,10 +1,10 @@
 import k from "../kaplayCtx";
-import { displayIndex, menu, menuHeight, screenHeight, screenWidth, canvas, go, inventory, addMoney, changeDisplayIndex } from "../constants";
+import { displayIndex, menu, menuHeight, screenHeight, screenWidth, canvas, go, inventory, addMoney, changeDisplayIndex, inventoryDuplicates, inventorySorted } from "../constants";
 
 export default function displayScene() {
     menu();
 
-    const displayItem = inventory[displayIndex];
+    const displayItem = inventorySorted[displayIndex];
 
     const closebutton = k.add([k.sprite("closebutton"), k.pos(screenWidth - 140, menuHeight + 30), k.area()]);
     closebutton.onUpdate(() => {
@@ -45,17 +45,22 @@ export default function displayScene() {
     displayItem.setScale(3);
 
     let name = displayItem.pokemon.name;
-    if (displayItem.duplicates > 1) {
-        name += " x" + displayItem.duplicates;
+    if (inventoryDuplicates[displayIndex] > 1) {
+        name += " x" + inventoryDuplicates[displayIndex];
     }
     k.add([k.text(name, { size: 48, width: 1200, font: "pkmn", align: "center" }), k.pos(screenWidth / 2 - 600, itemY + 480)]);
 
     const sellbutton = k.add([k.sprite("sellbutton"), k.pos(screenWidth / 2 - 77, itemY + 650), k.area()])
     sellbutton.onClick(() => {
-        inventory[displayIndex].duplicates--;
-                addMoney(displayItem.value);
-        if (inventory[displayIndex].duplicates == 0) {
-            inventory.splice(inventory.indexOf(displayItem), 1);
+        inventoryDuplicates[displayIndex]--;
+        addMoney(displayItem.value);
+        for (let i = 0; i < inventory.length; i++) {
+            if (inventory[i].pokemon.name == displayItem.pokemon.name && inventory[i].value == displayItem.value) {
+                inventory.splice(i, 1);
+                break;
+            }
+        }
+        if (inventoryDuplicates[displayIndex] == 0) {
             go("inventory");
         }
         else {
