@@ -1,10 +1,11 @@
 import k from "../kaplayCtx";
-import { displayIndex, menu, menuHeight, screenHeight, screenWidth, canvas, go, inventory, addMoney, changeDisplayIndex } from "../constants";
+import { displayIndex, menu, menuHeight, screenHeight, screenWidth, canvas, go, inventory, addMoney, changeDisplayIndex, inventoryStacked, stackedIndexes } from "../constants";
 
 export default function displayScene() {
     menu();
 
-    const displayItem = inventory[displayIndex];
+    const displayItem = inventoryStacked[displayIndex];
+    console.log("Displaying #" + displayIndex + ": " + displayItem.name);
 
     const closebutton = k.add([k.sprite("closebutton"), k.pos(screenWidth - 140, menuHeight + 30), k.area()]);
     closebutton.onUpdate(() => {
@@ -45,13 +46,23 @@ export default function displayScene() {
     displayItem.setScale(3);
 
     let name = displayItem.name;
+    if (stackedIndexes[displayIndex].length > 1) {
+        name += " x" + stackedIndexes[displayIndex].length;
+    }
     k.add([k.text(name, { size: 48, width: 1200, font: "pkmn", align: "center" }), k.pos(screenWidth / 2 - 600, itemY + 480)]);
 
     const sellbutton = k.add([k.sprite("sellbutton"), k.pos(screenWidth / 2 - 77, itemY + 650), k.area()])
     sellbutton.onClick(() => {
         addMoney(displayItem.value);
-        inventory.splice(inventory.indexOf(displayItem), 1);
-        go("inventory");
+        console.log("Got rid of #" + stackedIndexes[displayIndex][stackedIndexes[displayIndex].length - 1] + ": " + inventory[stackedIndexes[displayIndex][stackedIndexes[displayIndex].length - 1]].name);
+        inventory.splice(stackedIndexes[displayIndex][stackedIndexes[displayIndex].length - 1], 1); // gets rid of the newest duplicate
+        stackedIndexes[displayIndex].splice(stackedIndexes[displayIndex].length - 1);
+        if (stackedIndexes[displayIndex].length == 0) {
+            go("inventory");
+        }
+        else {
+            go("display");
+        }
 
     });
     sellbutton.onUpdate(() => {

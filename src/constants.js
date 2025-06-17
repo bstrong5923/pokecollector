@@ -14,6 +14,7 @@ export function setSortStyle(style) {
 
 export let stacking = 1;
 export function toggleStacking() {
+    page = 0;
     if (stacking == 0) {
         stacking = 1;
     }
@@ -22,6 +23,7 @@ export function toggleStacking() {
     }
 }
 export let stackedIndexes = [];
+export let inventoryStacked = [];
 
 function sortInventoryOldest() {
     for (let i = 0; i < inventory.length; i++) {
@@ -75,7 +77,34 @@ function sortInventoryLeastExpensive() {
         inventory[min] = temp;
     }
 }
+function sortInventoryHighestIndex() {
+    for (let i = 0; i < inventory.length; i++) {
+        let max = i;
+        for (let j = i + 1; j < inventory.length; j++) {
+            if (inventory[j].pokemon.indexOrder > inventory[max].pokemon.indexOrder) {
+                max = j;
+            }
+        }
+        let temp = inventory[i];
+        inventory[i] = inventory[max];
+        inventory[max] = temp;
+    }
+}
+function sortInventoryLowestIndex() {
+    for (let i = 0; i < inventory.length; i++) {
+        let min = i;
+        for (let j = i + 1; j < inventory.length; j++) {
+            if (inventory[j].pokemon.indexOrder < inventory[min].pokemon.indexOrder) {
+                min = j;
+            }
+        }
+        let temp = inventory[i];
+        inventory[i] = inventory[min];
+        inventory[min] = temp;
+    }
+}
 export function sortInventory() {
+    sortInventoryHighestIndex();
     if (sortStyle == "Time ^") {
         sortInventoryOldest();
     }
@@ -85,11 +114,15 @@ export function sortInventory() {
     else if (sortStyle == "Value v") {
         sortInventoryLeastExpensive();
     }
-    else {
+    else if (sortStyle == "Value ^") {
         sortInventoryMostExpensive();
+    }
+    else if (sortStyle == "Index v") {
+        sortInventoryLowestIndex();
     }
 
     stackedIndexes = [];
+    inventoryStacked = [];
     if (stacking == 1) {
         for (let i = 0; i < inventory.length; i++) {
             let add = true;
@@ -104,7 +137,17 @@ export function sortInventory() {
                 stackedIndexes.push([i])
             }
         }
+        for (const stack of stackedIndexes) {
+            inventoryStacked.push(inventory[stack[0]]);
+        }
     }
+    else {
+        for (let i = 0; i < inventory.length; i++) {
+            inventoryStacked.push(inventory[i]);
+            stackedIndexes.push([i]);
+        }
+    }
+    
 
     // // Print inventory for testing
     // let print = "";
@@ -252,6 +295,10 @@ for (let x = 0; x <= 19; x++) {
                     index %= 1000;
                 }
                 name += regionalForm + pokemonNames[index - 1];
+                let indexOrder = index;
+                if (regionalForm != "") {
+                    indexOrder += 0.5;
+                }
 
                 let scale = 160 / sprite.frame.w;
                 if (scale > 115 / sprite.frame.h) {
@@ -303,6 +350,7 @@ for (let x = 0; x <= 19; x++) {
                 pokedex[sprite.filename] = {
                     name: name,
                     index: index,
+                    indexOrder: indexOrder,
                     codename: sprite.filename,
                     shinyLevel: shinyLevel,
                     gender: gender,
@@ -382,7 +430,7 @@ export class Box {
         });
     }
     display() {
-        displayIndex = inventory.indexOf(this);
+        displayIndex = inventoryStacked.indexOf(this);
         go("display");
     }
     move(changex, changey) {
