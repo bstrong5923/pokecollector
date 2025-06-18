@@ -6,7 +6,7 @@ export default function spinningScene() { // scene of wheel spinnin'
 
     // Fill inventory for testing 
     for (let i = 0; i < 250; i++) {
-        inventory.push(packs[Math.floor(Math.random() * packs.length)].getRandom());
+        inventory.push(packs[Math.floor(Math.random() * packs.length)].getRandom()); // Math.floor(Math.random() * packs.length)
     }
 
     const wheelX = screenWidth / 2 - 403; // starting point for the boxes and wheel
