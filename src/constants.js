@@ -6,6 +6,27 @@ export const canvas = document.querySelector("canvas");
 
 let hoveringPriority = false;
 
+export function shortenNumber(num) {
+    // const letters = ["", "K", "M", "B", "T", "Q", "Qu", "S"];
+    // let threshold = 1;
+    // let decimals = 1;
+    // while (num >= threshold * 1000) {
+    //     decimals = 1;
+    //     if (num >= threshold * 10000) {
+    //         decimals = 2;
+    //     }
+    //     threshold *= 1000;
+    // }
+    // return (num / threshold).toFixed(decimals) + letters[Math.log(threshold) / Math.log(1000)];
+
+    let result = num + "";
+    const commas = Math.floor(Math.log(num) / Math.log(1000));
+    for (let c = commas; c > 0; c--) {
+        result = result.substring(0, result.length - c * 3) + "," + result.substring(result.length - c * 3);
+    }
+    return result;
+}
+
 export const inventory = [];
 export let sortStyle = "Time ^";
 export function setSortStyle(style) {
@@ -216,10 +237,10 @@ export function menu(current) {
     }
 
     // money display in top left
-    const moneydisplay = k.add([k.text("*" + money, { size: 18, font: "pkmn"}), k.pos(10, 10)]);
+    const moneydisplay = k.add([k.text("*" + shortenNumber(money), { size: 18, font: "pkmn"}), k.pos(10, 10)]);
 
     k.onUpdate(() => {
-        moneydisplay.text = "*" + money; // update money display
+        moneydisplay.text = "*" + shortenNumber(money); // update money display
 
         canvas.style.cursor = "default";
             for (const button of buttons) {
@@ -398,7 +419,7 @@ export class Box {
     add(x, y) {
         this.sprite = [
             k.add([k.sprite("boxes", { frame: this.rarity }), k.pos(x, y), k.opacity(this.opacity), k.area(), k.scale(this.scale)]),
-            k.add([k.text("*" + this.value, { size: 14 * this.scale, font: "pkmn" }), k.pos(x + 10 * this.scale, y + 128 * this.scale), k.opacity(this.opacity), k.layer("3")]),
+            k.add([k.text("*" + shortenNumber(this.value), { size: 14 * this.scale, font: "pkmn" }), k.pos(x + 10 * this.scale, y + 128 * this.scale), k.opacity(this.opacity), k.layer("3")]),
             k.add([k.sprite(this.pokemon.codename), k.pos(x + (200 - this.pokemon.width)  * this.scale / 2, y + (150 - this.pokemon.height)  * this.scale / 2), k.scale(this.pokemon.scale * this.scale), k.opacity(this.opacity)]),
         ];
         if (this.pokemon.shinyLevel > 0) {

@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { inventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney, canvas } from "../constants";
+import { inventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney, canvas, shortenNumber } from "../constants";
 
 export default function spinningScene() { // scene of wheel spinnin'
     menu("spinning");
@@ -33,7 +33,7 @@ export default function spinningScene() { // scene of wheel spinnin'
     const buymultbutton = k.add([k.sprite("buymults", { frame: 0 }), k.pos(screenWidth / 2 - 243, screenHeight / 2 + 40 + menuHeight), k.area(), k.layer("1")]);
     const buybutton = k.add([k.sprite("buybutton"), k.pos(screenWidth / 2 - 77, screenHeight / 2 + 40 + menuHeight), k.area(), k.layer("1"), k.opacity(1)]); // buy button
     const spinbutton = k.add([k.sprite("spinbutton"), k.pos(screenWidth / 2 + 89, screenHeight / 2 + 40 + menuHeight), k.area(), k.layer("1"), k.opacity(1)]); // spin button
-    let pricedisplay = k.add([k.text("Price: *" + packs[whichPack].price, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 70 - Math.floor(Math.log10(packs[whichPack].price + 1)) * 14, spinbutton.pos.y + 100)]);
+    let pricedisplay = k.add([k.text("Price: *" + shortenNumber(packs[whichPack].price), { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 70 - Math.floor(Math.log10(packs[whichPack].price + 1)) * 14, spinbutton.pos.y + 100)]);
     let owneddisplay = k.add([k.text("Owned: " + packsowned[whichPack], { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 75 - Math.floor(Math.log10(packsowned[whichPack] + 1)) * 12, pricedisplay.pos.y + 40)]);
     const autospinbutton = [
         k.add([k.text("Autospin", { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 55, owneddisplay.pos.y + 40), k.area()]),
@@ -84,7 +84,7 @@ export default function spinningScene() { // scene of wheel spinnin'
 
     k.onUpdate(() => {
         // update text displays
-        pricedisplay.text = "Price: *" + (packs[whichPack].price * buymult);
+        pricedisplay.text = "Price: *" + shortenNumber(packs[whichPack].price * buymult);
         pricedisplay.pos.x = screenWidth / 2 - 70 - Math.floor(Math.log10(packs[whichPack].price * buymult + 1)) * 14;
         owneddisplay.text = "Owned: " + packsowned[whichPack];
         owneddisplay.pos.x = screenWidth / 2 - 75 - Math.floor(Math.log10(packsowned[whichPack] + 1)) * 12;

@@ -14,7 +14,7 @@ export default function inventoryScene() { // scene showin inventory
         totalvalue += item.value;
     }
     k.add([k.text("Total Value: *" + totalvalue, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 + 450 + 24 * Math.floor(Math.log10(inventory.length + 1)), menuHeight + 24)]);
-    k.add([k.text("Used: " + inventory.length + "/500", { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 + 150, menuHeight + 24)]);
+    k.add([k.text("Owned: " + inventory.length, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 + 150, menuHeight + 24)]);
 
     const sortButton = k.add([k.text("Sort by: " + sortStyle, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 10 * sortStyle.length - 400, menuHeight + 24), k.area()]);
     const sortStyles = ["Time ^", "Time v", "Value ^", "Value v", "Index ^", "Index v"];
