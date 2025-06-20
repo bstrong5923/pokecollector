@@ -7,24 +7,35 @@ export const canvas = document.querySelector("canvas");
 let hoveringPriority = false;
 
 export function shortenNumber(num) {
-    // const letters = ["", "K", "M", "B", "T", "Q", "Qu", "S"];
-    // let threshold = 1;
-    // let decimals = 1;
-    // while (num >= threshold * 1000) {
-    //     decimals = 1;
-    //     if (num >= threshold * 10000) {
-    //         decimals = 2;
-    //     }
-    //     threshold *= 1000;
-    // }
-    // return (num / threshold).toFixed(decimals) + letters[Math.log(threshold) / Math.log(1000)];
-
-    let result = num + "";
-    const commas = Math.floor(Math.log(num) / Math.log(1000));
-    for (let c = commas; c > 0; c--) {
-        result = result.substring(0, result.length - c * 3) + "," + result.substring(result.length - c * 3);
+    // Letters
+    const letters = ["", "[", "{", "]", "}", "\\\\", "|", "S"];
+    let threshold = 1;
+    let decimals = 0;
+    while (num >= threshold * 1000) {
+        decimals = 2;
+        if (num >= threshold * 10000) {
+            decimals = 1;
+        }
+        threshold *= 1000;
     }
-    return result;
+    return Math.floor(num / threshold * (10 ** decimals)) / (10 ** decimals) + letters[Math.log(threshold) / Math.log(1000)];
+
+    // // commas
+    // let result = num + "";
+    // const commas = Math.floor(Math.log(num) / Math.log(1000));
+    // for (let c = commas; c > 0; c--) {
+    //     result = result.substring(0, result.length - c * 3) + "," + result.substring(result.length - c * 3);
+    // }
+    // return result;
+}
+
+export const packsowned = [0, 0, 0];
+export let money = 10000;
+export function subtractMoney(amount) {
+    money -= amount;
+}
+export function addMoney(amount) {
+    money += amount;
 }
 
 export const inventory = [];
@@ -166,15 +177,6 @@ export function sortInventory() {
     //     n++;
     // }
     // console.log(print);
-}
-
-export const packsowned = [0, 0, 0];
-export let money = 100000;
-export function subtractMoney(amount) {
-    money -= amount;
-}
-export function addMoney(amount) {
-    money += amount;
 }
 
 export const menuHeight = 130;
@@ -532,9 +534,9 @@ export class Pack {
 // list of packs
 const standardRarityWeights = [0.49, 0.32, 0.14, 0.015, 0.004, 0.0007, 0.00005];
 export const packs = [
-    new Pack(0, "Pack 1", 100, [[1, 3, 1, 1180], [10, 0, 1, 26], [23, 0, 1, 39], [25, 2, 1, 477], [27, 0, 1, 41], [35, 1, 1, 109], [41, 0, 1, 38], [48, 0, 1, 28], [54, 1, 1, 108], [60, 0, 1, 23], [74, 0, 1, 31], [63, 1, 1, 103], [84, 0, 1, 31], [88, 1, 1, 108], [83, 2, 1, 426], [96, 1, 1, 112], [102, 1, 1, 91], [109, 1, 1, 109], [116, 2, 1, 396], [120, 1, 1, 96], [132, 2, 1, 300], [133, 0, 1, 30], [125, 2, 1, 438], [128, 2, 1, 438], [137, 2, 1, 471], [145, 5, 1, 52032], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
-    new Pack(1, "Pack 2", 100, [[4, 3, 1, 1226], [13, 0, 1, 27], [21, 0, 1, 34], [25, 2, 1, 477], [29, 0, 1, 33], [37, 1, 1, 108], [43, 0, 1, 21], [50, 0, 1, 30], [56, 1, 1, 109], [66, 0, 1, 39], [77, 0, 1, 35], [72, 1, 1, 111], [86, 0, 1, 27], [92, 1, 1, 113], [111, 2, 1, 468], [98, 1, 1, 105], [104, 1, 1, 102], [114, 1, 1, 106], [123, 2, 1, 511], [129, 1, 1, 70], [132, 2, 1, 300], [133, 0, 1, 30], [126, 2, 1, 432], [131, 2, 1, 502], [142, 2, 1, 650], [146, 5, 1, 52803], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
-    new Pack(2, "Pack 3", 100, [[7, 3, 1, 1109], [16, 0, 1, 32], [19, 0, 1, 29], [25, 2, 1, 477], [32, 0, 1, 33], [39, 1, 1, 114], [46, 0, 1, 27], [52, 0, 1, 37], [58, 1, 1, 118], [69, 0, 1, 25], [79, 0, 1, 34], [81, 1, 1, 107], [90, 0, 1, 30], [95, 1, 1, 121], [115, 2, 1, 441], [100, 1, 1, 103], [108, 1, 1, 114], [118, 1, 1, 102], [124, 2, 1, 386], [138, 1, 1, 98], [132, 2, 1, 300], [133, 0, 1, 30], [127, 2, 1, 461], [140, 2, 1, 447], [143, 2, 1, 578], [144, 5, 1, 51894], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
+    new Pack(0, "Pack 1", 250, [[1, 3, 1, 1180], [10, 0, 1, 26], [23, 0, 1, 39], [25, 2, 1, 477], [27, 0, 1, 41], [35, 1, 1, 109], [41, 0, 1, 38], [48, 0, 1, 28], [54, 1, 1, 108], [60, 0, 1, 23], [74, 0, 1, 31], [63, 1, 1, 103], [84, 0, 1, 31], [88, 1, 1, 108], [83, 2, 1, 426], [96, 1, 1, 112], [102, 1, 1, 91], [109, 1, 1, 109], [116, 2, 1, 396], [120, 1, 1, 96], [132, 2, 1, 300], [133, 0, 1, 30], [125, 2, 1, 438], [128, 2, 1, 438], [137, 2, 1, 471], [145, 5, 1, 52032], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
+    new Pack(1, "Pack 2", 250, [[4, 3, 1, 1226], [13, 0, 1, 27], [21, 0, 1, 34], [25, 2, 1, 477], [29, 0, 1, 33], [37, 1, 1, 108], [43, 0, 1, 21], [50, 0, 1, 30], [56, 1, 1, 109], [66, 0, 1, 39], [77, 0, 1, 35], [72, 1, 1, 111], [86, 0, 1, 27], [92, 1, 1, 113], [111, 2, 1, 468], [98, 1, 1, 105], [104, 1, 1, 102], [114, 1, 1, 106], [123, 2, 1, 511], [129, 1, 1, 70], [132, 2, 1, 300], [133, 0, 1, 30], [126, 2, 1, 432], [131, 2, 1, 502], [142, 2, 1, 650], [146, 5, 1, 52803], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
+    new Pack(2, "Pack 3", 250, [[7, 3, 1, 1109], [16, 0, 1, 32], [19, 0, 1, 29], [25, 2, 1, 477], [32, 0, 1, 33], [39, 1, 1, 114], [46, 0, 1, 27], [52, 0, 1, 37], [58, 1, 1, 118], [69, 0, 1, 25], [79, 0, 1, 34], [81, 1, 1, 107], [90, 0, 1, 30], [95, 1, 1, 121], [115, 2, 1, 441], [100, 1, 1, 103], [108, 1, 1, 114], [118, 1, 1, 102], [124, 2, 1, 386], [138, 1, 1, 98], [132, 2, 1, 300], [133, 0, 1, 30], [127, 2, 1, 461], [140, 2, 1, 447], [143, 2, 1, 578], [144, 5, 1, 51894], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
 ];
 export let whichPack = 0;
 
@@ -599,4 +601,41 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
             x = xmin + xindent;
         }
     }
+}
+
+// AUTO SPIN SETTINGS
+export const autospinsettings = {
+    sellUnder: 0,
+}
+
+export function showNumberInput(settingKey) { // Chat gpt's work
+    const input = document.getElementById("numberInput");
+    input.value = ""; // clear previous input
+    input.style.display = "block";
+    input.focus();
+
+    // Strip non-numeric input as user types
+    input.addEventListener("input", () => {
+        input.value = input.value.replace(/[^0-9]/g, "");
+    });
+
+    input.addEventListener("keydown", function onKeyDown(e) {
+        if (e.key === "Enter") {
+        const value = parseInt(input.value.trim(), 10);
+
+        if (!isNaN(value)) {
+            input.style.display = "none";
+            input.blur();
+
+            // Save value to settings object or localStorage
+            autospinsettings[settingKey] = value;
+            console.log(`Set ${settingKey} to ${value}`);
+        }
+
+        go("autospinsettings");
+
+        // Clean up listener after use
+        input.removeEventListener("keydown", onKeyDown);
+        }
+    });
 }

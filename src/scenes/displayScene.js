@@ -5,7 +5,6 @@ export default function displayScene() {
     menu();
 
     const displayItem = inventoryStacked[displayIndex];
-    console.log("Displaying #" + displayIndex + ": " + displayItem.name);
 
     const closebutton = k.add([k.sprite("closebutton"), k.pos(screenWidth - 140, menuHeight + 30), k.area()]);
     closebutton.onUpdate(() => {
@@ -54,7 +53,6 @@ export default function displayScene() {
     const sellbutton = k.add([k.sprite("sellbutton"), k.pos(screenWidth / 2 - 77, itemY + 650), k.area()])
     sellbutton.onClick(() => {
         addMoney(displayItem.value);
-        console.log("Got rid of #" + stackedIndexes[displayIndex][stackedIndexes[displayIndex].length - 1] + ": " + inventory[stackedIndexes[displayIndex][stackedIndexes[displayIndex].length - 1]].name);
         inventory.splice(stackedIndexes[displayIndex][stackedIndexes[displayIndex].length - 1], 1); // gets rid of the newest duplicate
         stackedIndexes[displayIndex].splice(stackedIndexes[displayIndex].length - 1);
         if (stackedIndexes[displayIndex].length == 0) {

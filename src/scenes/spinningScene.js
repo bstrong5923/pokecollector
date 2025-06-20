@@ -1,13 +1,13 @@
 import k from "../kaplayCtx";
-import { inventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney, canvas, shortenNumber } from "../constants";
+import { inventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney, canvas, shortenNumber, go } from "../constants";
 
 export default function spinningScene() { // scene of wheel spinnin'
     menu("spinning");
 
-    // Fill inventory for testing 
-    for (let i = 0; i < 250; i++) {
-        inventory.push(packs[Math.floor(Math.random() * packs.length)].getRandom()); // Math.floor(Math.random() * packs.length)
-    }
+    // // Fill inventory for testing 
+    // for (let i = 0; i < 250; i++) {
+    //     inventory.push(packs[Math.floor(Math.random() * packs.length)].getRandom()); // Math.floor(Math.random() * packs.length)
+    // }
 
     const wheelX = screenWidth / 2 - 403; // starting point for the boxes and wheel
     const wheelY = screenHeight / 2 - 175 + menuHeight; // starting point for the boxes and wheel
@@ -36,8 +36,8 @@ export default function spinningScene() { // scene of wheel spinnin'
     let pricedisplay = k.add([k.text("Price: *" + shortenNumber(packs[whichPack].price), { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 70 - Math.floor(Math.log10(packs[whichPack].price + 1)) * 14, spinbutton.pos.y + 100)]);
     let owneddisplay = k.add([k.text("Owned: " + packsowned[whichPack], { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 75 - Math.floor(Math.log10(packsowned[whichPack] + 1)) * 12, pricedisplay.pos.y + 40)]);
     const autospinbutton = [
-        k.add([k.text("Autospin", { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 55, owneddisplay.pos.y + 40), k.area()]),
-        k.add([k.sprite("checkbox", { frame: 0 }), k.pos(screenWidth / 2 - 87, owneddisplay.pos.y + 36), k.area(), k.scale(4)]),
+        k.add([k.text("Autospin", { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 68, owneddisplay.pos.y + 40), k.area()]),
+        k.add([k.sprite("checkbox", { frame: 0 }), k.pos(screenWidth / 2 - 97, owneddisplay.pos.y + 40), k.area(), k.scale(3)]),
     ];
     for (const comp of autospinbutton) {
         comp.onClick(() => {
@@ -49,6 +49,10 @@ export default function spinningScene() { // scene of wheel spinnin'
             }
         });
     }
+    const autospinsettingsbutton = k.add([k.sprite("settings"), k.pos(screenWidth / 2 + 82, owneddisplay.pos.y + 41), k.area(), k.scale(3)]);
+    autospinsettingsbutton.onClick(() => {
+        go("autospinsettings");
+    });
 
     buymultbutton.onClick(() => {
         buymultbutton.frame++;
@@ -101,7 +105,7 @@ export default function spinningScene() { // scene of wheel spinnin'
             spinbutton.opacity = 1;
         }
 
-        if (buybutton.isHovering() || buymultbutton.isHovering() || spinbutton.isHovering()) {
+        if (buybutton.isHovering() || buymultbutton.isHovering() || spinbutton.isHovering() || autospinbutton[0].isHovering() || autospinbutton[1].isHovering() || autospinsettingsbutton.isHovering()) {
             canvas.style.cursor = "pointer";
         }
 

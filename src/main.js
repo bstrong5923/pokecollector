@@ -4,6 +4,7 @@ import inventoryScene from "./scenes/inventoryScene";
 import packsScene from "./scenes/packsScene";
 import displayScene from "./scenes/displayScene";
 import testScene from "./scenes/testScene";
+import autospinsettingsScene from "./scenes/autospinsettingsScene";
 
 // set up layers
 k.setLayers(["5", "4", "3", "2", "1", "0"], "4"); 
@@ -28,6 +29,7 @@ k.loadSprite("checkbox", "images/buttons/checkbox.png", {
     sliceX: 1,
     sliceY: 2,
 });
+k.loadSprite("settings", "images/buttons/settings.png");
 k.loadSprite("pagearrowright", "images/pagebuttons/right.png");
 k.loadSprite("pagearrowleft", "images/pagebuttons/left.png");
 k.loadSprite("small_left", "images/pagebuttons/small_left.png");
@@ -68,11 +70,12 @@ k.scene("inventoryScene", () => inventoryScene());
 k.scene("packsScene", () => packsScene());
 k.scene("displayScene", () => displayScene());
 k.scene("testScene", () => testScene());
+k.scene("autospinsettingsScene", () => autospinsettingsScene());
 
 // load fonts
 k.loadFont("pkmn", "fonts/pkmnbydrizzee.ttf");
 
 // v start on this scene v
 k.onLoad(() => { // once everything is loaded
-    k.go("packsScene");
+    k.go("autospinsettingsScene");
 })
