@@ -1,0 +1,26 @@
+@font-face {
+  font-family: "pkmn";
+  src: url("fonts/pkmnbydrizzee.ttf") format("truetype");
+}
+
+#numberInput {
+  position: absolute;
+  top: 200px;
+  left: 100px;
+  width: 200px;
+  height: 40px;
+  font-size: 20px;
+  font-family: 'pkmn', monospace;
+  color: white;
+  background: rgba(0, 0, 0, 0);
+  border: 2px rgba(0, 0, 0, 0);;
+  border-radius: 8px;
+  padding: 5px 10px;
+  outline: none;
+  z-index: 9999;
+}
+
+#numberInput::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
