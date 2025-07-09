@@ -608,11 +608,36 @@ export const autospinsettings = {
     sellUnder: 0,
 }
 
-export function showNumberInput(settingKey) { // Chat gpt's work
+function positionInput(x, y) {
+    const input = document.getElementById("numberInput");
+
+    let scale = window.innerWidth / kScreenWidth;
+    let correctY = (window.innerHeight - kScreenHeight * scale) / 2;
+    let correctX = 0;
+    if (scale > window.innerHeight / kScreenHeight) {
+        scale = window.innerHeight / kScreenHeight;
+        correctY = 0;
+        correctX = (window.innerWidth - kScreenWidth * scale) / 2;
+    }
+    console.log(scale)
+    console.log(x + correctX);
+    console.log(y + correctY);
+
+    input.style.top = y * scale + correctY;
+    input.style.left = x * scale + correctX;
+}
+
+export function showNumberInput(settingKey, x, y) { // Chat gpt's work
     const input = document.getElementById("numberInput");
     input.value = ""; // clear previous input
     input.style.display = "block";
     input.focus();
+    
+    positionInput(x, y);
+
+    window.addEventListener('resize', () => {
+        positionInput(x, y);
+    });
 
     // Strip non-numeric input as user types
     input.addEventListener("input", () => {
