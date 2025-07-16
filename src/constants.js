@@ -538,12 +538,33 @@ export class Pack {
         }
     }
     getAll() {
-        let result = [];
-        for (const item of this.items) {
-            result.push(new Box(pokedex["" + item[0]], item[1], item[3]));
+        const rarityChances = [];
+        let total = 0;
+        for (const weight of this.rarityWeights) {
+            total += weight;
         }
-        result = sortItemsLeastExpensive(result);
-        return result;
+        for (let w = 0; w < this.rarityWeights.length; w++) {
+            let totalOfWeight = 0; // how many are there of this rarity?
+            for (const item of this.items) {
+                if (item[1] == w) {
+                    totalOfWeight += item[2];
+                }
+            }
+            rarityChances.push(Math.round((this.rarityWeights[w] * 1000000 / total) / totalOfWeight) / 10000); // chance for each item of this rarity (to 4 decimal places)
+        }
+
+        let boxes = [];
+        const chancesDict = {};
+        const chances = [];
+        for (const item of this.items) {
+            boxes.push(new Box(pokedex["" + item[0]], item[1], item[3]));
+            chancesDict[item[0]] = rarityChances[item[1]] * item[2];
+        }
+        boxes = sortItemsLeastExpensive(boxes);
+        for (const box of boxes) {
+            chances.push(chancesDict[box.pokemon.index]);
+        }
+        return [boxes, chances];
     }
 }
 
