@@ -38,7 +38,7 @@ export function addMoney(amount) {
     money += amount;
 }
 
-export const inventory = [];
+export let inventory = [];
 export let sortStyle = "Time ^";
 export function setSortStyle(style) {
     sortStyle = style;
@@ -57,88 +57,94 @@ export function toggleStacking() {
 export let stackedIndexes = [];
 export let inventoryStacked = [];
 
-function sortInventoryOldest() {
-    for (let i = 0; i < inventory.length; i++) {
+function sortItemsOldest(items) {
+    for (let i = 0; i < items.length; i++) {
         let min = i;
-        for (let j = i + 1; j < inventory.length; j++) {
-            if (inventory[j].dateCreated > inventory[min].dateCreated) {
+        for (let j = i + 1; j < items.length; j++) {
+            if (items[j].dateCreated > items[min].dateCreated) {
                 min = j;
             }
         }
-        inventory.unshift(inventory.splice(min, 1)[0]);
+        items.unshift(items.splice(min, 1)[0]);
     }
+    return items;
 }
-function sortInventoryNewest() {
-    for (let i = 0; i < inventory.length; i++) {
+function sortItemsNewest(items) {
+    for (let i = 0; i < items.length; i++) {
         let min = i;
-        for (let j = i + 1; j < inventory.length; j++) {
-            if (inventory[j].dateCreated < inventory[min].dateCreated) {
+        for (let j = i + 1; j < items.length; j++) {
+            if (items[j].dateCreated < items[min].dateCreated) {
                 min = j;
             }
         }
-        inventory.unshift(inventory.splice(min, 1)[0]);
+        items.unshift(items.splice(min, 1)[0]);
     }
+    return items;
 }
-function sortInventoryMostExpensive() {
-    for (let i = 0; i < inventory.length; i++) {
+function sortItemsMostExpensive(items) {
+    for (let i = 0; i < items.length; i++) {
         let min = i;
-        for (let j = i + 1; j < inventory.length; j++) {
-            if (inventory[j].value < inventory[min].value) {
+        for (let j = i + 1; j < items.length; j++) {
+            if (items[j].value < items[min].value) {
                 min = j;
             }
         }
-        inventory.unshift(inventory.splice(min, 1)[0]);
+        items.unshift(items.splice(min, 1)[0]);
     }
+    return items;
 }
-function sortInventoryLeastExpensive() {
-    for (let i = 0; i < inventory.length; i++) {
+function sortItemsLeastExpensive(items) {
+    for (let i = 0; i < items.length; i++) {
         let min = i;
-        for (let j = i + 1; j < inventory.length; j++) {
-            if (inventory[j].value > inventory[min].value) {
+        for (let j = i + 1; j < items.length; j++) {
+            if (items[j].value > items[min].value) {
                 min = j;
             }
         }
-        inventory.unshift(inventory.splice(min, 1)[0]);
+        items.unshift(items.splice(min, 1)[0]);
     }
+    return items;
 }
-function sortInventoryHighestIndex() {
-    for (let i = 0; i < inventory.length; i++) {
+function sortItemsHighestIndex(items) {
+    for (let i = 0; i < items.length; i++) {
         let min = i;
-        for (let j = i + 1; j < inventory.length; j++) {
-            if (inventory[j].pokemon.indexOrder < inventory[min].pokemon.indexOrder) {
+        for (let j = i + 1; j < items.length; j++) {
+            if (items[j].pokemon.indexOrder < items[min].pokemon.indexOrder) {
                 min = j;
             }
         }
-        inventory.unshift(inventory.splice(min, 1)[0]);
+        items.unshift(items.splice(min, 1)[0]);
     }
+    return items;
 }
-function sortInventoryLowestIndex() {
-    for (let i = 0; i < inventory.length; i++) {
+function sortItemsLowestIndex(items) {
+    for (let i = 0; i < items.length; i++) {
         let min = i;
-        for (let j = i + 1; j < inventory.length; j++) {
-            if (inventory[j].pokemon.indexOrder > inventory[min].pokemon.indexOrder) {
+        for (let j = i + 1; j < items.length; j++) {
+            if (items[j].pokemon.indexOrder > items[min].pokemon.indexOrder) {
                 min = j;
             }
         }
-        inventory.unshift(inventory.splice(min, 1)[0]);
+        items.unshift(items.splice(min, 1)[0]);
     }
+    return items;
 }
 export function sortInventory() {
-    sortInventoryHighestIndex();
+    inventory = sortItemsHighestIndex(inventory);
     if (sortStyle == "Time ^") {
-        sortInventoryOldest();
+        inventory = sortItemsOldest(inventory);
     }
     else if (sortStyle == "Time v") {
-        sortInventoryNewest();
+        inventory = sortItemsNewest(inventory);
     }
     else if (sortStyle == "Value v") {
-        sortInventoryLeastExpensive();
+        inventory = sortItemsLeastExpensive(inventory);
     }
     else if (sortStyle == "Value ^") {
-        sortInventoryMostExpensive();
+        inventory = sortItemsMostExpensive(inventory);
 }
     else if (sortStyle == "Index v") {
-        sortInventoryLowestIndex();
+        inventory = sortItemsLowestIndex(inventory);
     }
 
     stackedIndexes = [];
@@ -464,8 +470,10 @@ export class Box {
         this.scale = val;
         const tempx = this.x;
         const tempy = this.y;
-        this.destroySprite();
-        this.add(tempx, tempy);
+        if (this.sprite.length > 0) {
+            this.destroySprite();
+            this.add(tempx, tempy);
+        }
     }
     stacksWith(other) {
         if (other.pokemon.name == this.pokemon.name && other.name == this.name && other.value == this.value) {
@@ -529,6 +537,14 @@ export class Pack {
           }
         }
     }
+    getAll() {
+        let result = [];
+        for (const item of this.items) {
+            result.push(new Box(pokedex["" + item[0]], item[1], item[3]));
+        }
+        result = sortItemsLeastExpensive(result);
+        return result;
+    }
 }
 
 // list of packs
@@ -547,13 +563,13 @@ export let whichPack = 0;
 
 
 // used in inventoryScene and packsScene and stuff to format items into rows and cols
-export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height, spacing, pageArrowName, pageArrowScale, leftX, leftY, rightX, rightY) {
-    const itemsPerRow = Math.floor((xmax - xmin + spacing) / (width + spacing));
-    const rowsPerPage = Math.floor((ymax - ymin + spacing) / (height + spacing));
+export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height, spacingHorizontal, spacingVertical, pageArrowName="pagearrow", pageArrowScale=1, leftX=xmin, leftY=ymin, rightX=xmin, rightY=ymin) {
+    const itemsPerRow = Math.floor((xmax - xmin + spacingHorizontal) / (width + spacingHorizontal));
+    const rowsPerPage = Math.floor((ymax - ymin + spacingVertical) / (height + spacingVertical));
     const itemsPerPage = itemsPerRow * rowsPerPage;
 
-    const xindent = (xmax - xmin + spacing - itemsPerRow * (width + spacing)) / 2;
-    const yindent = (ymax - ymin + spacing - rowsPerPage * (height + spacing)) / 2;
+    const xindent = (xmax - xmin + spacingHorizontal - itemsPerRow * (width + spacingHorizontal)) / 2;
+    const yindent = (ymax - ymin + spacingVertical - rowsPerPage * (height + spacingVertical)) / 2;
 
     let pagearrowleft;
     let pagearrowright;
@@ -595,9 +611,9 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
                 k.add([k.text("x" + stackedIndexes[i].length, { size: 14, font: "pkmn" }), k.pos(x + 168 - 14 * Math.floor(Math.log10(stackedIndexes[i].length)), y + 128), k.layer("3")])
             }
         }
-        x += width + spacing;
+        x += width + spacingHorizontal;
         if (x > xmax - width - xindent) {
-            y += height + spacing;
+            y += height + spacingVertical;
             x = xmin + xindent;
         }
     }
@@ -619,9 +635,6 @@ function positionInput(x, y) {
         correctY = 0;
         correctX = (window.innerWidth - kScreenWidth * scale) / 2;
     }
-    console.log(scale)
-    console.log(x + correctX);
-    console.log(y + correctY);
 
     input.style.top = y * scale + correctY;
     input.style.left = x * scale + correctX;

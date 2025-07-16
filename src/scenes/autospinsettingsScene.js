@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { autospinsettings, menu, menuHeight, screenWidth, showNumberInput } from "../constants";
+import { autospinsettings, displayItems, menu, menuHeight, packs, screenHeight, screenWidth, showNumberInput, whichPack } from "../constants";
 
 
 export default function autospinsettingsScene() {
@@ -11,4 +11,10 @@ export default function autospinsettingsScene() {
     autosellunder.onClick(() => {
         showNumberInput("sellUnder", screenWidth / 2 - 94, menuHeight + 138);
     });
+
+    const items = packs[whichPack].getAll();
+    for (const box of items) {
+        box.setScale(0.8);
+    }
+    displayItems(items, null, 20, screenWidth - 20, autosellunder.pos.x + 20, screenHeight + menuHeight - 20, 160, 120, 10, 25)
 }

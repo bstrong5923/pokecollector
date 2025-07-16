@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { inventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney, canvas, shortenNumber, go } from "../constants";
+import { inventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney, canvas, shortenNumber, go, autospinsettings, addMoney } from "../constants";
 
 export default function spinningScene() { // scene of wheel spinnin'
     menu("spinning");
@@ -51,7 +51,9 @@ export default function spinningScene() { // scene of wheel spinnin'
     }
     const autospinsettingsbutton = k.add([k.sprite("settings"), k.pos(screenWidth / 2 + 82, owneddisplay.pos.y + 41), k.area(), k.scale(3)]);
     autospinsettingsbutton.onClick(() => {
-        go("autospinsettings");
+        if (speed == 0) {
+            go("autospinsettings");
+        }
     });
 
     buymultbutton.onClick(() => {
@@ -115,7 +117,13 @@ export default function spinningScene() { // scene of wheel spinnin'
             for (let i = 0; i < wheel.length; i++) {
                 const box = wheel[i];
                 if (i == 2) { // which box did it land on?
-                    inventory.push(box);
+                    if (autospinbutton[1].frame == 1 && box.value < autospinsettings.sellUnder) {
+                        addMoney(box.value);
+                        console.log("sold!");
+                    }
+                    else {
+                        inventory.push(box);
+                    }
                     
                 }
                 else {
@@ -125,14 +133,15 @@ export default function spinningScene() { // scene of wheel spinnin'
                 }
             }   
             if (autospinbutton[1].frame == 1 && packsowned[whichPack] > 0) {
-                packsowned[whichPack]--;
-                speed = Math.floor(Math.random() * 21 + 180);
-                for (let i = 0; i < wheel.length; i++) {
-                    const box = wheel[i];
-                    if (box.y != wheelY) {
-                        box.move(-(5 + ((i - 2) % 2) * 2.5), -3.75); 
+                
+                    packsowned[whichPack]--;
+                    speed = Math.floor(Math.random() * 21 + 180);
+                    for (let i = 0; i < wheel.length; i++) {
+                        const box = wheel[i];
+                        if (box.y != wheelY) {
+                            box.move(-(5 + ((i - 2) % 2) * 2.5), -3.75); 
+                        }
                     }
-                }
             } 
             else {
                 turnMenuOn();
