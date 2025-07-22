@@ -39,6 +39,7 @@ k.loadSprite("shinies", "images/shinies.png", {
     sliceX: 3,
     sliceY: 1,
 });
+k.loadSprite("textbox", "images/textbox.png");
 
 // loading the pokemon
 for (let x = 0; x <= 19; x++) {

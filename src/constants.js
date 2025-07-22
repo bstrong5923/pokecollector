@@ -109,7 +109,7 @@ function sortItemsHighestIndex(items) {
     for (let i = 0; i < items.length; i++) {
         let min = i;
         for (let j = i + 1; j < items.length; j++) {
-            if (items[j].pokemon.indexOrder < items[min].pokemon.indexOrder) {
+            if (items[j].pokemon.indexRegional < items[min].pokemon.indexRegional) {
                 min = j;
             }
         }
@@ -121,7 +121,7 @@ function sortItemsLowestIndex(items) {
     for (let i = 0; i < items.length; i++) {
         let min = i;
         for (let j = i + 1; j < items.length; j++) {
-            if (items[j].pokemon.indexOrder > items[min].pokemon.indexOrder) {
+            if (items[j].pokemon.indexRegional > items[min].pokemon.indexRegional) {
                 min = j;
             }
         }
@@ -312,9 +312,9 @@ for (let x = 0; x <= 19; x++) {
                     index %= 1000;
                 }
                 name += regionalForm + pokemonNames[index - 1];
-                let indexOrder = index;
+                let indexRegional = index;
                 if (regionalForm != "") {
-                    indexOrder += 0.5;
+                    indexRegional += 0.5;
                 }
 
                 let scale = 160 / sprite.frame.w;
@@ -367,7 +367,7 @@ for (let x = 0; x <= 19; x++) {
                 pokedex[sprite.filename] = {
                     name: name,
                     index: index,
-                    indexOrder: indexOrder,
+                    indexRegional: indexRegional,
                     codename: sprite.filename,
                     shinyLevel: shinyLevel,
                     gender: gender,
@@ -643,6 +643,10 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
 // AUTO SPIN SETTINGS
 export const autospinsettings = {
     sellUnder: 0,
+    specificPreferences: {},
+}
+for (const code in pokedex) {
+    autospinsettings.specificPreferences[pokedex[code].indexRegional] = 0;
 }
 
 function positionInput(x, y) {
