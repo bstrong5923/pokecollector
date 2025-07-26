@@ -250,13 +250,16 @@ export function menu(current) {
     k.onUpdate(() => {
         moneydisplay.text = "*" + shortenNumber(money); // update money display
 
+        // console.log(currentScene);
+        // console.log(canvas.style.cursor);
         canvas.style.cursor = "default";
-            for (const button of buttons) {
-                if (button.isHovering()) {
-                    canvas.style.cursor = "pointer"; 
-                }
+        for (const button of buttons) {
+            if (button.isHovering()) {
+                canvas.style.cursor = "pointer"; 
             }
-    })
+        }
+        // console.log(canvas.style.cursor);
+    });
 }
 
 // POKEMON DICTIONARY
@@ -436,7 +439,7 @@ export class Box {
         this.x = x;
         this.y = y;
         this.sprite[0].onUpdate(() => {
-            if (this.sprite[0].isHovering() && currentScene != "spinning" && !hoveringPriority) {
+            if (this.sprite[0].isHovering() && currentScene == "inventory" && !hoveringPriority) {
                 canvas.style.cursor = "pointer";
             }
         });

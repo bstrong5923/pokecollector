@@ -5,6 +5,7 @@ import packsScene from "./scenes/packsScene";
 import displayScene from "./scenes/displayScene";
 import testScene from "./scenes/testScene";
 import autospinsettingsScene from "./scenes/autospinsettingsScene";
+import { go } from "./constants";
 
 // set up layers
 k.setLayers(["5", "4", "3", "2", "1", "0"], "4"); 
@@ -39,7 +40,10 @@ k.loadSprite("shinies", "images/shinies.png", {
     sliceX: 3,
     sliceY: 1,
 });
-k.loadSprite("textbox", "images/textbox.png");
+k.loadSprite("textbox", "images/textboxes.png", {
+    sliceX: 1,
+    sliceY: 3,
+});
 
 // loading the pokemon
 for (let x = 0; x <= 19; x++) {
@@ -78,5 +82,5 @@ k.loadFont("pkmn", "fonts/pkmnbydrizzee.ttf");
 
 // v start on this scene v
 k.onLoad(() => { // once everything is loaded
-    k.go("autospinsettingsScene");
+    go("packs");
 })

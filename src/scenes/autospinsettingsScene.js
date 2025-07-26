@@ -1,31 +1,27 @@
 import k from "../kaplayCtx";
 import { autospinsettings, canvas, displayItems, go, menu, menuHeight, packs, screenHeight, screenWidth, showNumberInput, whichPack } from "../constants";
 
-const preferenceTexts = ["Sell if selling", "Always sell", "Always keep"];
+const preferenceTexts = ["Sell if selling", "Always keep", "Always sell"];
 
 class BoxWithChance {
     constructor(box, chance) {
         this.box = box;
         this.chance = chance;
         this.scale = 1;
-        this.preference = autospinsettings.specificPreferences[this.box.pokemon.indexRegional];
+        this.preferencekey = this.box.pokemon.indexRegional;
     }
     add(x, y) {
         this.box.add(x, y);
         this.sprite = this.box.sprite;
         this.sprite.push(k.add([k.text(this.chance + "%", { font: "pkmn", size: 15 }), k.pos(x + 10 * this.scale, y + 6 * this.scale)]))
-        this.sprite.push(k.add([k.sprite("textbox"), k.pos(x, y + 155 * this.scale), k.scale(this.scale), k.area()]));
-        this.sprite.push(k.add([k.text(preferenceTexts[this.preference], { size: 16, width: 200 * this.scale, align: "center", font: "pkmn" }), k.pos(x, y + 166 * this.scale)]));
+        this.sprite.push(k.add([k.sprite("textbox", { frame: autospinsettings.specificPreferences[this.preferencekey] }), k.pos(x, y + 155 * this.scale), k.scale(this.scale), k.area()]));
+        this.sprite.push(k.add([k.text(preferenceTexts[autospinsettings.specificPreferences[this.preferencekey]], { size: 16, width: 200 * this.scale, align: "center", font: "pkmn" }), k.pos(x, y + 166 * this.scale)]));
         this.sprite[this.sprite.length - 2].onClick(() => {
-            this.preference++;
-            if (this.preference >= preferenceTexts.length) {
-                this.preference = 0;
+            autospinsettings.specificPreferences[this.preferencekey]++;
+            if (autospinsettings.specificPreferences[this.preferencekey] >= preferenceTexts.length) {
+                autospinsettings.specificPreferences[this.preferencekey] = 0;
             }
             go("autospinsettings");
-            console.log("preference changed!");
-        });
-        this.sprite[this.sprite.length - 2].onHover(() => {
-            canvas.style.cursor = "pointer";
         });
     }
     setScale(val) {
@@ -52,4 +48,13 @@ export default function autospinsettingsScene() {
         items[i].setScale(0.8);
     }
     displayItems(items, null, 20, screenWidth - 20, autosellunder.pos.y + 20, screenHeight + menuHeight - 50, 160, 120, 5, 40);
+
+    k.onUpdate(() => {
+        for (const item of items) {
+            if (item.sprite[item.sprite.length - 2].isHovering()) {
+                canvas.style.cursor = "pointer";
+                break;
+            }
+        }
+    });
 }
