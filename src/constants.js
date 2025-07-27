@@ -249,7 +249,7 @@ export function menu(current) {
     }
 
     // money display in top left
-    const moneydisplay = k.add([k.text("*" + shortenNumber(money), { size: 18, font: "pkmn"}), k.pos(10, 10)]);
+    const moneydisplay = k.add([k.text("*" + shortenNumber(money), { size: 24, font: "pkmn"}), k.pos(10, 10)]);
 
     let count = 0;
     k.onUpdate(() => {
@@ -655,6 +655,7 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
 // AUTO SPIN SETTINGS
 export const autospinsettings = {
     sellUnder: 0,
+    alwaysKeepShinies: false,
     specificPreferences: {},
 }
 for (const code in pokedex) {

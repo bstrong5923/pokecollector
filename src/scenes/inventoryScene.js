@@ -36,7 +36,7 @@ export default function inventoryScene() { // scene showin inventory
         if (sortButton.isHovering()) {
             hoveringTrue();
         }
-    })
+    });
     const stackbutton = [
         k.add([k.text("Stacking", { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 700, menuHeight + 24), k.area()]),
         k.add([k.sprite("checkbox", { frame: stacking }), k.pos(screenWidth / 2 - 729, menuHeight + 24), k.area(), k.scale(3)]),
@@ -45,6 +45,11 @@ export default function inventoryScene() { // scene showin inventory
         comp.onClick(() => {
             toggleStacking();
             go("inventory");
+        });
+        comp.onUpdate(() => {
+            if (comp.isHovering()) {
+                hoveringTrue();
+            }
         });
     }
 

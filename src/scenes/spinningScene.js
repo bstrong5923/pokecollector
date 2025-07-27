@@ -117,8 +117,8 @@ export default function spinningScene() { // scene of wheel spinnin'
             for (let i = 0; i < wheel.length; i++) {
                 const box = wheel[i];
                 if (i == 2) { // which box did it land on?
-                    if (autospinbutton[1].frame == 1 && (autospinsettings.specificPreferences[box.pokemon.indexRegional] == 2 || (box.value < autospinsettings.sellUnder && autospinsettings.specificPreferences[box.pokemon.indexRegional] == 0))) {
-                        addMoney(box.value);
+                    if (autospinbutton[1].frame == 1 && !(box.pokemon.shinyLevel != 0 && autospinsettings.alwaysKeepShinies) && (autospinsettings.specificPreferences[box.pokemon.indexRegional] == 2 || (box.value < autospinsettings.sellUnder && autospinsettings.specificPreferences[box.pokemon.indexRegional] == 0))) {
+                        addMoney(box.value); // autosell it if autospin is on and its supposed to autosell
                     }
                     else {
                         inventory.push(box);

@@ -33,12 +33,43 @@ class BoxWithChance {
 export default function autospinsettingsScene() {
     menu();
 
+    const closebutton = k.add([k.sprite("closebutton"), k.pos(screenWidth - 140, menuHeight + 30), k.scale(0.8), k.area()]);
+    closebutton.onUpdate(() => {
+        if (closebutton.isHovering()) {
+            hoveringTrue();
+        }
+    });
+    closebutton.onClick(() => {
+        go("spinning");
+    });
+
     k.add([k.text("Autospin Settings", { size: 60, width: 1000, font: "pkmn", align: "center" }), k.pos(screenWidth / 2 - 500, menuHeight + 40)]);
 
     const autosellunder = k.add([k.text("Autosell under * " + autospinsettings["sellUnder"], { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 373, menuHeight + 140), k.area()]);
     autosellunder.onClick(() => {
         showNumberInput("sellUnder", screenWidth / 2 - 94, menuHeight + 138);
     });
+
+    const alwaysKeepShinies = [
+        k.add([k.text("Always keep shinies", { size: 24, font: "pkmn" }), k.pos(autosellunder.pos.x + 29, autosellunder.pos.y + 55), k.area()]),
+        k.add([k.sprite("checkbox", { frame: Number(autospinsettings.alwaysKeepShinies) }), k.pos(autosellunder.pos.x, autosellunder.pos.y + 55), k.area(), k.scale(3)]),
+    ];
+    for (const comp of alwaysKeepShinies) {
+        comp.onClick(() => {
+            if (autospinsettings.alwaysKeepShinies) {
+                autospinsettings.alwaysKeepShinies = false;
+            }
+            else {
+                autospinsettings.alwaysKeepShinies = true;
+            }
+            go("autospinsettings");
+        });
+        comp.onUpdate(() => {
+            if (comp.isHovering()) {
+                hoveringTrue();
+            }
+        });
+    }
 
     const items = [];
     const boxes = packs[whichPack].getAll()[0];
@@ -47,7 +78,7 @@ export default function autospinsettingsScene() {
         items.push(new BoxWithChance(boxes[i], chances[i]));
         items[i].setScale(0.8);
     }
-    displayItems(items, null, 20, screenWidth - 20, autosellunder.pos.y + 20, screenHeight + menuHeight - 50, 160, 120, 5, 40);
+    displayItems(items, null, 20, screenWidth - 20, alwaysKeepShinies[0].pos.y + 55, screenHeight + menuHeight - 50, 160, 155, 5, 5); // grid of possible pokemon
 
     k.onUpdate(() => {
         for (const item of items) {
