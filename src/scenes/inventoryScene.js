@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { inventory, displayItems, menu, menuHeight, screenWidth, screenHeight, page, sortStyle, go, canvas, sortInventory, setSortStyle, toggleStacking, stacking, stackedIndexes, inventoryStacked } from "../constants";
+import { inventory, displayItems, menu, menuHeight, screenWidth, screenHeight, page, sortStyle, go, canvas, sortInventory, setSortStyle, toggleStacking, stacking, stackedIndexes, inventoryStacked, hoveringTrue } from "../constants";
 
 export default function inventoryScene() { // scene showin inventory
     menu("inventory");
@@ -34,7 +34,7 @@ export default function inventoryScene() { // scene showin inventory
     });
     sortButton.onUpdate(() => {
         if (sortButton.isHovering()) {
-            canvas.style.cursor = "pointer";
+            hoveringTrue();
         }
     })
     const stackbutton = [

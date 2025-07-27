@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { displayIndex, menu, menuHeight, screenHeight, screenWidth, canvas, go, inventory, addMoney, changeDisplayIndex, inventoryStacked, stackedIndexes } from "../constants";
+import { displayIndex, menu, menuHeight, screenHeight, screenWidth, canvas, go, inventory, addMoney, changeDisplayIndex, inventoryStacked, stackedIndexes, hoveringTrue } from "../constants";
 
 export default function displayScene() {
     menu();
@@ -9,7 +9,7 @@ export default function displayScene() {
     const closebutton = k.add([k.sprite("closebutton"), k.pos(screenWidth - 140, menuHeight + 30), k.area()]);
     closebutton.onUpdate(() => {
         if (closebutton.isHovering()) {
-            canvas.style.cursor = "pointer";
+            hoveringTrue();
         }
     });
     closebutton.onClick(() => {
@@ -35,7 +35,7 @@ export default function displayScene() {
 
     k.onUpdate(() => {
         if ((pagearrowleft != null && pagearrowleft.isHovering()) || (pagearrowright != null && pagearrowright.isHovering())) {
-            canvas.style.cursor = "pointer";
+            hoveringTrue();
         }
     });
 
@@ -64,8 +64,8 @@ export default function displayScene() {
 
     });
     sellbutton.onUpdate(() => {
-        if (sellbutton.isHovering) {
-            canvas.style.cursor = "pointer";
+        if (sellbutton.isHovering()) {
+            hoveringTrue();
         }
     });
 }

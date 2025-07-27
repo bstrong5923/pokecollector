@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { autospinsettings, canvas, displayItems, go, menu, menuHeight, packs, screenHeight, screenWidth, showNumberInput, whichPack } from "../constants";
+import { autospinsettings, canvas, displayItems, go, hoveringTrue, menu, menuHeight, packs, screenHeight, screenWidth, showNumberInput, whichPack } from "../constants";
 
 const preferenceTexts = ["Sell if selling", "Always keep", "Always sell"];
 
@@ -52,7 +52,7 @@ export default function autospinsettingsScene() {
     k.onUpdate(() => {
         for (const item of items) {
             if (item.sprite[item.sprite.length - 2].isHovering()) {
-                canvas.style.cursor = "pointer";
+                hoveringTrue();
                 break;
             }
         }

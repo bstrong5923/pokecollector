@@ -5,6 +5,10 @@ import { format } from "date-fns";
 export const canvas = document.querySelector("canvas");
 
 let hoveringPriority = false;
+let hovering = false;
+export function hoveringTrue() {
+    hovering = true;
+}
 
 export function shortenNumber(num) {
     // Letters
@@ -247,18 +251,23 @@ export function menu(current) {
     // money display in top left
     const moneydisplay = k.add([k.text("*" + shortenNumber(money), { size: 18, font: "pkmn"}), k.pos(10, 10)]);
 
+    let count = 0;
     k.onUpdate(() => {
         moneydisplay.text = "*" + shortenNumber(money); // update money display
 
-        // console.log(currentScene);
-        // console.log(canvas.style.cursor);
-        canvas.style.cursor = "default";
         for (const button of buttons) {
             if (button.isHovering()) {
-                canvas.style.cursor = "pointer"; 
+                hoveringTrue(); 
             }
         }
-        // console.log(canvas.style.cursor);
+
+        if (hovering) {
+            canvas.style.cursor = "pointer";
+            hovering = false;
+        }
+        else {
+            canvas.style.cursor = "default";
+        }
     });
 }
 
@@ -440,7 +449,7 @@ export class Box {
         this.y = y;
         this.sprite[0].onUpdate(() => {
             if (this.sprite[0].isHovering() && currentScene == "inventory" && !hoveringPriority) {
-                canvas.style.cursor = "pointer";
+                hoveringTrue();
             }
         });
         this.sprite[0].onClick(() => {
@@ -506,7 +515,7 @@ export class Pack {
         });
         this.sprite.onUpdate(() => {
             if (this.sprite.isHovering()) {
-                canvas.style.cursor = "pointer";
+                hoveringTrue();
             }
         });
     }
@@ -615,11 +624,11 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
     k.onUpdate(() => {
         hoveringPriority = false;
         if (pagearrowleft != null && pagearrowleft.isHovering()) {
-            canvas.style.cursor = "pointer";
+            hoveringTrue();
             hoveringPriority = true;
         }
         if (pagearrowright != null && pagearrowright.isHovering()) {
-            canvas.style.cursor = "pointer";
+            hoveringTrue();
             hoveringPriority = true;
         }
     });
