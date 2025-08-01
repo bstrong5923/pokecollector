@@ -279,7 +279,7 @@ await fetch("pokemon_data.json")
     .then((response) => response.json())
     .then(async (pokemon_data) => {
 
-    for (let x = 0; x <= 19; x++) {
+    for (let x = 0; x <= 5; x++) {
         let num = Math.floor(x / 2);
         if (x % 2 == 1) {
             num += "v";
