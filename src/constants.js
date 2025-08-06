@@ -301,7 +301,7 @@ await fetch("pokemon_data.json")
                         }
                     }
 
-                    let regionalForm = "";
+                    let regionalForm = ""; // If it is a regional form
                     let index = parseInt(sprite.filename.substring(0, cutoff));
                     if (index > 2000) {
                         regionalForm = "Alolan ";
@@ -311,7 +311,7 @@ await fetch("pokemon_data.json")
                                 regionalForm = "Hisuian ";
                             }
                         }
-                        index %= 1000;
+                        index %= 1000; // switch index to non-regional index
                     }
                     name += regionalForm + pokemon_data[index - 1].name;
                     let indexRegional = index;
@@ -319,7 +319,7 @@ await fetch("pokemon_data.json")
                         indexRegional += 0.5;
                     }
 
-                    let scale = 160 / sprite.frame.w;
+                    let scale = 160 / sprite.frame.w; // how much to scale the image
                     if (scale > 115 / sprite.frame.h) {
                         scale = 115 / sprite.frame.h;
                     }
