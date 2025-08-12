@@ -113,7 +113,7 @@ function sortItemsHighestIndex(items) {
     for (let i = 0; i < items.length; i++) {
         let min = i;
         for (let j = i + 1; j < items.length; j++) {
-            if (items[j].pokemon.indexRegional < items[min].pokemon.indexRegional) {
+            if (items[j].pokemon.index_regional < items[min].pokemon.index_regional) {
                 min = j;
             }
         }
@@ -125,7 +125,7 @@ function sortItemsLowestIndex(items) {
     for (let i = 0; i < items.length; i++) {
         let min = i;
         for (let j = i + 1; j < items.length; j++) {
-            if (items[j].pokemon.indexRegional > items[min].pokemon.indexRegional) {
+            if (items[j].pokemon.index_regional > items[min].pokemon.index_regional) {
                 min = j;
             }
         }
@@ -273,107 +273,111 @@ export function menu(current) {
 
 // POKEMON DICTIONARY
 const pokedex = {};
+let pokemon_data;
 
 const shinyNames = ["", "Shiny ", "Rare Shiny ", "Epic Shiny "];
 await fetch("pokemon_data.json")
     .then((response) => response.json())
-    .then(async (pokemon_data) => {
-
-    for (let x = 0; x <= 5; x++) {
-        let num = Math.floor(x / 2);
-        if (x % 2 == 1) {
-            num += "v";
-        }
-
-        await fetch("images/pokemon/pokemon_icons_" + num + ".json") // chatgpt's work
-            .then((response2) => response2.json())  // chatgpt's work
-            .then((data2) => { // fill pokedex with pokemon data
-                const frames = data2.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
-
-                for (const sprite of frames) { // for each pokemon sprite
-                    let name = "";
-                    let cutoff = sprite.filename.length; // figure out where the pokedex number ends
-
-                    const possibleCutoffs = [sprite.filename.indexOf("-"), sprite.filename.indexOf("s"), sprite.filename.indexOf("_")];
-                    for (const c of possibleCutoffs) {
-                        if (c != -1 && c < cutoff) {
-                            cutoff = c;
-                        }
-                    }
-
-                    let regionalForm = ""; // If it is a regional form
-                    let index = parseInt(sprite.filename.substring(0, cutoff));
-                    if (index > 2000) {
-                        regionalForm = "Alolan ";
-                        if (index > 4000) {
-                            regionalForm = "Galarian ";
-                            if (index > 600) {
-                                regionalForm = "Hisuian ";
-                            }
-                        }
-                        index %= 1000; // switch index to non-regional index
-                    }
-                    name += regionalForm + pokemon_data[index - 1].name;
-                    let indexRegional = index;
-                    if (regionalForm != "") {
-                        indexRegional += 0.5;
-                    }
-
-                    let scale = 160 / sprite.frame.w; // how much to scale the image
-                    if (scale > 115 / sprite.frame.h) {
-                        scale = 115 / sprite.frame.h;
-                    }
-                    scale -= (scale - 5) / 2.5;
-
-                    let shinyLevel = 0; // figure out what level of shiny it is
-                    let i = sprite.filename.indexOf("s");
-                    let i2 = sprite.filename.indexOf("_");
-                    if (i == cutoff) {
-                        shinyLevel = 1;
-                    }
-                    else if (i2 != -1) {
-                        shinyLevel = parseInt(sprite.filename.charAt(i2 + 1));
-                        const baseform = pokedex[sprite.filename.substring(0, i2)];
-                        scale = baseform.scale;
-                    }
-                    name = shinyNames[shinyLevel] + name;
-
-                    let w = sprite.frame.w * scale;
-                    let h = sprite.frame.h * scale;
-                    if (i2 != -1) {
-                        h += scale ** 3.3 / 8;
-                        if (index == 41) {
-                            h -= 20;
-                        }
-                    }
-
-                    let gender = pokemon_data[index - 1].gender;
-                    if (pokemon_data[index - 1].genderForms) {
-                        if (sprite.filename.indexOf("-f") != -1) {
-                            gender = [0, 100];
-                        }
-                        else {
-                            gender = [100, 0];
-                        }
-                    }
-                    
-                    pokedex[sprite.filename] = {
-                        name: name,
-                        index: index,
-                        indexRegional: indexRegional,
-                        codename: sprite.filename,
-                        shinyLevel: shinyLevel,
-                        gender: gender,
-                        scale: scale,
-                        width: w,
-                        height: h,
-                        regionalForm: regionalForm,
-                    };
-                }
-            })
-            .then(() => { console.log("pokedex loading " + (x + 1) + "/20"); });
-    }
+    .then(async (pokemon_data_raw) => {
+        pokemon_data = pokemon_data_raw
 });
+
+for (let x = 0; x <= 5; x++) {
+    let num = Math.floor(x / 2);
+    if (x % 2 == 1) {
+        num += "v";
+    }
+
+    await fetch("images/pokemon/pokemon_icons_" + num + ".json") // chatgpt's work
+        .then((response2) => response2.json())  // chatgpt's work
+        .then((data2) => { // fill pokedex with pokemon data
+            const frames = data2.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
+
+            for (const sprite of frames) { // for each pokemon sprite
+                let name = "";
+                let cutoff = sprite.filename.length; // figure out where the pokedex number ends
+
+                const possibleCutoffs = [sprite.filename.indexOf("-"), sprite.filename.indexOf("s"), sprite.filename.indexOf("_")];
+                for (const c of possibleCutoffs) {
+                    if (c != -1 && c < cutoff) {
+                        cutoff = c;
+                    }
+                }
+
+                let regional_form = ""; // If it is a regional form
+                let index = parseInt(sprite.filename.substring(0, cutoff));
+                if (index > 2000) {
+                    regional_form = "Alolan ";
+                    if (index > 4000) {
+                        regional_form = "Galarian ";
+                        if (index > 600) {
+                            regional_form = "Hisuian ";
+                        }
+                    }
+                    index %= 1000; // switch index to non-regional index
+                }
+                name += regional_form + pokemon_data[index - 1].name;
+                let index_regional = index;
+                if (regional_form != "") {
+                    index_regional += 0.5;
+                }
+
+                let scale = 160 / sprite.frame.w; // how much to scale the image
+                if (scale > 115 / sprite.frame.h) {
+                    scale = 115 / sprite.frame.h;
+                }
+                scale -= (scale - 5) / 2.5;
+
+                let shiny_level = 0; // figure out what level of shiny it is
+                let i = sprite.filename.indexOf("s");
+                let i2 = sprite.filename.indexOf("_");
+                if (i == cutoff) {
+                    shiny_level = 1;
+                }
+                else if (i2 != -1) {
+                    shiny_level = parseInt(sprite.filename.charAt(i2 + 1));
+                    const baseform = pokedex[sprite.filename.substring(0, i2)];
+                    scale = baseform.scale;
+                }
+                name = shinyNames[shiny_level] + name;
+
+                let w = sprite.frame.w * scale;
+                let h = sprite.frame.h * scale;
+                if (i2 != -1) {
+                    h += scale ** 3.3 / 8;
+                    if (index == 41) {
+                        h -= 20;
+                    }
+                }
+
+                let gender = pokemon_data[index - 1].gender;
+                if (pokemon_data[index - 1].genderForms) {
+                    if (sprite.filename.indexOf("-f") != -1) {
+                        gender = [0, 100];
+                    }
+                    else {
+                        gender = [100, 0];
+                    }
+                }
+                
+                pokedex[sprite.filename] = {
+                    name: name,
+                    index: index,
+                    index_regional: index_regional,
+                    codename: sprite.filename,
+                    shiny_level: shiny_level,
+                    gender: gender,
+                    scale: scale,
+                    width: w,
+                    height: h,
+                    regional_form: regional_form,
+                    base_value: pokemon_data[index - 1].value,
+                    rarity: pokemon_data[index - 1].rarity,
+                };
+            }
+        })
+        .then(() => { console.log("pokedex loading " + (x + 1) + "/20"); });
+}
 
 function getPokemon(index) {
     let shinyText = "";
@@ -407,8 +411,8 @@ const shinyMults = [1, 777, 3333, 17777];
 
 // item in a pack
 export class Box {
-    constructor(pokemon, rarity, basevalue) {
-        this.rarity = rarity;
+    constructor(pokemon) {
+        this.rarity = pokemon.rarity;
         this.x = 0;
         this.y = 0;
         this.sprite = [];
@@ -416,10 +420,10 @@ export class Box {
         this.name = pokemon.name;
         this.scale = 1;
         this.opacity = 1;
-        this.basevalue = basevalue;
+        this.basevalue = this.pokemon.base_value;
         this.dateCreated = format(new Date(), 'yyyyMMddHHmmss');
 
-        this.value = basevalue * shinyMults[this.pokemon.shinyLevel];
+        this.value = this.basevalue * shinyMults[this.pokemon.shiny_level];
     }
     add(x, y) {
         this.sprite = [
@@ -427,8 +431,8 @@ export class Box {
             k.add([k.text("*" + shortenNumber(this.value), { size: 14 * this.scale, font: "pkmn" }), k.pos(x + 10 * this.scale, y + 128 * this.scale), k.opacity(this.opacity), k.layer("3")]),
             k.add([k.sprite(this.pokemon.codename), k.pos(x + (200 - this.pokemon.width)  * this.scale / 2, y + (150 - this.pokemon.height)  * this.scale / 2), k.scale(this.pokemon.scale * this.scale), k.opacity(this.opacity)]),
         ];
-        if (this.pokemon.shinyLevel > 0) {
-            this.sprite.push(k.add([k.sprite("shinies", { frame: this.pokemon.shinyLevel - 1 }), k.pos(x + 160 * this.scale, y + 9 * this.scale), k.opacity(this.opacity), k.scale(this.scale * 2)]));
+        if (this.pokemon.shiny_level > 0) {
+            this.sprite.push(k.add([k.sprite("shinies", { frame: this.pokemon.shiny_level - 1 }), k.pos(x + 160 * this.scale, y + 9 * this.scale), k.opacity(this.opacity), k.scale(this.scale * 2)]));
         }
         this.x = x;
         this.y = y;
@@ -518,17 +522,17 @@ export class Pack {
             let totalWeightOfRarity = 0;
             const itemsOfRarity = [];
             for (const item of this.items) {
-                if (item[1] == i) {
+                if (pokemon_data[item[0] - 1].rarity == i) {
                     itemsOfRarity.push(item);
-                    totalWeightOfRarity += item[2];
+                    totalWeightOfRarity += item[1];
                 }
             }
             const randomOfRarity = Math.random() * totalWeightOfRarity;
             let cumulativeOfRarity = 0;
             for (const item of itemsOfRarity) {
-                cumulativeOfRarity += item[2];
+                cumulativeOfRarity += item[1];
                 if (randomOfRarity < cumulativeOfRarity) {
-                    return new Box(getPokemon(item[0]), item[1], item[3]);
+                    return new Box(getPokemon(item[0]));
                 }
             }
           }
@@ -543,8 +547,8 @@ export class Pack {
         for (let w = 0; w < this.rarityWeights.length; w++) {
             let totalOfWeight = 0; // how many are there of this rarity?
             for (const item of this.items) {
-                if (item[1] == w) {
-                    totalOfWeight += item[2];
+                if (pokemon_data[item[0] - 1].rarity == w) {
+                    totalOfWeight += item[1];
                 }
             }
             rarityChances.push(Math.round((this.rarityWeights[w] * 1000000 / total) / totalOfWeight) / 10000); // chance for each item of this rarity (to 4 decimal places)
@@ -554,8 +558,8 @@ export class Pack {
         const chancesDict = {};
         const chances = [];
         for (const item of this.items) {
-            boxes.push(new Box(pokedex["" + item[0]], item[1], item[3]));
-            chancesDict[item[0]] = rarityChances[item[1]] * item[2];
+            boxes.push(new Box(pokedex["" + item[0]]));
+            chancesDict[item[0]] = rarityChances[pokemon_data[item[0] - 1].rarity] * item[1];
         }
         boxes = sortItemsLeastExpensive(boxes);
         for (const box of boxes) {
@@ -568,9 +572,9 @@ export class Pack {
 // list of packs
 const standardRarityWeights = [0.49, 0.32, 0.14, 0.015, 0.004, 0.0007, 0.00005];
 export const packs = [
-    new Pack(0, "Pack 1", 250, [[1, 3, 1, 1180], [10, 0, 1, 26], [23, 0, 1, 39], [25, 2, 1, 477], [27, 0, 1, 41], [35, 1, 1, 109], [41, 0, 1, 38], [48, 0, 1, 28], [54, 1, 1, 108], [60, 0, 1, 23], [74, 0, 1, 31], [63, 1, 1, 103], [84, 0, 1, 31], [88, 1, 1, 108], [83, 2, 1, 426], [96, 1, 1, 112], [102, 1, 1, 91], [109, 1, 1, 109], [116, 2, 1, 396], [120, 1, 1, 96], [132, 2, 1, 300], [133, 0, 1, 30], [125, 2, 1, 438], [128, 2, 1, 438], [137, 2, 1, 471], [145, 5, 1, 52032], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
-    new Pack(1, "Pack 2", 250, [[4, 3, 1, 1226], [13, 0, 1, 27], [21, 0, 1, 34], [25, 2, 1, 477], [29, 0, 1, 33], [37, 1, 1, 108], [43, 0, 1, 21], [50, 0, 1, 30], [56, 1, 1, 109], [66, 0, 1, 39], [77, 0, 1, 35], [72, 1, 1, 111], [86, 0, 1, 27], [92, 1, 1, 113], [111, 2, 1, 468], [98, 1, 1, 105], [104, 1, 1, 102], [114, 1, 1, 106], [123, 2, 1, 511], [129, 1, 1, 70], [132, 2, 1, 300], [133, 0, 1, 30], [126, 2, 1, 432], [131, 2, 1, 502], [142, 2, 1, 650], [146, 5, 1, 52803], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
-    new Pack(2, "Pack 3", 250, [[7, 3, 1, 1109], [16, 0, 1, 32], [19, 0, 1, 29], [25, 2, 1, 477], [32, 0, 1, 33], [39, 1, 1, 114], [46, 0, 1, 27], [52, 0, 1, 37], [58, 1, 1, 118], [69, 0, 1, 25], [79, 0, 1, 34], [81, 1, 1, 107], [90, 0, 1, 30], [95, 1, 1, 121], [115, 2, 1, 441], [100, 1, 1, 103], [108, 1, 1, 114], [118, 1, 1, 102], [124, 2, 1, 386], [138, 1, 1, 98], [132, 2, 1, 300], [133, 0, 1, 30], [127, 2, 1, 461], [140, 2, 1, 447], [143, 2, 1, 578], [144, 5, 1, 51894], [147, 4, 1, 4213], [150, 5, .5, 57147], [151, 6, 1, 618322]], standardRarityWeights),
+    new Pack(0, "Pack 1", 250, [[1, 1], [10, 1], [23, 1], [25, 1], [27, 1], [35, 1], [41, 1], [48, 1], [54, 1], [60, 1], [74, 1], [63, 1], [84, 1], [88, 1], [83, 1], [96, 1], [102, 1], [106, 1], [109, 1], [116, 1], [120, 1], [132, 1], [133, 1], [137, 1], [125, 1], [128, 1], [145, 1], [147, 1], [150, .5], [151, 1]], standardRarityWeights),
+    new Pack(1, "Pack 2", 250, [[4, 1], [13, 1], [21, 1], [25, 1], [29, 1], [37, 1], [43, 1], [50, 1], [56, 1], [66, 1], [77, 1], [72, 1], [86, 1], [92, 1], [111, 1], [98, 1], [104, 1], [107, 1], [114, 1], [123, 1], [129, 1], [132, 1], [133, 1], [113, 1], [131, 1], [142, 1], [146, 1], [147, 1], [150, .5], [151, 1]], standardRarityWeights),
+    new Pack(2, "Pack 3", 250, [[7, 1], [16, 1], [19, 1], [25, 1], [32, 1], [39, 1], [46, 1], [52, 1], [58, 1], [69, 1], [79, 1], [81, 1], [90, 1], [95, 1], [115, 1], [100, 1], [108, 1], [126, 1], [118, 1], [124, 1], [138, 1], [132, 1], [133, 1], [140, 1], [127, 1], [143, 1], [144, 1], [147, 1], [150, .5], [151, 1]], standardRarityWeights),
 ];
 export let whichPack = 0;
 
@@ -644,7 +648,7 @@ export const autospinsettings = {
     specificPreferences: {},
 }
 for (const code in pokedex) {
-    autospinsettings.specificPreferences[pokedex[code].indexRegional] = 0;
+    autospinsettings.specificPreferences[pokedex[code].index_regional] = 0;
 }
 
 function positionInput(x, y) {

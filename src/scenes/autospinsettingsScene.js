@@ -8,7 +8,7 @@ class BoxWithChance {
         this.box = box;
         this.chance = chance;
         this.scale = 1;
-        this.preferencekey = this.box.pokemon.indexRegional;
+        this.preferencekey = this.box.pokemon.index_regional;
     }
     add(x, y) {
         this.box.add(x, y);
