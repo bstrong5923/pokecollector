@@ -1,4 +1,279 @@
 [
+    {"index": 1, "name": "Bulbasaur", "value": 1, "rarity": 1, "evolves": [2], "gender": [87.5, 12.5], "genderForms": false, "types": ["grass", "poison"]}
+    {"index": 2, "name": "Ivysaur", "value": 1, "rarity": 1, "evolves": [3], "gender": [87.5, 12.5], "genderForms": false, "types": ["grass", "poison"]}
+    {"index": 3, "name": "Venusaur", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["grass", "poison"]}
+    {"index": 4, "name": "Charmander", "value": 1, "rarity": 1, "evolves": [5], "gender": [87.5, 12.5], "genderForms": false, "types": ["fire"]}
+    {"index": 5, "name": "Charmeleon", "value": 1, "rarity": 1, "evolves": [6], "gender": [87.5, 12.5], "genderForms": false, "types": ["fire"]}
+    {"index": 6, "name": "Charizard", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["fire", "flying"]}
+    {"index": 7, "name": "Squirtle", "value": 1, "rarity": 1, "evolves": [8], "gender": [87.5, 12.5], "genderForms": false, "types": ["water"]}
+    {"index": 8, "name": "Wartortle", "value": 1, "rarity": 1, "evolves": [9], "gender": [87.5, 12.5], "genderForms": false, "types": ["water"]}
+    {"index": 9, "name": "Blastoise", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["water"]}
+    {"index": 10, "name": "Caterpie", "value": 1, "rarity": 1, "evolves": [11], "gender": [50, 50], "genderForms": false, "types": ["bug"]}
+    {"index": 11, "name": "Metapod", "value": 1, "rarity": 1, "evolves": [12], "gender": [50, 50], "genderForms": false, "types": ["bug"]}
+    {"index": 12, "name": "Butterfree", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["bug", "flying"]}
+    {"index": 13, "name": "Weedle", "value": 1, "rarity": 1, "evolves": [14], "gender": [50, 50], "genderForms": false, "types": ["bug", "poison"]}
+    {"index": 14, "name": "Kakuna", "value": 1, "rarity": 1, "evolves": [15], "gender": [50, 50], "genderForms": false, "types": ["bug", "poison"]}
+    {"index": 15, "name": "Beedrill", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["bug", "poison"]}
+    {"index": 16, "name": "Pidgey", "value": 1, "rarity": 1, "evolves": [17], "gender": [50, 50], "genderForms": false, "types": ["normal", "flying"]}
+    {"index": 17, "name": "Pidgeotto", "value": 1, "rarity": 1, "evolves": [18], "gender": [50, 50], "genderForms": false, "types": ["normal", "flying"]}
+    {"index": 18, "name": "Pidgeot", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["normal", "flying"]}
+    {"index": 19, "name": "Rattata", "value": 1, "rarity": 1, "evolves": [20], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 20, "name": "Raticate", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 21, "name": "Spearow", "value": 1, "rarity": 1, "evolves": [22], "gender": [50, 50], "genderForms": false, "types": ["normal", "flying"]}
+    {"index": 22, "name": "Fearow", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["normal", "flying"]}
+    {"index": 23, "name": "Ekans", "value": 1, "rarity": 1, "evolves": [24], "gender": [50, 50], "genderForms": false, "types": ["poison"]}
+    {"index": 24, "name": "Arbok", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["poison"]}
+    {"index": 25, "name": "Pikachu", "value": 1, "rarity": 1, "evolves": [26], "gender": [50, 50], "genderForms": false, "types": ["electric"]}
+    {"index": 26, "name": "Raichu", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["electric"]}
+    {"index": 27, "name": "Sandshrew", "value": 1, "rarity": 1, "evolves": [28], "gender": [50, 50], "genderForms": false, "types": ["ground"]}
+    {"index": 28, "name": "Sandslash", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["ground"]}
+    {"index": 29, "name": "Nidoran♀", "value": 1, "rarity": 1, "evolves": [30], "gender": [0, 100], "genderForms": false, "types": ["poison"]}
+    {"index": 30, "name": "Nidorina", "value": 1, "rarity": 1, "evolves": [31], "gender": [0, 100], "genderForms": false, "types": ["poison"]}
+    {"index": 31, "name": "Nidoqueen", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 100], "genderForms": false, "types": ["poison", "ground"]}
+    {"index": 32, "name": "Nidoran♂", "value": 1, "rarity": 1, "evolves": [33], "gender": [100, 0], "genderForms": false, "types": ["poison"]}
+    {"index": 33, "name": "Nidorino", "value": 1, "rarity": 1, "evolves": [34], "gender": [100, 0], "genderForms": false, "types": ["poison"]}
+    {"index": 34, "name": "Nidoking", "value": 1, "rarity": 1, "evolves": [], "gender": [100, 0], "genderForms": false, "types": ["poison", "ground"]}
+    {"index": 35, "name": "Clefairy", "value": 1, "rarity": 1, "evolves": [36], "gender": [25, 75], "genderForms": false, "types": ["fairy"]}
+    {"index": 36, "name": "Clefable", "value": 1, "rarity": 1, "evolves": [], "gender": [25, 75], "genderForms": false, "types": ["fairy"]}
+    {"index": 37, "name": "Vulpix", "value": 1, "rarity": 1, "evolves": [38], "gender": [25, 75], "genderForms": false, "types": ["fire"]}
+    {"index": 38, "name": "Ninetales", "value": 1, "rarity": 1, "evolves": [], "gender": [25, 75], "genderForms": false, "types": ["fire"]}
+    {"index": 39, "name": "Jigglypuff", "value": 1, "rarity": 1, "evolves": [40], "gender": [25, 75], "genderForms": false, "types": ["normal", "fairy"]}
+    {"index": 40, "name": "Wigglytuff", "value": 1, "rarity": 1, "evolves": [], "gender": [25, 75], "genderForms": false, "types": ["normal", "fairy"]}
+    {"index": 41, "name": "Zubat", "value": 1, "rarity": 1, "evolves": [42], "gender": [50, 50], "genderForms": false, "types": ["poison", "flying"]}
+    {"index": 42, "name": "Golbat", "value": 1, "rarity": 1, "evolves": [169], "gender": [50, 50], "genderForms": false, "types": ["poison", "flying"]}
+    {"index": 43, "name": "Oddish", "value": 1, "rarity": 1, "evolves": [44], "gender": [50, 50], "genderForms": false, "types": ["grass", "poison"]}
+    {"index": 44, "name": "Gloom", "value": 1, "rarity": 1, "evolves": [45, 182], "gender": [50, 50], "genderForms": false, "types": ["grass", "poison"]}
+    {"index": 45, "name": "Vileplume", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["grass", "poison"]}
+    {"index": 46, "name": "Paras", "value": 1, "rarity": 1, "evolves": [47], "gender": [50, 50], "genderForms": false, "types": ["bug", "grass"]}
+    {"index": 47, "name": "Parasect", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["bug", "grass"]}
+    {"index": 48, "name": "Venonat", "value": 1, "rarity": 1, "evolves": [49], "gender": [50, 50], "genderForms": false, "types": ["bug", "poison"]}
+    {"index": 49, "name": "Venomoth", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["bug", "poison"]}
+    {"index": 50, "name": "Diglett", "value": 1, "rarity": 1, "evolves": [51], "gender": [50, 50], "genderForms": false, "types": ["ground"]}
+    {"index": 51, "name": "Dugtrio", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["ground"]}
+    {"index": 52, "name": "Meowth", "value": 1, "rarity": 1, "evolves": [53], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 53, "name": "Persian", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 54, "name": "Psyduck", "value": 1, "rarity": 1, "evolves": [55], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 55, "name": "Golduck", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 56, "name": "Mankey", "value": 1, "rarity": 1, "evolves": [57], "gender": [50, 50], "genderForms": false, "types": ["fighting"]}
+    {"index": 57, "name": "Primeape", "value": 1, "rarity": 1, "evolves": [979], "gender": [50, 50], "genderForms": false, "types": ["fighting"]}
+    {"index": 58, "name": "Growlithe", "value": 1, "rarity": 1, "evolves": [59], "gender": [75, 25], "genderForms": false, "types": ["fire"]}
+    {"index": 59, "name": "Arcanine", "value": 1, "rarity": 1, "evolves": [], "gender": [75, 25], "genderForms": false, "types": ["fire"]}
+    {"index": 60, "name": "Poliwag", "value": 1, "rarity": 1, "evolves": [61], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 61, "name": "Poliwhirl", "value": 1, "rarity": 1, "evolves": [62, 186], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 62, "name": "Poliwrath", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water", "fighting"]}
+    {"index": 63, "name": "Abra", "value": 1, "rarity": 1, "evolves": [64], "gender": [75, 25], "genderForms": false, "types": ["psychic"]}
+    {"index": 64, "name": "Kadabra", "value": 1, "rarity": 1, "evolves": [65], "gender": [75, 25], "genderForms": false, "types": ["psychic"]}
+    {"index": 65, "name": "Alakazam", "value": 1, "rarity": 1, "evolves": [], "gender": [75, 25], "genderForms": false, "types": ["psychic"]}
+    {"index": 66, "name": "Machop", "value": 1, "rarity": 1, "evolves": [67], "gender": [75, 25], "genderForms": false, "types": ["fighting"]}
+    {"index": 67, "name": "Machoke", "value": 1, "rarity": 1, "evolves": [68], "gender": [75, 25], "genderForms": false, "types": ["fighting"]}
+    {"index": 68, "name": "Machamp", "value": 1, "rarity": 1, "evolves": [], "gender": [75, 25], "genderForms": false, "types": ["fighting"]}
+    {"index": 69, "name": "Bellsprout", "value": 1, "rarity": 1, "evolves": [70], "gender": [50, 50], "genderForms": false, "types": ["grass", "poison"]}
+    {"index": 70, "name": "Weepinbell", "value": 1, "rarity": 1, "evolves": [71], "gender": [50, 50], "genderForms": false, "types": ["grass", "poison"]}
+    {"index": 71, "name": "Victreebel", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["grass", "poison"]}
+    {"index": 72, "name": "Tentacool", "value": 1, "rarity": 1, "evolves": [73], "gender": [50, 50], "genderForms": false, "types": ["water", "poison"]}
+    {"index": 73, "name": "Tentacruel", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water", "poison"]}
+    {"index": 74, "name": "Geodude", "value": 1, "rarity": 1, "evolves": [75], "gender": [50, 50], "genderForms": false, "types": ["rock", "ground"]}
+    {"index": 75, "name": "Graveler", "value": 1, "rarity": 1, "evolves": [76], "gender": [50, 50], "genderForms": false, "types": ["rock", "ground"]}
+    {"index": 76, "name": "Golem", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["rock", "ground"]}
+    {"index": 77, "name": "Ponyta", "value": 1, "rarity": 1, "evolves": [78], "gender": [50, 50], "genderForms": false, "types": ["fire"]}
+    {"index": 78, "name": "Rapidash", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["fire"]}
+    {"index": 79, "name": "Slowpoke", "value": 1, "rarity": 1, "evolves": [80, 199], "gender": [50, 50], "genderForms": false, "types": ["water", "psychic"]}
+    {"index": 80, "name": "Slowbro", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water", "psychic"]}
+    {"index": 81, "name": "Magnemite", "value": 1, "rarity": 1, "evolves": [82], "gender": [0, 0], "genderForms": false, "types": ["electric", "steel"]}
+    {"index": 82, "name": "Magneton", "value": 1, "rarity": 1, "evolves": [462], "gender": [0, 0], "genderForms": false, "types": ["electric", "steel"]}
+    {"index": 83, "name": "Farfetch’d", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["normal", "flying"]}
+    {"index": 84, "name": "Doduo", "value": 1, "rarity": 1, "evolves": [85], "gender": [50, 50], "genderForms": true, "types": ["normal", "flying"]}
+    {"index": 85, "name": "Dodrio", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": true, "types": ["normal", "flying"]}
+    {"index": 86, "name": "Seel", "value": 1, "rarity": 1, "evolves": [87], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 87, "name": "Dewgong", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water", "ice"]}
+    {"index": 88, "name": "Grimer", "value": 1, "rarity": 1, "evolves": [89], "gender": [50, 50], "genderForms": false, "types": ["poison"]}
+    {"index": 89, "name": "Muk", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["poison"]}
+    {"index": 90, "name": "Shellder", "value": 1, "rarity": 1, "evolves": [91], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 91, "name": "Cloyster", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water", "ice"]}
+    {"index": 92, "name": "Gastly", "value": 1, "rarity": 1, "evolves": [93], "gender": [50, 50], "genderForms": false, "types": ["ghost", "poison"]}
+    {"index": 93, "name": "Haunter", "value": 1, "rarity": 1, "evolves": [94], "gender": [50, 50], "genderForms": false, "types": ["ghost", "poison"]}
+    {"index": 94, "name": "Gengar", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["ghost", "poison"]}
+    {"index": 95, "name": "Onix", "value": 1, "rarity": 1, "evolves": [208], "gender": [50, 50], "genderForms": false, "types": ["rock", "ground"]}
+    {"index": 96, "name": "Drowzee", "value": 1, "rarity": 1, "evolves": [97], "gender": [50, 50], "genderForms": false, "types": ["psychic"]}
+    {"index": 97, "name": "Hypno", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["psychic"]}
+    {"index": 98, "name": "Krabby", "value": 1, "rarity": 1, "evolves": [99], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 99, "name": "Kingler", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 100, "name": "Voltorb", "value": 1, "rarity": 1, "evolves": [101], "gender": [0, 0], "genderForms": false, "types": ["electric"]}
+    {"index": 101, "name": "Electrode", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["electric"]}
+    {"index": 102, "name": "Exeggcute", "value": 1, "rarity": 1, "evolves": [103], "gender": [50, 50], "genderForms": false, "types": ["grass", "psychic"]}
+    {"index": 103, "name": "Exeggutor", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["grass", "psychic"]}
+    {"index": 104, "name": "Cubone", "value": 1, "rarity": 1, "evolves": [105], "gender": [50, 50], "genderForms": false, "types": ["ground"]}
+    {"index": 105, "name": "Marowak", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["ground"]}
+    {"index": 106, "name": "Hitmonlee", "value": 1, "rarity": 1, "evolves": [], "gender": [100, 0], "genderForms": false, "types": ["fighting"]}
+    {"index": 107, "name": "Hitmonchan", "value": 1, "rarity": 1, "evolves": [], "gender": [100, 0], "genderForms": false, "types": ["fighting"]}
+    {"index": 108, "name": "Lickitung", "value": 1, "rarity": 1, "evolves": [463], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 109, "name": "Koffing", "value": 1, "rarity": 1, "evolves": [110], "gender": [50, 50], "genderForms": false, "types": ["poison"]}
+    {"index": 110, "name": "Weezing", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["poison"]}
+    {"index": 111, "name": "Rhyhorn", "value": 1, "rarity": 1, "evolves": [112], "gender": [50, 50], "genderForms": false, "types": ["ground", "rock"]}
+    {"index": 112, "name": "Rhydon", "value": 1, "rarity": 1, "evolves": [464], "gender": [50, 50], "genderForms": false, "types": ["ground", "rock"]}
+    {"index": 113, "name": "Chansey", "value": 1, "rarity": 1, "evolves": [242], "gender": [0, 100], "genderForms": false, "types": ["normal"]}
+    {"index": 114, "name": "Tangela", "value": 1, "rarity": 1, "evolves": [465], "gender": [50, 50], "genderForms": false, "types": ["grass"]}
+    {"index": 115, "name": "Kangaskhan", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 100], "genderForms": false, "types": ["normal"]}
+    {"index": 116, "name": "Horsea", "value": 1, "rarity": 1, "evolves": [117], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 117, "name": "Seadra", "value": 1, "rarity": 1, "evolves": [230], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 118, "name": "Goldeen", "value": 1, "rarity": 1, "evolves": [119], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 119, "name": "Seaking", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 120, "name": "Staryu", "value": 1, "rarity": 1, "evolves": [121], "gender": [0, 0], "genderForms": false, "types": ["water"]}
+    {"index": 121, "name": "Starmie", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["water", "psychic"]}
+    {"index": 122, "name": "Mr. Mime", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["psychic", "fairy"]}
+    {"index": 123, "name": "Scyther", "value": 1, "rarity": 1, "evolves": [212], "gender": [50, 50], "genderForms": false, "types": ["bug", "flying"]}
+    {"index": 124, "name": "Jynx", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 100], "genderForms": false, "types": ["ice", "psychic"]}
+    {"index": 125, "name": "Electabuzz", "value": 1, "rarity": 1, "evolves": [466], "gender": [75, 25], "genderForms": false, "types": ["electric"]}
+    {"index": 126, "name": "Magmar", "value": 1, "rarity": 1, "evolves": [467], "gender": [75, 25], "genderForms": false, "types": ["fire"]}
+    {"index": 127, "name": "Pinsir", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["bug"]}
+    {"index": 128, "name": "Tauros", "value": 1, "rarity": 1, "evolves": [], "gender": [100, 0], "genderForms": false, "types": ["normal"]}
+    {"index": 129, "name": "Magikarp", "value": 1, "rarity": 1, "evolves": [130], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 130, "name": "Gyarados", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water", "flying"]}
+    {"index": 131, "name": "Lapras", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water", "ice"]}
+    {"index": 132, "name": "Ditto", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["normal"]}
+    {"index": 133, "name": "Eevee", "value": 1, "rarity": 1, "evolves": [134, 135, 136, 196, 197, 470, 471, 700], "gender": [87.5, 12.5], "genderForms": false, "types": ["normal"]}
+    {"index": 134, "name": "Vaporeon", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["water"]}
+    {"index": 135, "name": "Jolteon", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["electric"]}
+    {"index": 136, "name": "Flareon", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["fire"]}
+    {"index": 137, "name": "Porygon", "value": 1, "rarity": 1, "evolves": [233], "gender": [0, 0], "genderForms": false, "types": ["normal"]}
+    {"index": 138, "name": "Omanyte", "value": 1, "rarity": 1, "evolves": [139], "gender": [87.5, 12.5], "genderForms": false, "types": ["rock", "water"]}
+    {"index": 139, "name": "Omastar", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["rock", "water"]}
+    {"index": 140, "name": "Kabuto", "value": 1, "rarity": 1, "evolves": [141], "gender": [87.5, 12.5], "genderForms": false, "types": ["rock", "water"]}
+    {"index": 141, "name": "Kabutops", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["rock", "water"]}
+    {"index": 142, "name": "Aerodactyl", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["rock", "flying"]}
+    {"index": 143, "name": "Snorlax", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["normal"]}
+    {"index": 144, "name": "Articuno", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["ice", "flying"]}
+    {"index": 145, "name": "Zapdos", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["electric", "flying"]}
+    {"index": 146, "name": "Moltres", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["fire", "flying"]}
+    {"index": 147, "name": "Dratini", "value": 1, "rarity": 1, "evolves": [148], "gender": [50, 50], "genderForms": false, "types": ["dragon"]}
+    {"index": 148, "name": "Dragonair", "value": 1, "rarity": 1, "evolves": [149], "gender": [50, 50], "genderForms": false, "types": ["dragon"]}
+    {"index": 149, "name": "Dragonite", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["dragon", "flying"]}
+    {"index": 150, "name": "Mewtwo", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["psychic"]}
+    {"index": 151, "name": "Mew", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["psychic"]}
+    {"index": 152, "name": "Chikorita", "value": 1, "rarity": 1, "evolves": [153], "gender": [87.5, 12.5], "genderForms": false, "types": ["grass"]}
+    {"index": 153, "name": "Bayleef", "value": 1, "rarity": 1, "evolves": [154], "gender": [87.5, 12.5], "genderForms": true, "types": ["grass"]}
+    {"index": 154, "name": "Meganium", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": true, "types": ["grass"]}
+    {"index": 155, "name": "Cyndaquil", "value": 1, "rarity": 1, "evolves": [156], "gender": [87.5, 12.5], "genderForms": false, "types": ["fire"]}
+    {"index": 156, "name": "Quilava", "value": 1, "rarity": 1, "evolves": [157], "gender": [87.5, 12.5], "genderForms": false, "types": ["fire"]}
+    {"index": 157, "name": "Typhlosion", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["fire"]}
+    {"index": 158, "name": "Totodile", "value": 1, "rarity": 1, "evolves": [159], "gender": [87.5, 12.5], "genderForms": false, "types": ["water"]}
+    {"index": 159, "name": "Croconaw", "value": 1, "rarity": 1, "evolves": [160], "gender": [87.5, 12.5], "genderForms": false, "types": ["water"]}
+    {"index": 160, "name": "Feraligatr", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["water"]}
+    {"index": 161, "name": "Sentret", "value": 1, "rarity": 1, "evolves": [162], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 162, "name": "Furret", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 163, "name": "Hoothoot", "value": 1, "rarity": 1, "evolves": [164], "gender": [50, 50], "genderForms": false, "types": ["normal", "flying"]}
+    {"index": 164, "name": "Noctowl", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["normal", "flying"]}
+    {"index": 165, "name": "Ledyba", "value": 1, "rarity": 1, "evolves": [166], "gender": [50, 50], "genderForms": false, "types": ["bug", "flying"]}
+    {"index": 166, "name": "Ledian", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["bug", "flying"]}
+    {"index": 167, "name": "Spinarak", "value": 1, "rarity": 1, "evolves": [168], "gender": [50, 50], "genderForms": false, "types": ["bug", "poison"]}
+    {"index": 168, "name": "Ariados", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["bug", "poison"]}
+    {"index": 169, "name": "Crobat", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["poison", "flying"]}
+    {"index": 170, "name": "Chinchou", "value": 1, "rarity": 1, "evolves": [171], "gender": [50, 50], "genderForms": false, "types": ["water", "electric"]}
+    {"index": 171, "name": "Lanturn", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water", "electric"]}
+    {"index": 172, "name": "Pichu", "value": 1, "rarity": 1, "evolves": [25], "gender": [50, 50], "genderForms": false, "types": ["electric"]}
+    {"index": 173, "name": "Cleffa", "value": 1, "rarity": 1, "evolves": [35], "gender": [25, 75], "genderForms": false, "types": ["fairy"]}
+    {"index": 174, "name": "Igglybuff", "value": 1, "rarity": 1, "evolves": [39], "gender": [25, 75], "genderForms": false, "types": ["normal", "fairy"]}
+    {"index": 175, "name": "Togepi", "value": 1, "rarity": 1, "evolves": [176], "gender": [87.5, 12.5], "genderForms": false, "types": ["fairy"]}
+    {"index": 176, "name": "Togetic", "value": 1, "rarity": 1, "evolves": [468], "gender": [87.5, 12.5], "genderForms": false, "types": ["fairy", "flying"]}
+    {"index": 177, "name": "Natu", "value": 1, "rarity": 1, "evolves": [178], "gender": [50, 50], "genderForms": false, "types": ["psychic", "flying"]}
+    {"index": 178, "name": "Xatu", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["psychic", "flying"]}
+    {"index": 179, "name": "Mareep", "value": 1, "rarity": 1, "evolves": [180], "gender": [50, 50], "genderForms": false, "types": ["electric"]}
+    {"index": 180, "name": "Flaaffy", "value": 1, "rarity": 1, "evolves": [181], "gender": [50, 50], "genderForms": false, "types": ["electric"]}
+    {"index": 181, "name": "Ampharos", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["electric"]}
+    {"index": 182, "name": "Bellossom", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["grass"]}
+    {"index": 183, "name": "Marill", "value": 1, "rarity": 1, "evolves": [184], "gender": [50, 50], "genderForms": false, "types": ["water", "fairy"]}
+    {"index": 184, "name": "Azumarill", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water", "fairy"]}
+    {"index": 185, "name": "Sudowoodo", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["rock"]}
+    {"index": 186, "name": "Politoed", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 187, "name": "Hoppip", "value": 1, "rarity": 1, "evolves": [188], "gender": [50, 50], "genderForms": false, "types": ["grass", "flying"]}
+    {"index": 188, "name": "Skiploom", "value": 1, "rarity": 1, "evolves": [189], "gender": [50, 50], "genderForms": false, "types": ["grass", "flying"]}
+    {"index": 189, "name": "Jumpluff", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["grass", "flying"]}
+    {"index": 190, "name": "Aipom", "value": 1, "rarity": 1, "evolves": [424], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 191, "name": "Sunkern", "value": 1, "rarity": 1, "evolves": [192], "gender": [50, 50], "genderForms": false, "types": ["grass"]}
+    {"index": 192, "name": "Sunflora", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["grass"]}
+    {"index": 193, "name": "Yanma", "value": 1, "rarity": 1, "evolves": [469], "gender": [50, 50], "genderForms": false, "types": ["bug", "flying"]}
+    {"index": 194, "name": "Wooper", "value": 1, "rarity": 1, "evolves": [195], "gender": [50, 50], "genderForms": false, "types": ["water", "ground"]}
+    {"index": 195, "name": "Quagsire", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water", "ground"]}
+    {"index": 196, "name": "Espeon", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["psychic"]}
+    {"index": 197, "name": "Umbreon", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["dark"]}
+    {"index": 198, "name": "Murkrow", "value": 1, "rarity": 1, "evolves": [430], "gender": [50, 50], "genderForms": true, "types": ["dark", "flying"]}
+    {"index": 199, "name": "Slowking", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water", "psychic"]}
+    {"index": 200, "name": "Misdreavus", "value": 1, "rarity": 1, "evolves": [429], "gender": [50, 50], "genderForms": false, "types": ["ghost"]}
+    {"index": 201, "name": "Unown", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["psychic"]}
+    {"index": 202, "name": "Wobbuffet", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["psychic"]}
+    {"index": 203, "name": "Girafarig", "value": 1, "rarity": 1, "evolves": [981], "gender": [50, 50], "genderForms": false, "types": ["normal", "psychic"]}
+    {"index": 204, "name": "Pineco", "value": 1, "rarity": 1, "evolves": [205], "gender": [50, 50], "genderForms": false, "types": ["bug"]}
+    {"index": 205, "name": "Forretress", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["bug", "steel"]}
+    {"index": 206, "name": "Dunsparce", "value": 1, "rarity": 1, "evolves": [982], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 207, "name": "Gligar", "value": 1, "rarity": 1, "evolves": [472], "gender": [50, 50], "genderForms": false, "types": ["ground", "flying"]}
+    {"index": 208, "name": "Steelix", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["steel", "ground"]}
+    {"index": 209, "name": "Snubbull", "value": 1, "rarity": 1, "evolves": [210], "gender": [25, 75], "genderForms": false, "types": ["fairy"]}
+    {"index": 210, "name": "Granbull", "value": 1, "rarity": 1, "evolves": [], "gender": [25, 75], "genderForms": false, "types": ["fairy"]}
+    {"index": 211, "name": "Qwilfish", "value": 1, "rarity": 1, "evolves": [904], "gender": [50, 50], "genderForms": false, "types": ["water", "poison"]}
+    {"index": 212, "name": "Scizor", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["bug", "steel"]}
+    {"index": 213, "name": "Shuckle", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["bug", "rock"]}
+    {"index": 214, "name": "Heracross", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["bug", "fighting"]}
+    {"index": 215, "name": "Sneasel", "value": 1, "rarity": 1, "evolves": [461], "gender": [50, 50], "genderForms": false, "types": ["dark", "ice"]}
+    {"index": 216, "name": "Teddiursa", "value": 1, "rarity": 1, "evolves": [217], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 217, "name": "Ursaring", "value": 1, "rarity": 1, "evolves": [901], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 218, "name": "Slugma", "value": 1, "rarity": 1, "evolves": [219], "gender": [50, 50], "genderForms": false, "types": ["fire"]}
+    {"index": 219, "name": "Magcargo", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["fire", "rock"]}
+    {"index": 220, "name": "Swinub", "value": 1, "rarity": 1, "evolves": [221], "gender": [50, 50], "genderForms": false, "types": ["ice", "ground"]}
+    {"index": 221, "name": "Piloswine", "value": 1, "rarity": 1, "evolves": [473], "gender": [50, 50], "genderForms": false, "types": ["ice", "ground"]}
+    {"index": 222, "name": "Corsola", "value": 1, "rarity": 1, "evolves": [], "gender": [25, 75], "genderForms": false, "types": ["water", "rock"]}
+    {"index": 223, "name": "Remoraid", "value": 1, "rarity": 1, "evolves": [224], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 224, "name": "Octillery", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water"]}
+    {"index": 225, "name": "Delibird", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["ice", "flying"]}
+    {"index": 226, "name": "Mantine", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water", "flying"]}
+    {"index": 227, "name": "Skarmory", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["steel", "flying"]}
+    {"index": 228, "name": "Houndour", "value": 1, "rarity": 1, "evolves": [229], "gender": [50, 50], "genderForms": false, "types": ["dark", "fire"]}
+    {"index": 229, "name": "Houndoom", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["dark", "fire"]}
+    {"index": 230, "name": "Kingdra", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water", "dragon"]}
+    {"index": 231, "name": "Phanpy", "value": 1, "rarity": 1, "evolves": [232], "gender": [50, 50], "genderForms": false, "types": ["ground"]}
+    {"index": 232, "name": "Donphan", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["ground"]}
+    {"index": 233, "name": "Porygon2", "value": 1, "rarity": 1, "evolves": [474], "gender": [0, 0], "genderForms": false, "types": ["normal"]}
+    {"index": 234, "name": "Stantler", "value": 1, "rarity": 1, "evolves": [899], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 235, "name": "Smeargle", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 236, "name": "Tyrogue", "value": 1, "rarity": 1, "evolves": [106, 107, 237], "gender": [100, 0], "genderForms": false, "types": ["fighting"]}
+    {"index": 237, "name": "Hitmontop", "value": 1, "rarity": 1, "evolves": [], "gender": [100, 0], "genderForms": false, "types": ["fighting"]}
+    {"index": 238, "name": "Smoochum", "value": 1, "rarity": 1, "evolves": [124], "gender": [0, 100], "genderForms": false, "types": ["ice", "psychic"]}
+    {"index": 239, "name": "Elekid", "value": 1, "rarity": 1, "evolves": [125], "gender": [75, 25], "genderForms": false, "types": ["electric"]}
+    {"index": 240, "name": "Magby", "value": 1, "rarity": 1, "evolves": [126], "gender": [75, 25], "genderForms": false, "types": ["fire"]}
+    {"index": 241, "name": "Miltank", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 100], "genderForms": false, "types": ["normal"]}
+    {"index": 242, "name": "Blissey", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 100], "genderForms": false, "types": ["normal"]}
+    {"index": 243, "name": "Raikou", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["electric"]}
+    {"index": 244, "name": "Entei", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["fire"]}
+    {"index": 245, "name": "Suicune", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["water"]}
+    {"index": 246, "name": "Larvitar", "value": 1, "rarity": 1, "evolves": [247], "gender": [50, 50], "genderForms": false, "types": ["rock", "ground"]}
+    {"index": 247, "name": "Pupitar", "value": 1, "rarity": 1, "evolves": [248], "gender": [50, 50], "genderForms": false, "types": ["rock", "ground"]}
+    {"index": 248, "name": "Tyranitar", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["rock", "dark"]}
+    {"index": 249, "name": "Lugia", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["psychic", "flying"]}
+    {"index": 250, "name": "Ho-oh", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["fire", "flying"]}
+    {"index": 251, "name": "Celebi", "value": 1, "rarity": 1, "evolves": [], "gender": [0, 0], "genderForms": false, "types": ["psychic", "grass"]}
+    {"index": 252, "name": "Treecko", "value": 1, "rarity": 1, "evolves": [253], "gender": [87.5, 12.5], "genderForms": false, "types": ["grass"]}
+    {"index": 253, "name": "Grovyle", "value": 1, "rarity": 1, "evolves": [254], "gender": [87.5, 12.5], "genderForms": false, "types": ["grass"]}
+    {"index": 254, "name": "Sceptile", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["grass"]}
+    {"index": 255, "name": "Torchic", "value": 1, "rarity": 1, "evolves": [256], "gender": [87.5, 12.5], "genderForms": true, "types": ["fire"]}
+    {"index": 256, "name": "Combusken", "value": 1, "rarity": 1, "evolves": [257], "gender": [87.5, 12.5], "genderForms": true, "types": ["fire", "fighting"]}
+    {"index": 257, "name": "Blaziken", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": true, "types": ["fire", "fighting"]}
+    {"index": 258, "name": "Mudkip", "value": 1, "rarity": 1, "evolves": [259], "gender": [87.5, 12.5], "genderForms": false, "types": ["water"]}
+    {"index": 259, "name": "Marshtomp", "value": 1, "rarity": 1, "evolves": [260], "gender": [87.5, 12.5], "genderForms": false, "types": ["water", "ground"]}
+    {"index": 260, "name": "Swampert", "value": 1, "rarity": 1, "evolves": [], "gender": [87.5, 12.5], "genderForms": false, "types": ["water", "ground"]}
+    {"index": 261, "name": "Poochyena", "value": 1, "rarity": 1, "evolves": [262], "gender": [50, 50], "genderForms": false, "types": ["dark"]}
+    {"index": 262, "name": "Mightyena", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["dark"]}
+    {"index": 263, "name": "Zigzagoon", "value": 1, "rarity": 1, "evolves": [264], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 264, "name": "Linoone", "value": 1, "rarity": 1, "evolves": [862], "gender": [50, 50], "genderForms": false, "types": ["normal"]}
+    {"index": 265, "name": "Wurmple", "value": 1, "rarity": 1, "evolves": [266, 268], "gender": [50, 50], "genderForms": false, "types": ["bug"]}
+    {"index": 266, "name": "Silcoon", "value": 1, "rarity": 1, "evolves": [267], "gender": [50, 50], "genderForms": false, "types": ["bug"]}
+    {"index": 267, "name": "Beautifly", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["bug", "flying"]}
+    {"index": 268, "name": "Cascoon", "value": 1, "rarity": 1, "evolves": [269], "gender": [50, 50], "genderForms": false, "types": ["bug"]}
+    {"index": 269, "name": "Dustox", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["bug", "poison"]}
+    {"index": 270, "name": "Lotad", "value": 1, "rarity": 1, "evolves": [271], "gender": [50, 50], "genderForms": false, "types": ["water", "grass"]}
+    {"index": 271, "name": "Lombre", "value": 1, "rarity": 1, "evolves": [272], "gender": [50, 50], "genderForms": false, "types": ["water", "grass"]}
+    {"index": 272, "name": "Ludicolo", "value": 1, "rarity": 1, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["water", "grass"]}
+]
+
+[
     {"index": 1, "name": "Bulbasaur", "value": 1180, "rarity": 3, "evolves": [2], "gender": [87.5, 12.5], "genderForms": false, "types": ["grass", "poison"]},
     {"index": 2, "name": "Ivysaur", "value": 1, "rarity": 3, "evolves": [3], "gender": [50, 50], "genderForms": false, "types": ["normal"]},
     {"index": 3, "name": "Venusaur", "value": 1, "rarity": 3, "evolves": [], "gender": [50, 50], "genderForms": false, "types": ["normal"]},
