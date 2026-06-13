@@ -5,7 +5,7 @@ export default function questsScene() {
     menu("quests");
 
     const slotWidth = 500;
-    const slotHeight = 460;
+    const slotHeight = 700;
     const slotSpacing = 40;
     const totalWidth = 3 * slotWidth + 2 * slotSpacing;
     const startX = (screenWidth - totalWidth) / 2;
@@ -35,15 +35,23 @@ export default function questsScene() {
 
         if (quests[i] != null) {
             const quest = quests[i];
-            const spriteScale = Math.max(1.8, Math.min(2.4, quest.pokemon.scale * 2.2));
-            const spriteWidth = quest.pokemon.width * spriteScale;
-            const spriteX = slotX + slotWidth / 2 - spriteWidth / 2;
-            const spriteY = slotY + 150;
+            const baseScale = quest.pokemon.scale;
+            const rawWidth = quest.pokemon.width / baseScale;
+            const rawHeight = quest.pokemon.height / baseScale;
+            const maxSpriteWidth = slotWidth - 80;
+            const maxSpriteHeight = 250;
+            const extraScale = Math.min(maxSpriteWidth / (rawWidth * baseScale), maxSpriteHeight / (rawHeight * baseScale), 4.5);
+            const spriteScale = baseScale * extraScale;
+            const displayWidth = rawWidth * spriteScale;
+            const displayHeight = rawHeight * spriteScale;
+            const spriteX = slotX + slotWidth / 2 - displayWidth / 2;
+            const spriteY = slotY + 110;
+            const statsY = spriteY + displayHeight + 30;
 
             // pokemon name
             const nameText = k.add([
-                k.text(quest.name, { size: 32, font: "pkmn", align: "center", width: slotWidth - 20 }),
-                k.pos(slotX + 10, slotY + 20)
+                k.text(quest.name, { size: 36, font: "pkmn", align: "center", width: slotWidth - 20 }),
+                k.pos(slotX + 10, slotY + 30)
             ]);
             slot.textElements.push({ type: "name", element: nameText });
 
@@ -51,33 +59,34 @@ export default function questsScene() {
             k.add([
                 k.sprite(quest.pokemon.codename),
                 k.pos(spriteX, spriteY),
-                k.scale(spriteScale)
+                k.scale(spriteScale),
+                k.opacity(1)
             ]);
 
             // time remaining
             const timeText = k.add([
-                k.text("Time: " + quest.getTimeDisplay(), { size: 24, font: "pkmn", align: "center", width: slotWidth - 20 }),
-                k.pos(slotX + 10, slotY + 320)
+                k.text("Time: " + quest.getTimeDisplay(), { size: 30, font: "pkmn", align: "center", width: slotWidth - 20 }),
+                k.pos(slotX + 10, statsY)
             ]);
             slot.textElements.push({ type: "time", element: timeText });
 
             // reward amount
             const rewardText = k.add([
-                k.text("Reward: *" + quest.reward, { size: 24, font: "pkmn", align: "center", width: slotWidth - 20 }),
-                k.pos(slotX + 10, slotY + 360)
+                k.text("Reward: *" + quest.reward, { size: 30, font: "pkmn", align: "center", width: slotWidth - 20 }),
+                k.pos(slotX + 10, statsY + 70)
             ]);
             slot.textElements.push({ type: "reward", element: rewardText });
 
             const cancelButton = k.add([
-                k.rect(180, 50),
-                k.pos(slotX + slotWidth / 2 - 90, slotY + 390),
+                k.rect(200, 60),
+                k.pos(slotX + slotWidth / 2 - 100, statsY + 130),
                 k.color(120, 0, 0),
                 k.outline(2, k.rgb(190, 40, 40)),
                 k.area()
             ]);
             const cancelText = k.add([
-                k.text("Cancel", { size: 24, font: "pkmn", align: "center", width: 180, color: "white" }),
-                k.pos(slotX + slotWidth / 2 - 90, slotY + 400)
+                k.text("Cancel", { size: 30, font: "pkmn", align: "center", width: 200, color: "white" }),
+                k.pos(slotX + slotWidth / 2 - 100, statsY + 145)
             ]);
             const cancelArea = cancelButton;
             cancelArea.onClick(() => {
