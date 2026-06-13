@@ -503,7 +503,18 @@ export class Quest {
         this.pokemon = box.pokemon;
         this.name = box.name;
         this.startTime = Date.now(); // timestamp when quest started
-        this.questDuration = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+
+        const rarityDurations = [
+            2 * 60 * 1000,        // rarity 0: 2 minutes
+            5 * 60 * 1000,        // rarity 1: 5 minutes
+            15 * 60 * 1000,       // rarity 2: 15 minutes
+            30 * 60 * 1000,       // rarity 3: 30 minutes
+            2 * 60 * 60 * 1000,   // rarity 4: 2 hours
+            16 * 60 * 60 * 1000,  // rarity 5: 16 hours
+            72 * 60 * 60 * 1000,  // rarity 6: 72 hours
+        ];
+
+        this.questDuration = rarityDurations[this.pokemon.rarity] ?? 2 * 60 * 60 * 1000;
         this.reward = Math.floor(box.value * 0.5); // 50% of pokemon value as reward
     }
     
