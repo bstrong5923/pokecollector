@@ -6,6 +6,7 @@ import displayScene from "./scenes/displayScene";
 import testScene from "./scenes/testScene";
 import autospinsettingsScene from "./scenes/autospinsettingsScene";
 import questsScene from "./scenes/questsScene";
+import questSelectionScene from "./scenes/questSelectionScene";
 import { go } from "./constants";
 
 // set up layers
@@ -78,6 +79,7 @@ k.scene("displayScene", () => displayScene());
 k.scene("testScene", () => testScene());
 k.scene("autospinsettingsScene", () => autospinsettingsScene());
 k.scene("questsScene", () => questsScene());
+k.scene("questSelectionScene", () => questSelectionScene());
 
 // load fonts
 k.loadFont("pkmn", "fonts/pkmnbydrizzee.ttf");

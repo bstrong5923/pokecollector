@@ -424,6 +424,10 @@ export class Box {
         this.dateCreated = format(new Date(), 'yyyyMMddHHmmss');
 
         this.value = this.basevalue * shinyMults[this.pokemon.shiny_level];
+        this.onClickAction = null;
+    }
+    setOnClickAction(callback) {
+        this.onClickAction = callback;
     }
     add(x, y) {
         this.sprite = [
@@ -440,10 +444,18 @@ export class Box {
             if (this.sprite[0].isHovering() && currentScene == "inventory" && !hoveringPriority) {
                 hoveringTrue();
             }
+            if (this.sprite[0].isHovering() && currentScene == "questSelection" && this.onClickAction != null) {
+                hoveringTrue();
+            }
         });
         this.sprite[0].onClick(() => {
-            if (currentScene == "inventory" && !hoveringPriority) {
-                this.display();
+            if (!hoveringPriority) {
+                if (currentScene == "questSelection" && this.onClickAction != null) {
+                    this.onClickAction();
+                }
+                else if (currentScene == "inventory" && this.onClickAction == null) {
+                    this.display();
+                }
             }
         });
     }
@@ -532,12 +544,53 @@ export function completeQuest(slotIndex) {
     }
 }
 
+export function cancelQuest(slotIndex) {
+    if (slotIndex >= 0 && slotIndex < 3 && quests[slotIndex] != null) {
+        const quest = quests[slotIndex];
+        inventory.push(quest.box);
+        sortInventory();
+        quests[slotIndex] = null;
+    }
+}
+
 export function checkQuestCompletion() {
     for (let i = 0; i < 3; i++) {
         if (quests[i] != null && quests[i].isComplete()) {
             completeQuest(i);
         }
     }
+}
+
+export let questSelectionSlot = null;
+export function startQuestSelection(slotIndex) {
+    questSelectionSlot = slotIndex;
+    page = 0;
+    go("questSelection");
+}
+
+export function assignQuestFromInventory(stackedIndex) {
+    if (questSelectionSlot == null || questSelectionSlot < 0 || questSelectionSlot >= 3) {
+        return false;
+    }
+    if (quests[questSelectionSlot] != null) {
+        return false;
+    }
+    if (stackedIndex < 0 || stackedIndex >= stackedIndexes.length) {
+        return false;
+    }
+
+    const inventoryIndex = stackedIndexes[stackedIndex][stackedIndexes[stackedIndex].length - 1];
+    if (inventoryIndex == null || inventoryIndex < 0 || inventoryIndex >= inventory.length) {
+        return false;
+    }
+
+    const box = inventory[inventoryIndex];
+    addQuest(box, questSelectionSlot);
+    inventory.splice(inventoryIndex, 1);
+    questSelectionSlot = null;
+    sortInventory();
+    go("quests");
+    return true;
 }
 
 // pack of pokemon

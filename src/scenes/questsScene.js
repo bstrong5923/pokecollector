@@ -1,15 +1,15 @@
 import k from "../kaplayCtx";
-import { quests, menu, menuHeight, screenWidth, screenHeight, checkQuestCompletion, hoveringTrue } from "../constants";
+import { quests, menu, menuHeight, screenWidth, screenHeight, checkQuestCompletion, hoveringTrue, startQuestSelection, cancelQuest, go } from "../constants";
 
 export default function questsScene() {
     menu("quests");
 
     const slotWidth = 500;
-    const slotHeight = 350;
+    const slotHeight = 460;
     const slotSpacing = 40;
     const totalWidth = 3 * slotWidth + 2 * slotSpacing;
     const startX = (screenWidth - totalWidth) / 2;
-    const startY = menuHeight + 50;
+    const startY = menuHeight + 40;
 
     // array to store quest slot displays for updating
     const questSlots = [];
@@ -35,42 +35,80 @@ export default function questsScene() {
 
         if (quests[i] != null) {
             const quest = quests[i];
+            const spriteScale = Math.max(1.8, Math.min(2.4, quest.pokemon.scale * 2.2));
+            const spriteWidth = quest.pokemon.width * spriteScale;
+            const spriteX = slotX + slotWidth / 2 - spriteWidth / 2;
+            const spriteY = slotY + 150;
+
+            // pokemon name
+            const nameText = k.add([
+                k.text(quest.name, { size: 32, font: "pkmn", align: "center", width: slotWidth - 20 }),
+                k.pos(slotX + 10, slotY + 20)
+            ]);
+            slot.textElements.push({ type: "name", element: nameText });
 
             // pokemon sprite
             k.add([
                 k.sprite(quest.pokemon.codename),
-                k.pos(slotX + (slotWidth - quest.pokemon.width * 2) / 2, slotY + 30),
-                k.scale(quest.pokemon.scale * 2)
+                k.pos(spriteX, spriteY),
+                k.scale(spriteScale)
             ]);
-
-            // pokemon name
-            const nameText = k.add([
-                k.text(quest.name, { size: 20, font: "pkmn", align: "center", width: slotWidth - 20 }),
-                k.pos(slotX + 10, slotY + 160)
-            ]);
-            slot.textElements.push({ type: "name", element: nameText });
 
             // time remaining
             const timeText = k.add([
-                k.text("Time: " + quest.getTimeDisplay(), { size: 18, font: "pkmn", align: "center", width: slotWidth - 20 }),
-                k.pos(slotX + 10, slotY + 210)
+                k.text("Time: " + quest.getTimeDisplay(), { size: 24, font: "pkmn", align: "center", width: slotWidth - 20 }),
+                k.pos(slotX + 10, slotY + 320)
             ]);
             slot.textElements.push({ type: "time", element: timeText });
 
             // reward amount
             const rewardText = k.add([
-                k.text("Reward: *" + quest.reward, { size: 18, font: "pkmn", align: "center", width: slotWidth - 20 }),
-                k.pos(slotX + 10, slotY + 260)
+                k.text("Reward: *" + quest.reward, { size: 24, font: "pkmn", align: "center", width: slotWidth - 20 }),
+                k.pos(slotX + 10, slotY + 360)
             ]);
             slot.textElements.push({ type: "reward", element: rewardText });
 
-        } else {
-            // empty slot
-            const emptyText = k.add([
-                k.text("Empty", { size: 24, font: "pkmn", align: "center", width: slotWidth - 20, color: k.rgb(100, 100, 100) }),
-                k.pos(slotX + 10, slotY + slotHeight / 2 - 30)
+            const cancelButton = k.add([
+                k.rect(180, 50),
+                k.pos(slotX + slotWidth / 2 - 90, slotY + 390),
+                k.color(120, 0, 0),
+                k.outline(2, k.rgb(190, 40, 40)),
+                k.area()
             ]);
-            slot.textElements.push({ type: "empty", element: emptyText });
+            const cancelText = k.add([
+                k.text("Cancel", { size: 24, font: "pkmn", align: "center", width: 180, color: "white" }),
+                k.pos(slotX + slotWidth / 2 - 90, slotY + 400)
+            ]);
+            const cancelArea = cancelButton;
+            cancelArea.onClick(() => {
+                cancelQuest(i);
+                go("quests");
+            });
+            cancelArea.onUpdate(() => {
+                if (cancelArea.isHovering()) {
+                    hoveringTrue();
+                }
+            });
+        } else {
+            const emptyTitle = k.add([
+                k.text("Empty Slot", { size: 28, font: "pkmn", align: "center", width: slotWidth - 20, color: k.rgb(170, 170, 170) }),
+                k.pos(slotX + 10, slotY + 40)
+            ]);
+            slot.textElements.push({ type: "empty", element: emptyTitle });
+
+            const button = k.add([
+                k.text("Add Pokemon", { size: 28, font: "pkmn", align: "center", width: slotWidth - 20, color: "red" }),
+                k.pos(slotX + 10, slotY + slotHeight / 2 - 30),
+                k.area()
+            ]);
+            button.onClick(() => {
+                startQuestSelection(i);
+            });
+            button.onUpdate(() => {
+                if (button.isHovering()) {
+                    hoveringTrue();
+                }
+            });
         }
 
         questSlots.push(slot);
