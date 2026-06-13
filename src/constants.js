@@ -648,6 +648,7 @@ export const autospinsettings = {
     specificPreferences: {},
 }
 for (const code in pokedex) {
+    console.log(pokedex[code].index_regional);
     autospinsettings.specificPreferences[pokedex[code].index_regional] = 0;
 }
 
