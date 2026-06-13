@@ -217,8 +217,8 @@ export function menu(current) {
     k.add([k.rect(1920, menuHeight - 10), k.pos(0, 0), k.color(20, 20, 20)]);
     k.add([k.rect(1920, 10), k.pos(0, menuHeight - 10), k.color(0, 0, 0)]);
 
-    const scenes = ["packs", "inventory"];
-    const widths = [165, 203];
+    const scenes = ["packs", "inventory", "quests"];
+    const widths = [165, 203, 150];
 
     // totalWidth is the width from the start of the first to the end of the last, with spacing
     let totalWidth = -150;
@@ -481,6 +481,62 @@ export class Box {
             return true;
         }
         return false;
+    }
+}
+
+// quest pokemon - pokemon sent on a quest for money
+export class Quest {
+    constructor(box) {
+        this.box = box;
+        this.pokemon = box.pokemon;
+        this.name = box.name;
+        this.startTime = Date.now(); // timestamp when quest started
+        this.questDuration = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+        this.reward = Math.floor(box.value * 0.5); // 50% of pokemon value as reward
+    }
+    
+    getTimeRemaining() {
+        const elapsed = Date.now() - this.startTime;
+        const remaining = Math.max(0, this.questDuration - elapsed);
+        return remaining;
+    }
+    
+    isComplete() {
+        return this.getTimeRemaining() === 0;
+    }
+    
+    getTimeDisplay() {
+        const ms = this.getTimeRemaining();
+        const totalSeconds = Math.floor(ms / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+}
+
+// quests array - stores active quests in 3 slots
+export let quests = [null, null, null]; // 3 quest slots
+
+export function addQuest(box, slotIndex) {
+    if (slotIndex >= 0 && slotIndex < 3) {
+        quests[slotIndex] = new Quest(box);
+    }
+}
+
+export function completeQuest(slotIndex) {
+    if (slotIndex >= 0 && slotIndex < 3 && quests[slotIndex] != null) {
+        const quest = quests[slotIndex];
+        addMoney(quest.reward);
+        quests[slotIndex] = null;
+    }
+}
+
+export function checkQuestCompletion() {
+    for (let i = 0; i < 3; i++) {
+        if (quests[i] != null && quests[i].isComplete()) {
+            completeQuest(i);
+        }
     }
 }
 
