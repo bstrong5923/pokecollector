@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { quests, menu, menuHeight, screenWidth, screenHeight, checkQuestCompletion, hoveringTrue, startQuestSelection, cancelQuest, go } from "../constants";
+import { quests, menu, menuHeight, screenWidth, screenHeight, checkQuestCompletion, hoveringTrue, startQuestSelection, cancelQuest, claimQuest, go } from "../constants";
 
 export default function questsScene() {
     menu("quests");
@@ -30,7 +30,8 @@ export default function questsScene() {
         const slot = {
             index: i,
             quest: quests[i],
-            textElements: []
+            textElements: [],
+            wasComplete: quests[i] ? quests[i].isComplete() : false
         };
 
         if (quests[i] != null) {
@@ -65,7 +66,7 @@ export default function questsScene() {
 
             // time remaining
             const timeText = k.add([
-                k.text("Time: " + quest.getTimeDisplay(), { size: 30, font: "pkmn", align: "center", width: slotWidth - 20 }),
+                k.text(quest.isComplete() ? "Ready" : "Time: " + quest.getTimeDisplay(), { size: 30, font: "pkmn", align: "center", width: slotWidth - 20 }),
                 k.pos(slotX + 10, statsY)
             ]);
             slot.textElements.push({ type: "time", element: timeText });
@@ -77,24 +78,31 @@ export default function questsScene() {
             ]);
             slot.textElements.push({ type: "reward", element: rewardText });
 
-            const cancelButton = k.add([
+            const actionButton = k.add([
                 k.rect(200, 60),
                 k.pos(slotX + slotWidth / 2 - 100, statsY + 130),
-                k.color(120, 0, 0),
-                k.outline(2, k.rgb(190, 40, 40)),
+                k.color(quest.isComplete() ? 0 : 120, quest.isComplete() ? 120 : 0, 0),
+                k.outline(2, quest.isComplete() ? k.rgb(40, 190, 40) : k.rgb(190, 40, 40)),
                 k.area()
             ]);
-            const cancelText = k.add([
-                k.text("Cancel", { size: 30, font: "pkmn", align: "center", width: 200, color: "white" }),
+            const actionText = k.add([
+                k.text(quest.isComplete() ? "Claim" : "Cancel", { size: 30, font: "pkmn", align: "center", width: 200, color: "white" }),
                 k.pos(slotX + slotWidth / 2 - 100, statsY + 145)
             ]);
-            const cancelArea = cancelButton;
-            cancelArea.onClick(() => {
-                cancelQuest(i);
+            const actionArea = actionButton;
+            slot.actionText = actionText;
+            slot.actionButton = actionButton;
+
+            actionArea.onClick(() => {
+                if (quest.isComplete()) {
+                    claimQuest(i);
+                } else {
+                    cancelQuest(i);
+                }
                 go("quests");
             });
-            cancelArea.onUpdate(() => {
-                if (cancelArea.isHovering()) {
+            actionArea.onUpdate(() => {
+                if (actionArea.isHovering()) {
                     hoveringTrue();
                 }
             });
@@ -130,17 +138,31 @@ export default function questsScene() {
         // update time displays for active quests
         for (const slot of questSlots) {
             if (quests[slot.index] != null && slot.quest != quests[slot.index]) {
-                // quest status changed, reload the scene
+                // quest state changed, reload the scene
                 k.go("questsScene");
                 return;
             }
 
             if (quests[slot.index] != null) {
-                // update time remaining text
+                const quest = quests[slot.index];
+
+                if (quest.isComplete() && !slot.wasComplete) {
+                    // quest just finished, reload scene so button color and layout refresh
+                    k.go("questsScene");
+                    return;
+                }
+
+                slot.wasComplete = quest.isComplete();
+
+                // update time remaining text and button label
                 for (const textEl of slot.textElements) {
                     if (textEl.type === "time") {
-                        textEl.element.text = "Time: " + quests[slot.index].getTimeDisplay();
+                        textEl.element.text = quest.isComplete() ? "Ready" : "Time: " + quest.getTimeDisplay();
                     }
+                }
+
+                if (slot.actionText) {
+                    slot.actionText.text = quest.isComplete() ? "Claim" : "Cancel";
                 }
             }
         }

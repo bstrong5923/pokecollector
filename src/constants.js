@@ -564,12 +564,18 @@ export function cancelQuest(slotIndex) {
     }
 }
 
-export function checkQuestCompletion() {
-    for (let i = 0; i < 3; i++) {
-        if (quests[i] != null && quests[i].isComplete()) {
-            completeQuest(i);
-        }
+export function claimQuest(slotIndex) {
+    if (slotIndex >= 0 && slotIndex < 3 && quests[slotIndex] != null && quests[slotIndex].isComplete()) {
+        const quest = quests[slotIndex];
+        addMoney(quest.reward);
+        inventory.push(quest.box);
+        sortInventory();
+        quests[slotIndex] = null;
     }
+}
+
+export function checkQuestCompletion() {
+    // Quests are now claimed manually; do not auto-complete.
 }
 
 export let questSelectionSlot = null;
