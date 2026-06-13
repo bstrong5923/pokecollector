@@ -282,7 +282,7 @@ await fetch("pokemon_data.json")
         pokemon_data = pokemon_data_raw
 });
 
-for (let x = 0; x <= 5; x++) {
+for (let x = 0; x <= 3; x++) {
     let num = Math.floor(x / 2);
     if (x % 2 == 1) {
         num += "v";
