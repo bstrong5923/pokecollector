@@ -11,6 +11,7 @@ export default function packsScene() {
     const startX = (screenWidth - totalWidth) / 2;
     const startY = menuHeight + 40;
 
+    const ownedTexts = [];
     for (let i = 0; i < Math.min(3, packs.length); i++) {
         const slotX = startX + i * (slotWidth + slotSpacing);
         const slotY = startY;
@@ -45,11 +46,12 @@ export default function packsScene() {
             ]);
         }
 
-        // Owned information under the sprite, centered
-        k.add([
+        // Owned information under the sprite, centered (create element then update it each frame)
+        const ownedText = k.add([
             k.text("Owned: " + (packsowned[i] || 0), { size: 24, font: "pkmn", align: "center", width: slotWidth }),
-            k.pos(slotX, slotY + slotHeight - 46),
+            k.pos(slotX, slotY + slotHeight - 56),
         ]);
+        ownedTexts.push(ownedText);
 
         bg.onClick(() => {
             selectPack(packs[i].index);
@@ -61,4 +63,10 @@ export default function packsScene() {
             }
         });
     }
+
+    k.onUpdate(() => {
+        for (let i = 0; i < ownedTexts.length; i++) {
+            ownedTexts[i].text = "Owned: " + (packsowned[i] || 0);
+        }
+    });
 }

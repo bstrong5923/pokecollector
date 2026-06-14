@@ -633,21 +633,6 @@ export class Pack {
         this.items = items;
         this.rarityWeights = rarityWeights;
     }
-    add(x, y) {
-        this.sprite = k.add([k.sprite("pack"), k.pos(x, y), k.area()]);
-        this.sprite.onClick(() => {
-            if (!hoveringPriority) {
-                whichPack = this.index;
-                go("spinning");
-                currentScene = "spinning";
-            }
-        });
-        this.sprite.onUpdate(() => {
-            if (this.sprite.isHovering()) {
-                hoveringTrue();
-            }
-        });
-    }
     getRandom() {
         let totalWeight = 0;
         for (const weight of this.rarityWeights) {
