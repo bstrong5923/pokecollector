@@ -1,5 +1,6 @@
 import k from "./kaplayCtx";
 import { kScreenWidth, kScreenHeight } from "./kaplayCtx";
+import { onAuthChange, logoutUser } from "./authService.js";
 import { format } from "date-fns";
 
 export const canvas = document.querySelector("canvas");
@@ -195,6 +196,40 @@ export function sortInventory() {
 export const menuHeight = 130;
 export const screenWidth = kScreenWidth;
 export const screenHeight = kScreenHeight - menuHeight;
+
+// in-game logout button (created/destroyed based on auth state)
+let logoutBtnEntity = null;
+
+// create/destroy the logout button when auth state changes
+onAuthChange((user) => {
+    try {
+        if (user) {
+            // create the logout button if it doesn't exist
+            if (!logoutBtnEntity) {
+                logoutBtnEntity = k.add([k.text("Log Out", { size: 18, font: "pkmn", color: "red" }), k.pos(10, 40), k.area(), k.layer("3")]);
+                logoutBtnEntity.onClick(() => {
+                    logoutUser().catch((e) => console.error('logout failed', e));
+                });
+                // small hover handler to prevent pointer from hiding
+                k.onUpdate(() => {
+                    if (logoutBtnEntity && logoutBtnEntity.isHovering()) {
+                        hoveringTrue();
+                    }
+                });
+            } else {
+                logoutBtnEntity.opacity = 1;
+            }
+        } else {
+            // destroy the logout button when logged out
+            if (logoutBtnEntity) {
+                try { logoutBtnEntity.destroy(); } catch (e) {}
+                logoutBtnEntity = null;
+            }
+        }
+    } catch (e) {
+        console.warn('onAuthChange (constants) error', e);
+    }
+});
 
 export let page = 0;
 let currentScene = "packs";
@@ -778,7 +813,6 @@ export const autospinsettings = {
     specificPreferences: {},
 }
 for (const code in pokedex) {
-    console.log(pokedex[code].index_regional);
     autospinsettings.specificPreferences[pokedex[code].index_regional] = 0;
 }
 
