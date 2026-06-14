@@ -382,6 +382,11 @@ for (let x = 0; x <= 3; x++) {
         .then(() => { console.log("pokedex loading " + (x + 1) + "/20"); });
 }
 
+// Export a helper to read pokedex entries by numeric index (e.g. 1 => Bulbasaur)
+export function getPokedexEntry(index) {
+    return pokedex["" + index];
+}
+
 function getPokemon(index) {
     let shinyText = "";
     if (Math.random() * 2048 < 1 && pokedex[index + "s"] != null) {
@@ -620,10 +625,11 @@ export function assignQuestFromInventory(stackedIndex) {
 
 // pack of pokemon
 export class Pack {
-    constructor(index, name, price, items, rarityWeights) {
+    constructor(index, name, price, coverPokemonIndex, items, rarityWeights) {
         this.index = index;
         this.name = name;
         this.price = price;
+        this.coverPokemonIndex = coverPokemonIndex;
         this.items = items;
         this.rarityWeights = rarityWeights;
     }
@@ -706,11 +712,16 @@ export class Pack {
 // list of packs
 const standardRarityWeights = [0.49, 0.32, 0.14, 0.015, 0.004, 0.0007, 0.00005];
 export const packs = [
-    new Pack(0, "Pack 1", 250, [[1, 1], [10, 1], [23, 1], [25, 1], [27, 1], [35, 1], [41, 1], [48, 1], [54, 1], [60, 1], [74, 1], [63, 1], [84, 1], [88, 1], [83, 1], [96, 1], [102, 1], [106, 1], [109, 1], [116, 1], [120, 1], [132, 1], [133, 1], [137, 1], [125, 1], [128, 1], [145, 1], [147, 1], [150, .5], [151, 1]], standardRarityWeights),
-    new Pack(1, "Pack 2", 250, [[4, 1], [13, 1], [21, 1], [25, 1], [29, 1], [37, 1], [43, 1], [50, 1], [56, 1], [66, 1], [77, 1], [72, 1], [86, 1], [92, 1], [111, 1], [98, 1], [104, 1], [107, 1], [114, 1], [123, 1], [129, 1], [132, 1], [133, 1], [113, 1], [131, 1], [142, 1], [146, 1], [147, 1], [150, .5], [151, 1]], standardRarityWeights),
-    new Pack(2, "Pack 3", 250, [[7, 1], [16, 1], [19, 1], [25, 1], [32, 1], [39, 1], [46, 1], [52, 1], [58, 1], [69, 1], [79, 1], [81, 1], [90, 1], [95, 1], [115, 1], [100, 1], [108, 1], [126, 1], [118, 1], [124, 1], [138, 1], [132, 1], [133, 1], [140, 1], [127, 1], [143, 1], [144, 1], [147, 1], [150, .5], [151, 1]], standardRarityWeights),
+    //       i, name,   price, coverPokemonIndex, [[pokemon index, weight], ...],                                                                                                                                                                                                                                                             rarity weights (for the pack as a whole, not individual pokemon)
+    new Pack(0, "Pack 1", 250, 1, [[1, 1], [10, 1], [23, 1], [25, 1], [27, 1], [35, 1], [41, 1], [48, 1], [54, 1], [60, 1], [74, 1], [63, 1], [84, 1], [88, 1], [83, 1], [96, 1], [102, 1], [106, 1], [109, 1], [116, 1], [120, 1], [132, 1], [133, 1], [137, 1], [125, 1], [128, 1], [145, 1], [147, 1], [150, .5], [151, 1]], standardRarityWeights),
+    new Pack(1, "Pack 2", 250, 4, [[4, 1], [13, 1], [21, 1], [25, 1], [29, 1], [37, 1], [43, 1], [50, 1], [56, 1], [66, 1], [77, 1], [72, 1], [86, 1], [92, 1], [111, 1], [98, 1], [104, 1], [107, 1], [114, 1], [123, 1], [129, 1], [132, 1], [133, 1], [113, 1], [131, 1], [142, 1], [146, 1], [147, 1], [150, .5], [151, 1]], standardRarityWeights),
+    new Pack(2, "Pack 3", 250, 7, [[7, 1], [16, 1], [19, 1], [25, 1], [32, 1], [39, 1], [46, 1], [52, 1], [58, 1], [69, 1], [79, 1], [81, 1], [90, 1], [95, 1], [115, 1], [100, 1], [108, 1], [126, 1], [118, 1], [124, 1], [138, 1], [132, 1], [133, 1], [140, 1], [127, 1], [143, 1], [144, 1], [147, 1], [150, .5], [151, 1]], standardRarityWeights),
 ];
 export let whichPack = 0;
+
+export function selectPack(index) {
+    whichPack = index;
+}
 
 // // Fill inventory for testing
 // for (let i = 0; i < 100; i++) {
