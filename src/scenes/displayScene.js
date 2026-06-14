@@ -56,9 +56,11 @@ export default function displayScene() {
         inventory.splice(stackedIndexes[displayIndex][stackedIndexes[displayIndex].length - 1], 1); // gets rid of the newest duplicate
         stackedIndexes[displayIndex].splice(stackedIndexes[displayIndex].length - 1);
         if (stackedIndexes[displayIndex].length == 0) {
+            try { if (window.saveNow) window.saveNow(); } catch (e) {}
             go("inventory");
         }
         else {
+            try { if (window.saveNow) window.saveNow(); } catch (e) {}
             go("display");
         }
 

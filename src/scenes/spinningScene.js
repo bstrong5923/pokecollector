@@ -71,12 +71,14 @@ export default function spinningScene() { // scene of wheel spinnin'
         if (speed == 0 && money >= buymult * packs[whichPack].price) {
             packsowned[whichPack] += buymult;
             subtractMoney(buymult * packs[whichPack].price);
+            try { if (window.saveNow) window.saveNow(); } catch (e) {}
         }
     });
     spinbutton.onClick(() => { // when spinbutton clicked, speed it set between 180 and 200
         if (speed == 0 && packsowned[whichPack] > 0) {
             turnMenuOff();
             packsowned[whichPack]--;
+            try { if (window.saveNow) window.saveNow(); } catch (e) {}
             speed = Math.floor(Math.random() * 21 + 180);
             for (let i = 0; i < wheel.length; i++) {
                 const box = wheel[i];
@@ -119,9 +121,11 @@ export default function spinningScene() { // scene of wheel spinnin'
                 if (i == 2) { // which box did it land on?
                     if (autospinbutton[1].frame == 1 && !(box.pokemon.shiny_level != 0 && autospinsettings.alwaysKeepShinies) && (autospinsettings.specificPreferences[box.pokemon.index_regional] == 2 || (box.value < autospinsettings.sellUnder && autospinsettings.specificPreferences[box.pokemon.index_regional] == 0))) {
                         addMoney(box.value); // autosell it if autospin is on and its supposed to autosell
+                        try { if (window.saveNow) window.saveNow(); } catch (e) {}
                     }
                     else {
                         inventory.push(box);
+                        try { if (window.saveNow) window.saveNow(); } catch (e) {}
                     }
                     
                 }
@@ -134,6 +138,7 @@ export default function spinningScene() { // scene of wheel spinnin'
             if (autospinbutton[1].frame == 1 && packsowned[whichPack] > 0) {
                 
                     packsowned[whichPack]--;
+                    try { if (window.saveNow) window.saveNow(); } catch (e) {}
                     speed = Math.floor(Math.random() * 21 + 180);
                     for (let i = 0; i < wheel.length; i++) {
                         const box = wheel[i];

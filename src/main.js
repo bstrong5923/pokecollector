@@ -7,7 +7,7 @@ import testScene from "./scenes/testScene";
 import autospinsettingsScene from "./scenes/autospinsettingsScene";
 import questsScene from "./scenes/questsScene";
 import questSelectionScene from "./scenes/questSelectionScene";
-import { go, inventory, sortInventory, addMoney, subtractMoney, money, packsowned, quests, Box, Quest } from "./constants";
+import { go, inventory, sortInventory, addMoney, subtractMoney, money, packsowned, quests, Box, Quest, autospinsettings, sortStyle, setSortStyle, stacking, setStacking } from "./constants";
 import { initLoginUI } from "./LoginUI.js";
 import { onAuthChange } from "./authService.js";
 import { savePlayerData, loadPlayerData } from "./playerDataService.js";
@@ -104,6 +104,9 @@ k.onLoad(() => { // once everything is loaded
                 packsowned: packsowned,
                 inventory: inventory.map(item => ({ pokemon: item.pokemon, value: item.value, dateCreated: item.dateCreated, name: item.name })),
                 quests: quests.map(q => q ? { box: { pokemon: q.box.pokemon, name: q.box.name, value: q.box.value, dateCreated: q.box.dateCreated }, startTime: q.startTime } : null),
+                autospinsettings: autospinsettings,
+                sortStyle: sortStyle,
+                stacking: stacking,
             };
         }
 
@@ -115,6 +118,8 @@ k.onLoad(() => { // once everything is loaded
                 console.error('Error saving player data', err);
             }
         }
+        // expose saveNow globally so scenes and constants can trigger an immediate save
+        try { window.saveNow = saveNow } catch (e) { /* non-browser or restricted env */ }
 
         onAuthChange(async (user) => {
             if (user) {
@@ -172,6 +177,30 @@ k.onLoad(() => { // once everything is loaded
                                     }
                                 }
                             }
+                        }
+
+                        // restore autospinsettings
+                        if (data.autospinsettings && typeof data.autospinsettings === 'object') {
+                            autospinsettings.sellUnder = Number(data.autospinsettings.sellUnder) || autospinsettings.sellUnder;
+                            autospinsettings.alwaysKeepShinies = Boolean(data.autospinsettings.alwaysKeepShinies);
+                            if (data.autospinsettings.specificPreferences && typeof data.autospinsettings.specificPreferences === 'object') {
+                                for (const key in autospinsettings.specificPreferences) {
+                                    if (data.autospinsettings.specificPreferences.hasOwnProperty(key)) {
+                                        const parsed = Number(data.autospinsettings.specificPreferences[key]);
+                                        if (!Number.isNaN(parsed)) {
+                                            autospinsettings.specificPreferences[key] = parsed;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // restore inventory sorting prefs
+                        if (typeof data.sortStyle === 'string') {
+                            setSortStyle(data.sortStyle);
+                        }
+                        if (data.stacking === 0 || data.stacking === 1) {
+                            setStacking(data.stacking);
                         }
                     }
                 } catch (err) {

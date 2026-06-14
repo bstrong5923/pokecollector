@@ -58,6 +58,9 @@ export function toggleStacking() {
         stacking = 0;
     }
 }
+export function setStacking(value) {
+    stacking = value;
+}
 export let stackedIndexes = [];
 export let inventoryStacked = [];
 
@@ -544,6 +547,7 @@ export let quests = [null, null, null]; // 3 quest slots
 export function addQuest(box, slotIndex) {
     if (slotIndex >= 0 && slotIndex < 3) {
         quests[slotIndex] = new Quest(box);
+        try { if (window.saveNow) window.saveNow(); } catch (e) {}
     }
 }
 
@@ -552,6 +556,7 @@ export function completeQuest(slotIndex) {
         const quest = quests[slotIndex];
         addMoney(quest.reward);
         quests[slotIndex] = null;
+        try { if (window.saveNow) window.saveNow(); } catch (e) {}
     }
 }
 
@@ -561,6 +566,7 @@ export function cancelQuest(slotIndex) {
         inventory.push(quest.box);
         sortInventory();
         quests[slotIndex] = null;
+        try { if (window.saveNow) window.saveNow(); } catch (e) {}
     }
 }
 
@@ -571,6 +577,7 @@ export function claimQuest(slotIndex) {
         inventory.push(quest.box);
         sortInventory();
         quests[slotIndex] = null;
+        try { if (window.saveNow) window.saveNow(); } catch (e) {}
     }
 }
 
@@ -606,6 +613,7 @@ export function assignQuestFromInventory(stackedIndex) {
     inventory.splice(inventoryIndex, 1);
     questSelectionSlot = null;
     sortInventory();
+    try { if (window.saveNow) window.saveNow(); } catch (e) {}
     go("quests");
     return true;
 }
@@ -821,6 +829,7 @@ export function showNumberInput(settingKey, x, y) { // Chat gpt's work
 
             // Save value to settings object or localStorage
             autospinsettings[settingKey] = value;
+            try { if (window.saveNow) window.saveNow(); } catch (e) {}
             console.log(`Set ${settingKey} to ${value}`);
         }
 

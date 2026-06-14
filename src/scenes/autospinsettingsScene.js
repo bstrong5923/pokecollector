@@ -21,6 +21,7 @@ class BoxWithChance {
             if (autospinsettings.specificPreferences[this.preferencekey] >= preferenceTexts.length) {
                 autospinsettings.specificPreferences[this.preferencekey] = 0;
             }
+            try { if (window.saveNow) window.saveNow(); } catch (e) {}
             go("autospinsettings");
         });
     }
@@ -62,6 +63,7 @@ export default function autospinsettingsScene() {
             else {
                 autospinsettings.alwaysKeepShinies = true;
             }
+            try { if (window.saveNow) window.saveNow(); } catch (e) {}
             go("autospinsettings");
         });
         comp.onUpdate(() => {
