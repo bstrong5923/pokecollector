@@ -7,7 +7,10 @@ import testScene from "./scenes/testScene";
 import autospinsettingsScene from "./scenes/autospinsettingsScene";
 import questsScene from "./scenes/questsScene";
 import questSelectionScene from "./scenes/questSelectionScene";
-import { go } from "./constants";
+import { go, inventory, sortInventory, addMoney, subtractMoney, money, packsowned, quests, Box, Quest } from "./constants";
+import { initLoginUI } from "./LoginUI.js";
+import { onAuthChange } from "./authService.js";
+import { savePlayerData, loadPlayerData } from "./playerDataService.js";
 
 // set up layers
 k.setLayers(["5", "4", "3", "2", "1", "0"], "4"); 
@@ -86,5 +89,116 @@ k.loadFont("pkmn", "fonts/pkmnbydrizzee.ttf");
 
 // v start on this scene v
 k.onLoad(() => { // once everything is loaded
-    go("packs");
+        // mount login UI
+        try { initLoginUI() } catch (e) { console.warn('initLoginUI failed:', e) }
+
+        go("packs");
+
+        // auth handling: load player data on login, reset on logout
+        let currentUser = null;
+        let autosaveInterval = null;
+
+        function serializeState() {
+            return {
+                money: money,
+                packsowned: packsowned,
+                inventory: inventory.map(item => ({ pokemon: item.pokemon, value: item.value, dateCreated: item.dateCreated, name: item.name })),
+                quests: quests.map(q => q ? { box: { pokemon: q.box.pokemon, name: q.box.name, value: q.box.value, dateCreated: q.box.dateCreated }, startTime: q.startTime } : null),
+            };
+        }
+
+        async function saveNow() {
+            if (!currentUser) return;
+            try {
+                await savePlayerData(currentUser.uid, serializeState());
+            } catch (err) {
+                console.error('Error saving player data', err);
+            }
+        }
+
+        onAuthChange(async (user) => {
+            if (user) {
+                currentUser = user;
+                try {
+                    const data = await loadPlayerData(user.uid);
+                    if (data) {
+                        // restore money
+                        if (typeof data.money === 'number') {
+                            const delta = data.money - money;
+                            if (delta > 0) addMoney(delta);
+                            else if (delta < 0) subtractMoney(-delta);
+                        }
+
+                        // restore packsowned
+                        if (Array.isArray(data.packsowned)) {
+                            packsowned.length = 0;
+                            for (const p of data.packsowned) packsowned.push(p);
+                        }
+
+                        // restore inventory (reconstruct Box instances when possible)
+                        if (Array.isArray(data.inventory)) {
+                            inventory.length = 0;
+                            for (const it of data.inventory) {
+                                try {
+                                    const box = new Box(it.pokemon);
+                                    if (it.value) box.value = it.value;
+                                    if (it.dateCreated) box.dateCreated = it.dateCreated;
+                                    if (it.name) box.name = it.name;
+                                    inventory.push(box);
+                                } catch (e) {
+                                    console.warn('Failed to reconstruct inventory item', e);
+                                }
+                            }
+                            sortInventory();
+                        }
+
+                        // restore quests
+                        if (Array.isArray(data.quests)) {
+                            for (let i = 0; i < quests.length; i++) {
+                                const q = data.quests[i];
+                                if (q == null) {
+                                    quests[i] = null;
+                                } else {
+                                    try {
+                                        const b = new Box(q.box.pokemon || q.box);
+                                        if (q.box.value) b.value = q.box.value;
+                                        if (q.box.dateCreated) b.dateCreated = q.box.dateCreated;
+                                        const quest = new Quest(b);
+                                        if (q.startTime) quest.startTime = q.startTime;
+                                        quests[i] = quest;
+                                    } catch (e) {
+                                        console.warn('Failed to reconstruct quest', e);
+                                        quests[i] = null;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error loading player data', err);
+                }
+
+                // start autosave
+                if (autosaveInterval) clearInterval(autosaveInterval);
+                autosaveInterval = setInterval(saveNow, 15000);
+            } else {
+                // user logged out — reset to defaults
+                currentUser = null;
+                if (autosaveInterval) { clearInterval(autosaveInterval); autosaveInterval = null }
+
+                // reset money to default (10000)
+                try {
+                    const defaultMoney = 10000;
+                    const delta = defaultMoney - money;
+                    if (delta > 0) addMoney(delta);
+                    else if (delta < 0) subtractMoney(-delta);
+                } catch (e) { console.warn(e) }
+
+                // reset packsowned, inventory, quests
+                packsowned.length = 0; packsowned.push(0,0,0);
+                inventory.length = 0;
+                quests.length = 0; quests.push(null, null, null);
+                sortInventory();
+            }
+        });
 })
