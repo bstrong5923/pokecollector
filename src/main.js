@@ -7,7 +7,7 @@ import testScene from "./scenes/testScene";
 import autospinsettingsScene from "./scenes/autospinsettingsScene";
 import questsScene from "./scenes/questsScene";
 import questSelectionScene from "./scenes/questSelectionScene";
-import { go, addToInventory, sortInventory, addMoney, subtractMoney, money, packsowned, quests, Box, Quest, autospinsettings, sortStyle, setSortStyle, stacking, setStacking } from "./constants";
+import { go, inventory, addToInventory, sortInventory, addMoney, subtractMoney, money, packsowned, quests, Box, Quest, autospinsettings, sortStyle, setSortStyle, stacking, setStacking } from "./constants";
 import { initLoginUI } from "./LoginUI.js";
 import { onAuthChange } from "./authService.js";
 import { savePlayerData, loadPlayerData } from "./playerDataService.js";
