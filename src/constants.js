@@ -44,6 +44,15 @@ export function addMoney(amount) {
 }
 
 export let inventory = [];
+export const INVENTORY_CAP = 100;
+export function addToInventory(box, force = false) {
+    if (!force && inventory.length >= INVENTORY_CAP) {
+        try { alert(`Inventory full (${INVENTORY_CAP}).`); } catch (e) { console.warn(`Inventory full (${INVENTORY_CAP}).`); }
+        return false;
+    }
+    inventory.push(box);
+    return true;
+}
 export let sortStyle = "Time ^";
 export function setSortStyle(style) {
     sortStyle = style;
@@ -599,7 +608,7 @@ export function completeQuest(slotIndex) {
 export function cancelQuest(slotIndex) {
     if (slotIndex >= 0 && slotIndex < 3 && quests[slotIndex] != null) {
         const quest = quests[slotIndex];
-        inventory.push(quest.box);
+        if (!addToInventory(quest.box)) return;
         sortInventory();
         quests[slotIndex] = null;
         try { if (window.saveNow) window.saveNow(); } catch (e) {}
@@ -609,8 +618,8 @@ export function cancelQuest(slotIndex) {
 export function claimQuest(slotIndex) {
     if (slotIndex >= 0 && slotIndex < 3 && quests[slotIndex] != null && quests[slotIndex].isComplete()) {
         const quest = quests[slotIndex];
+        if (!addToInventory(quest.box)) return;
         addMoney(quest.reward);
-        inventory.push(quest.box);
         sortInventory();
         quests[slotIndex] = null;
         try { if (window.saveNow) window.saveNow(); } catch (e) {}

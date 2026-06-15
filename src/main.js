@@ -7,7 +7,7 @@ import testScene from "./scenes/testScene";
 import autospinsettingsScene from "./scenes/autospinsettingsScene";
 import questsScene from "./scenes/questsScene";
 import questSelectionScene from "./scenes/questSelectionScene";
-import { go, inventory, sortInventory, addMoney, subtractMoney, money, packsowned, quests, Box, Quest, autospinsettings, sortStyle, setSortStyle, stacking, setStacking } from "./constants";
+import { go, addToInventory, sortInventory, addMoney, subtractMoney, money, packsowned, quests, Box, Quest, autospinsettings, sortStyle, setSortStyle, stacking, setStacking } from "./constants";
 import { initLoginUI } from "./LoginUI.js";
 import { onAuthChange } from "./authService.js";
 import { savePlayerData, loadPlayerData } from "./playerDataService.js";
@@ -149,7 +149,7 @@ k.onLoad(() => { // once everything is loaded
                                     if (it.value) box.value = it.value;
                                     if (it.dateCreated) box.dateCreated = it.dateCreated;
                                     if (it.name) box.name = it.name;
-                                    inventory.push(box);
+                                    addToInventory(box, true);
                                 } catch (e) {
                                     console.warn('Failed to reconstruct inventory item', e);
                                 }

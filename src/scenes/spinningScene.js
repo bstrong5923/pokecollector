@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { inventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney, canvas, shortenNumber, go, autospinsettings, addMoney, hoveringTrue } from "../constants";
+import { addToInventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney, canvas, shortenNumber, go, autospinsettings, addMoney, hoveringTrue } from "../constants";
 
 export default function spinningScene() { // scene of wheel spinnin'
     menu("spinning");
@@ -124,8 +124,11 @@ export default function spinningScene() { // scene of wheel spinnin'
                         try { if (window.saveNow) window.saveNow(); } catch (e) {}
                     }
                     else {
-                        inventory.push(box);
-                        try { if (window.saveNow) window.saveNow(); } catch (e) {}
+                        if (!addToInventory(box)) {
+                            // inventory full; notify player
+                        } else {
+                            try { if (window.saveNow) window.saveNow(); } catch (e) {}
+                        }
                     }
                     
                 }

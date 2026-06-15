@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { inventory, displayItems, menu, menuHeight, screenWidth, screenHeight, page, sortStyle, go, canvas, sortInventory, setSortStyle, toggleStacking, stacking, stackedIndexes, inventoryStacked, hoveringTrue } from "../constants";
+import { inventory, displayItems, menu, menuHeight, screenWidth, screenHeight, page, sortStyle, go, canvas, sortInventory, setSortStyle, toggleStacking, stacking, stackedIndexes, inventoryStacked, hoveringTrue, INVENTORY_CAP } from "../constants";
 
 export default function inventoryScene() { // scene showin inventory
     menu("inventory");
@@ -13,8 +13,8 @@ export default function inventoryScene() { // scene showin inventory
     for (const item of inventory) {
         totalvalue += item.value;
     }
-    k.add([k.text("Total Value: *" + totalvalue, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 + 450 + 24 * Math.floor(Math.log10(inventory.length + 1)), menuHeight + 24)]);
-    k.add([k.text("Owned: " + inventory.length, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 + 150, menuHeight + 24)]);
+    k.add([k.text("Total Value: *" + totalvalue, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 + 468 + 24 * Math.floor(Math.log10(inventory.length + 1)), menuHeight + 24)]);
+    k.add([k.text("Owned: " + inventory.length + "/" + INVENTORY_CAP, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 + 146, menuHeight + 24)]);
 
     const sortButton = k.add([k.text("Sort by: " + sortStyle, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 10 * sortStyle.length - 400, menuHeight + 24), k.area()]);
     const sortStyles = ["Time ^", "Time v", "Value ^", "Value v", "Index ^", "Index v"];
