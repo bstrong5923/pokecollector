@@ -546,8 +546,14 @@ export class Quest {
             16 * 60 * 60 * 1000,  // rarity 5: 16 hours
             72 * 60 * 60 * 1000,  // rarity 6: 72 hours
         ];
+        const shinyDurationMults = [
+            1,    // non-shiny
+            60,
+            210,
+            900,
+        ];
 
-        this.questDuration = rarityDurations[this.pokemon.rarity] ?? 2 * 60 * 60 * 1000;
+        this.questDuration = rarityDurations[this.pokemon.rarity] * shinyDurationMults[this.pokemon.shiny_level] ?? 24 * 60 * 60 * 1000;
         this.reward = Math.floor(box.value * 0.5); // 50% of pokemon value as reward
     }
     
