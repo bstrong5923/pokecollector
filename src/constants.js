@@ -701,7 +701,13 @@ export class Pack {
                     totalOfWeight += item[1];
                 }
             }
-            rarityChances.push(Math.round((this.rarityWeights[w] * 1000000 / total) / totalOfWeight) / 10000); // chance for each item of this rarity (to 4 decimal places)
+            let chance = (this.rarityWeights[w] * 100 / total) / totalOfWeight;
+            let decimals = 0;
+            while (chance < Math.pow(10, -decimals + 1) && decimals < 6) {
+                decimals++;
+            }
+            let roundedChance = Math.round(chance * Math.pow(10, decimals)) / Math.pow(10, decimals);
+            rarityChances.push(roundedChance); // chance for each item of this rarity
         }
 
         let boxes = [];
