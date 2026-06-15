@@ -7,17 +7,46 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  updateProfile,
+  sendEmailVerification,
 } from 'firebase/auth'
+import { savePlayerData } from './playerDataService.js'
 
 /**
  * Create a new user account with email and password.
  * Returns a Promise resolving to the user credential.
  */
-export async function registerUser(email, password) {
+export async function registerUser(email, password, username) {
   try {
-    return await createUserWithEmailAndPassword(auth, email, password)
+    const cred = await createUserWithEmailAndPassword(auth, email, password)
+    try {
+      if (username && cred.user) {
+        await updateProfile(cred.user, { displayName: username })
+        // store username in player document as well
+        try { await savePlayerData(cred.user.uid, { username }) } catch (e) { console.warn('savePlayerData username failed', e) }
+      }
+    } catch (e) {
+      console.warn('updateProfile failed', e)
+    }
+    // send verification email if possible
+    try {
+      if (cred.user) await sendEmailVerification(cred.user)
+    } catch (e) {
+      console.warn('sendEmailVerification failed', e)
+    }
+    return cred
   } catch (err) {
     console.error('registerUser error', err)
+    throw err
+  }
+}
+
+export async function sendVerificationEmail(user) {
+  try {
+    if (!user) throw new Error('no user provided')
+    return await sendEmailVerification(user)
+  } catch (err) {
+    console.error('sendVerificationEmail error', err)
     throw err
   }
 }
