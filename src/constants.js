@@ -197,38 +197,10 @@ export const menuHeight = 130;
 export const screenWidth = kScreenWidth;
 export const screenHeight = kScreenHeight - menuHeight;
 
-// in-game logout button (created/destroyed based on auth state)
-let logoutBtnEntity = null;
-
-// create/destroy the logout button when auth state changes
+// track current auth user (updated by auth state changes)
+export let currentAuthUser = null;
 onAuthChange((user) => {
-    try {
-        if (user) {
-            // create the logout button if it doesn't exist
-            if (!logoutBtnEntity) {
-                logoutBtnEntity = k.add([k.text("Log Out", { size: 18, font: "pkmn", color: "red" }), k.pos(10, 40), k.area(), k.layer("3")]);
-                logoutBtnEntity.onClick(() => {
-                    logoutUser().catch((e) => console.error('logout failed', e));
-                });
-                // small hover handler to prevent pointer from hiding
-                k.onUpdate(() => {
-                    if (logoutBtnEntity && logoutBtnEntity.isHovering()) {
-                        hoveringTrue();
-                    }
-                });
-            } else {
-                logoutBtnEntity.opacity = 1;
-            }
-        } else {
-            // destroy the logout button when logged out
-            if (logoutBtnEntity) {
-                try { logoutBtnEntity.destroy(); } catch (e) {}
-                logoutBtnEntity = null;
-            }
-        }
-    } catch (e) {
-        console.warn('onAuthChange (constants) error', e);
-    }
+    currentAuthUser = user;
 });
 
 export let page = 0;
@@ -271,7 +243,7 @@ export function menu(current) {
     const fontSize = 30;
     for (let i = 0; i < scenes.length; i++) {
         const button = k.add([ // create the button
-            k.text(scenes[i], {size: fontSize, width: widths[i], font: "pkmn", color: "red"}),  // text is the scene, size and width determine hitbox
+            k.text(scenes[i], {size: fontSize, width: widths[i], font: "pkmn" }),  // text is the scene, size and width determine hitbox
             k.pos(nextX, (menuHeight - 10) / 2 - fontSize / 2),
             k.area() // hitbox
         ]);
@@ -286,18 +258,36 @@ export function menu(current) {
         buttons.push(button); // add it to buttons
     }
 
-    // money display in top left
-    const moneydisplay = k.add([k.text("*" + shortenNumber(money), { size: 24, font: "pkmn"}), k.pos(10, 10)]);
+    // profile display in top left: username, money, logout
+    const usernameDisplay = k.add([k.text((currentAuthUser && (currentAuthUser.displayName || currentAuthUser.email)) || "", { size: 28, font: "pkmn", color: "white" }), k.pos(10, 8)]);
+    const moneydisplay = k.add([k.text("*" + shortenNumber(money), { size: 24, font: "pkmn", color: "white" }), k.pos(10, 44)]);
+    let logoutBtn = null;
 
     let count = 0;
     k.onUpdate(() => {
-        moneydisplay.text = "*" + shortenNumber(money); // update money display
+        // update displays
+        usernameDisplay.text = (currentAuthUser && (currentAuthUser.displayName || currentAuthUser.email)) || "";
+        moneydisplay.text = "*" + shortenNumber(money);
 
+        // create/destroy logout button based on auth state
+        if (currentAuthUser && !logoutBtn) {
+            logoutBtn = k.add([k.text("Log Out", { size: 20, font: "pkmn" }), k.pos(10, 76), k.area(), k.layer("3"), k.color(255, 20, 20)]);
+            logoutBtn.onClick(() => {
+                logoutUser().catch((e) => console.error('logout failed', e));
+            });
+        }
+        else if (!currentAuthUser && logoutBtn) {
+            try { logoutBtn.destroy(); } catch (e) {}
+            logoutBtn = null;
+        }
+
+        // hover handling
         for (const button of buttons) {
             if (button.isHovering()) {
                 hoveringTrue(); 
             }
         }
+        if (logoutBtn && logoutBtn.isHovering()) hoveringTrue();
 
         if (hovering) {
             canvas.style.cursor = "pointer";
