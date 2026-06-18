@@ -319,6 +319,7 @@ await fetch("pokemon_data.json")
         pokemon_data = pokemon_data_raw
 });
 
+// fill pokedex with pokemon data
 for (let x = 0; x <= 3; x++) {
     let num = Math.floor(x / 2);
     if (x % 2 == 1) {
@@ -327,7 +328,7 @@ for (let x = 0; x <= 3; x++) {
 
     await fetch("images/pokemon/pokemon_icons_" + num + ".json") // chatgpt's work
         .then((response2) => response2.json())  // chatgpt's work
-        .then((data2) => { // fill pokedex with pokemon data
+        .then((data2) => { 
             const frames = data2.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
 
             for (const sprite of frames) { // for each pokemon sprite
@@ -459,6 +460,9 @@ export class Box {
         this.y = 0;
         this.sprite = [];
         this.pokemon = pokemon;
+        this.prefixes = [];
+        this.prefixesData = [];
+        this.prefixMult = 1;
         this.name = pokemon.name;
         this.scale = 1;
         this.opacity = 1;
@@ -468,18 +472,55 @@ export class Box {
         this.value = this.basevalue * shinyMults[this.pokemon.shiny_level];
         this.onClickAction = null;
     }
+
+    setPrefixes(prefixArray) {
+        const list = Array.isArray(prefixArray) ? prefixArray.slice() : prefixArray == null ? [] : [prefixArray];
+        this.prefixes = list;
+        this.prefixesData = this.prefixes.map(prefix => {
+            const data = prefixes[prefix];
+            if (!data) return null;
+            return {
+                ...data,
+                frametime: data.frametime || 0,
+                frameCount: data.frameCount || 1,
+            };
+        }).filter(Boolean);
+        const prefixText = this.prefixes.join("");
+        this.name = prefixText + this.pokemon.name;
+        this.prefixMult = this.prefixesData.reduce((acc, data) => acc * data.mult, 1);
+        this.value = this.basevalue * shinyMults[this.pokemon.shiny_level] * this.prefixMult;
+    }
     setOnClickAction(callback) {
         this.onClickAction = callback;
     }
     add(x, y) {
         this.sprite = [
             k.add([k.sprite("boxes", { frame: this.rarity }), k.pos(x, y), k.opacity(this.opacity), k.area(), k.scale(this.scale)]),
-            k.add([k.text("*" + shortenNumber(this.value), { size: 14 * this.scale, font: "pkmn" }), k.pos(x + 10 * this.scale, y + 128 * this.scale), k.opacity(this.opacity), k.layer("3")]),
-            k.add([k.sprite(this.pokemon.codename), k.pos(x + (200 - this.pokemon.width)  * this.scale / 2, y + (150 - this.pokemon.height)  * this.scale / 2), k.scale(this.pokemon.scale * this.scale), k.opacity(this.opacity)]),
         ];
+        this.sprite.push(
+            k.add([k.sprite(this.pokemon.codename), k.pos(x + (200 - this.pokemon.width)  * this.scale / 2, y + (150 - this.pokemon.height)  * this.scale / 2), k.scale(this.pokemon.scale * this.scale), k.opacity(this.opacity)]),
+        );
         if (this.pokemon.shiny_level > 0) {
             this.sprite.push(k.add([k.sprite("shinies", { frame: this.pokemon.shiny_level - 1 }), k.pos(x + 160 * this.scale, y + 9 * this.scale), k.opacity(this.opacity), k.scale(this.scale * 2)]));
         }
+        if (this.prefixesData.length > 0) {
+            for (const prefixData of this.prefixesData) {
+                const prefixSprite = k.add([k.sprite("prefix-" + prefixData.sprite), k.pos(x, y), k.opacity(this.opacity), k.scale(this.scale), k.layer("4")]);
+                if (prefixData.frametime > 0 && prefixData.frameCount > 1) {
+                    prefixSprite.frame = 0;
+                    prefixSprite.__prefixFrameTime = Date.now() + prefixData.frametime * 1000;
+                    prefixSprite.onUpdate(() => {
+                        const now = Date.now();
+                        if (now >= prefixSprite.__prefixFrameTime) {
+                            prefixSprite.frame = (prefixSprite.frame + 1) % prefixData.frameCount;
+                            prefixSprite.__prefixFrameTime = now + prefixData.frametime * 1000;
+                        }
+                    });
+                }
+                this.sprite.push(prefixSprite);
+            }
+        }
+        this.sprite.push(k.add([k.text("*" + shortenNumber(this.value), { size: 14 * this.scale, font: "pkmn" }), k.pos(x + 10 * this.scale, y + 128 * this.scale), k.opacity(this.opacity), k.layer("3")]));
         this.x = x;
         this.y = y;
         this.sprite[0].onUpdate(() => {
@@ -538,6 +579,48 @@ export class Box {
     }
 }
 
+export const prefixes = {
+    "Gooey " : { mult: 49, sprite: "gooey" },
+    "Cloudy " : { mult: 22, sprite: "cloudy" },
+    "Censored " : { mult: 13, sprite: "censored" },
+    "Decorated " : { mult: 33, sprite: "decorated" },
+    "Spectral " : { mult: 73, sprite: "spectral", frametime: 0.08, frameCount: 35 },
+}
+
+const initialPrefixChance = 0.025;
+const repeatPrefixChance = 0.05;
+export function getRandomPrefix() {
+    const prefixKeys = Object.keys(prefixes);
+    return prefixKeys[Math.floor(Math.random() * prefixKeys.length)];
+}
+
+export function createBoxWithPrefix(pokemon) {
+    const box = new Box(pokemon);
+    const chosenPrefixes = [];
+    if (Math.random() < initialPrefixChance) {
+        chosenPrefixes.push(getRandomPrefix());
+        while (Math.random() < repeatPrefixChance) {
+            let p = getRandomPrefix();
+            let again = true;
+            while (again) { // ensure no duplicate prefixes
+                again = false;
+                for (const cp of chosenPrefixes) {
+                    if (cp == p) {
+                        again = true;
+                        p = getRandomPrefix();
+                        break;
+                    }
+                }
+            }
+            chosenPrefixes.push(p);
+        }
+    }
+    if (chosenPrefixes.length > 0) {
+        box.setPrefixes(chosenPrefixes);
+    }
+    return box;
+}
+
 // quest pokemon - pokemon sent on a quest for money
 export class Quest {
     constructor(box) {
@@ -558,11 +641,16 @@ export class Quest {
         const shinyDurationMults = [
             1,    // non-shiny
             60,
-            210,
-            900,
+            180,
+            600,
         ];
+        const prefixDurationMults = [1, 1.5, 2.5, 5, 10, 30, 90, 300, 1000, 1500, 6000]
+        let i = 0;
+        while (this.box.prefixMult > prefixDurationMults[i] * 3) {
+            i++;
+        }
 
-        this.questDuration = rarityDurations[this.pokemon.rarity] * shinyDurationMults[this.pokemon.shiny_level] ?? 24 * 60 * 60 * 1000;
+        this.questDuration = rarityDurations[this.pokemon.rarity] * shinyDurationMults[this.pokemon.shiny_level] ?? 24 * 60 * 60 * 1000 * prefixDurationMults[i]; // base duration based on rarity and shiny level
         this.reward = Math.floor(box.value * 0.5); // 50% of pokemon value as reward
     }
     
@@ -697,7 +785,7 @@ export class Pack {
             for (const item of itemsOfRarity) {
                 cumulativeOfRarity += item[1];
                 if (randomOfRarity < cumulativeOfRarity) {
-                    return new Box(getPokemon(item[0]));
+                    return createBoxWithPrefix(getPokemon(item[0]));
                 }
             }
           }
@@ -763,7 +851,11 @@ export function selectPack(index) {
 // used in inventoryScene and packsScene and stuff to format items into rows and cols
 export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height, spacingHorizontal, spacingVertical, pageArrowName="pagearrow", pageArrowScale=1, leftX=xmin, leftY=ymin, rightX=xmin, rightY=ymin) {
     const itemsPerRow = Math.floor((xmax - xmin + spacingHorizontal) / (width + spacingHorizontal));
-    const rowsPerPage = Math.floor((ymax - ymin + spacingVertical) / (height + spacingVertical));
+    const maxRowsPerPage = Math.floor((ymax - ymin + spacingVertical) / (height + spacingVertical));
+    const rowsPerPage = Math.ceil(items.length / itemsPerRow);
+    if (rowsPerPage > maxRowsPerPage) {
+        rowsPerPage = maxRowsPerPage;
+    }
     const itemsPerPage = itemsPerRow * rowsPerPage;
 
     const xindent = (xmax - xmin + spacingHorizontal - itemsPerRow * (width + spacingHorizontal)) / 2;
@@ -821,6 +913,7 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
 export const autospinsettings = {
     sellUnder: 0,
     alwaysKeepShinies: false,
+    alwaysKeepPrefixes: false,
     specificPreferences: {},
 }
 for (const code in pokedex) {

@@ -7,7 +7,7 @@ import testScene from "./scenes/testScene";
 import autospinsettingsScene from "./scenes/autospinsettingsScene";
 import questsScene from "./scenes/questsScene";
 import questSelectionScene from "./scenes/questSelectionScene";
-import { go, inventory, addToInventory, sortInventory, addMoney, subtractMoney, money, packsowned, quests, Box, Quest, autospinsettings, sortStyle, setSortStyle, stacking, setStacking } from "./constants";
+import { go, inventory, addToInventory, sortInventory, addMoney, subtractMoney, money, packsowned, quests, Box, Quest, autospinsettings, sortStyle, setSortStyle, stacking, setStacking, prefixes } from "./constants";
 import { initLoginUI } from "./LoginUI.js";
 import { onAuthChange } from "./authService.js";
 import { savePlayerData, loadPlayerData } from "./playerDataService.js";
@@ -20,6 +20,21 @@ k.loadSprite("boxes", "images/allboxes.png", {
     sliceX: 4,
     sliceY: 2,
 });
+for (const prefixKey in prefixes) {
+    if (!Object.prototype.hasOwnProperty.call(prefixes, prefixKey)) continue;
+    const prefix = prefixes[prefixKey];
+    const assetName = "prefix-" + prefix.sprite;
+    const frameCount = prefix.frameCount || 1;
+    if (frameCount > 1) {
+        const frames = [];
+        for (let i = 0; i < frameCount; i++) {
+            frames.push(`images/prefixes/${prefix.sprite}/pixil-frame-${i}.png`);
+        }
+        k.loadSprite(assetName, frames, { singular: false });
+    } else {
+        k.loadSprite(assetName, "images/prefixes/" + prefix.sprite + ".png");
+    }
+}
 k.loadSprite("wheelborder", "images/wheelborder.png")
 k.loadSprite("bgcolor", "images/bgcolor.png");
 k.loadSprite("spinbutton", "images/buttons/spinbutton.png");
@@ -102,8 +117,8 @@ k.onLoad(() => { // once everything is loaded
             return {
                 money: money,
                 packsowned: packsowned,
-                inventory: inventory.map(item => ({ pokemon: item.pokemon, value: item.value, dateCreated: item.dateCreated, name: item.name })),
-                quests: quests.map(q => q ? { box: { pokemon: q.box.pokemon, name: q.box.name, value: q.box.value, dateCreated: q.box.dateCreated }, startTime: q.startTime } : null),
+                inventory: inventory.map(item => ({ pokemon: item.pokemon, value: item.value, dateCreated: item.dateCreated, name: item.name, prefixes: item.prefixes })),
+                quests: quests.map(q => q ? { box: { pokemon: q.box.pokemon, name: q.box.name, value: q.box.value, dateCreated: q.box.dateCreated, prefixes: q.box.prefixes }, startTime: q.startTime } : null),
                 autospinsettings: autospinsettings,
                 sortStyle: sortStyle,
                 stacking: stacking,
@@ -146,6 +161,9 @@ k.onLoad(() => { // once everything is loaded
                             for (const it of data.inventory) {
                                 try {
                                     const box = new Box(it.pokemon);
+                                    if (Array.isArray(it.prefixes)) {
+                                        box.setPrefixes(it.prefixes);
+                                    }
                                     if (it.value) box.value = it.value;
                                     if (it.dateCreated) box.dateCreated = it.dateCreated;
                                     if (it.name) box.name = it.name;
@@ -166,6 +184,9 @@ k.onLoad(() => { // once everything is loaded
                                 } else {
                                     try {
                                         const b = new Box(q.box.pokemon || q.box);
+                                        if (Array.isArray(q.box.prefixes)) {
+                                            b.setPrefixes(q.box.prefixes);
+                                        }
                                         if (q.box.value) b.value = q.box.value;
                                         if (q.box.dateCreated) b.dateCreated = q.box.dateCreated;
                                         const quest = new Quest(b);
@@ -183,6 +204,7 @@ k.onLoad(() => { // once everything is loaded
                         if (data.autospinsettings && typeof data.autospinsettings === 'object') {
                             autospinsettings.sellUnder = Number(data.autospinsettings.sellUnder) || autospinsettings.sellUnder;
                             autospinsettings.alwaysKeepShinies = Boolean(data.autospinsettings.alwaysKeepShinies);
+                            autospinsettings.alwaysKeepPrefixes = Boolean(data.autospinsettings.alwaysKeepPrefixes);
                             if (data.autospinsettings.specificPreferences && typeof data.autospinsettings.specificPreferences === 'object') {
                                 for (const key in autospinsettings.specificPreferences) {
                                     if (data.autospinsettings.specificPreferences.hasOwnProperty(key)) {
