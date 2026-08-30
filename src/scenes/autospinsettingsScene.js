@@ -92,7 +92,7 @@ export default function autospinsettingsScene() {
         items.push(new BoxWithChance(boxes[i], chances[i]));
         items[i].setScale(0.8);
     }
-    displayItems(items, null, 20, screenWidth - 20, alwaysKeepPrefixes[0].pos.y - 60, screenHeight + menuHeight - 50, 160, 155, 5, 5); // grid of possible pokemon
+    displayItems(items, null, 20, screenWidth - 20, alwaysKeepPrefixes[0].pos.y - 96, screenHeight + menuHeight - 50, 160, 155, 5, 5); // grid of possible pokemon
 
     k.onUpdate(() => {
         for (const item of items) {

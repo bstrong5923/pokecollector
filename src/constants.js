@@ -585,6 +585,7 @@ export const prefixes = {
     "Censored " : { mult: 13, sprite: "censored" },
     "Decorated " : { mult: 33, sprite: "decorated" },
     "Spectral " : { mult: 73, sprite: "spectral", frametime: 0.08, frameCount: 35 },
+    "Lovey " : { mult: 38, sprite: "lovey", frametime: 0.1, frameCount: 16 },
 }
 
 const initialPrefixChance = 0.025;
@@ -859,7 +860,9 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
     const itemsPerPage = itemsPerRow * rowsPerPage;
 
     const xindent = (xmax - xmin + spacingHorizontal - itemsPerRow * (width + spacingHorizontal)) / 2;
-    const yindent = (ymax - ymin + spacingVertical - rowsPerPage * (height + spacingVertical)) / 2;
+    const yindent = ymin - menuHeight + spacingVertical; // (ymax - ymin + spacingVertical - rowsPerPage * (height + spacingVertical)) / 2
+    console.log(ymax - ymin + spacingVertical);
+    console.log(rowsPerPage * (height + spacingVertical));
 
     let pagearrowleft;
     let pagearrowright;

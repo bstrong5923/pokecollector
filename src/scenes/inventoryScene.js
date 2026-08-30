@@ -60,6 +60,6 @@ export default function inventoryScene() { // scene showin inventory
         item.setOnClickAction(null);
     }
 
-    displayItems(inventoryStacked, "inventory", 20, screenWidth - 20, menuHeight + 24, menuHeight + screenHeight - 50, 200, 150, 6, 6, "small_", 3, screenWidth / 2 - 138, menuHeight + 24, screenWidth / 2 + 61, menuHeight + 24);
+    displayItems(inventoryStacked, "inventory", 20, screenWidth - 20, menuHeight + 34, menuHeight + screenHeight - 50, 200, 150, 6, 6, "small_", 3, screenWidth / 2 - 138, menuHeight + 24, screenWidth / 2 + 61, menuHeight + 24);
 
 }
