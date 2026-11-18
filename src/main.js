@@ -28,7 +28,7 @@ for (const prefixKey in prefixes) {
     if (frameCount > 1) {
         const frames = [];
         for (let i = 0; i < frameCount; i++) {
-            frames.push(`images/prefixes/${prefix.sprite}/pixil-frame-${i}.png`);
+            frames.push(`images/prefixes/${prefix.sprite}/${i}.png`);
         }
         k.loadSprite(assetName, frames, { singular: false });
     } else {
@@ -112,6 +112,7 @@ k.onLoad(() => { // once everything is loaded
         // auth handling: load player data on login, reset on logout
         let currentUser = null;
         let autosaveInterval = null;
+        let stateLoaded = false; // true once the cloud save has been loaded; saving before then could overwrite it with defaults
 
         function serializeState() {
             return {
@@ -126,7 +127,7 @@ k.onLoad(() => { // once everything is loaded
         }
 
         async function saveNow() {
-            if (!currentUser) return;
+            if (!currentUser || !stateLoaded) return;
             try {
                 await savePlayerData(currentUser.uid, serializeState());
             } catch (err) {
@@ -136,11 +137,13 @@ k.onLoad(() => { // once everything is loaded
         // expose saveNow globally so scenes and constants can trigger an immediate save
         try { window.saveNow = saveNow } catch (e) { /* non-browser or restricted env */ }
 
-        onAuthChange(async (user) => {
+        async function handleAuth(user) {
             if (user) {
                 currentUser = user;
+                stateLoaded = false;
                 try {
                     const data = await loadPlayerData(user.uid);
+                    if (currentUser !== user) return; // logged out or switched accounts while loading
                     if (data) {
                         // restore money
                         if (typeof data.money === 'number') {
@@ -225,8 +228,11 @@ k.onLoad(() => { // once everything is loaded
                             setStacking(data.stacking);
                         }
                     }
+                    stateLoaded = true; // safe to save now (new accounts with no save count too)
                 } catch (err) {
-                    console.error('Error loading player data', err);
+                    console.error('Error loading player data, retrying in 5s', err);
+                    setTimeout(() => { if (currentUser === user) handleAuth(user); }, 5000);
+                    return; // no autosave: saving now would overwrite the cloud save with defaults
                 }
 
                 // start autosave
@@ -235,6 +241,7 @@ k.onLoad(() => { // once everything is loaded
             } else {
                 // user logged out — reset to defaults
                 currentUser = null;
+                stateLoaded = false;
                 if (autosaveInterval) { clearInterval(autosaveInterval); autosaveInterval = null }
 
                 // reset money to default (10000)
@@ -251,5 +258,6 @@ k.onLoad(() => { // once everything is loaded
                 quests.length = 0; quests.push(null, null, null);
                 sortInventory();
             }
-        });
+        }
+        onAuthChange(handleAuth);
 })

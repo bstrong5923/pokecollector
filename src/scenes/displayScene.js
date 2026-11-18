@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { displayIndex, menu, menuHeight, screenHeight, screenWidth, canvas, go, inventory, addMoney, changeDisplayIndex, inventoryStacked, stackedIndexes, hoveringTrue } from "../constants";
+import { displayIndex, menu, menuHeight, screenHeight, screenWidth, canvas, go, inventory, addMoney, changeDisplayIndex, sortInventory, inventoryStacked, stackedIndexes, hoveringTrue } from "../constants";
 
 export default function displayScene() {
     menu();
@@ -25,7 +25,7 @@ export default function displayScene() {
             go("display");
         });
     }
-    if (displayIndex != inventory.length - 1) {
+    if (displayIndex != inventoryStacked.length - 1) {
         pagearrowright = k.add([k.sprite("pagearrowright"), k.pos(screenWidth - 120, screenHeight / 2 + menuHeight - 55), k.area(), k.layer("1")]);
         pagearrowright.onClick(() => {
             changeDisplayIndex(1);
@@ -52,18 +52,22 @@ export default function displayScene() {
 
     const sellbutton = k.add([k.sprite("sellbutton"), k.pos(screenWidth / 2 - 77, itemY + 650), k.area()])
     sellbutton.onClick(() => {
+        const stack = stackedIndexes[displayIndex];
+        const stackSize = stack.length;
         addMoney(displayItem.value);
-        inventory.splice(stackedIndexes[displayIndex][stackedIndexes[displayIndex].length - 1], 1); // gets rid of the newest duplicate
-        stackedIndexes[displayIndex].splice(stackedIndexes[displayIndex].length - 1);
-        if (stackedIndexes[displayIndex].length == 0) {
-            try { if (window.saveNow) window.saveNow(); } catch (e) {}
-            go("inventory");
+        inventory.splice(stack[stackSize - 1], 1); // gets rid of the newest duplicate
+        sortInventory(); // rebuild stacks so every index is correct again
+        try { if (window.saveNow) window.saveNow(); } catch (e) {}
+
+        if (stackSize == 1) {
+            go("inventory"); // that was the last one in the stack
         }
         else {
-            try { if (window.saveNow) window.saveNow(); } catch (e) {}
+            // stay on this stack: find where it is after the rebuild
+            const newIndex = inventoryStacked.findIndex((box) => box.stacksWith(displayItem));
+            changeDisplayIndex(newIndex - displayIndex);
             go("display");
         }
-
     });
     sellbutton.onUpdate(() => {
         if (sellbutton.isHovering()) {

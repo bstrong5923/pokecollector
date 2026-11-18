@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { addToInventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney, canvas, shortenNumber, go, autospinsettings, addMoney, hoveringTrue } from "../constants";
+import { addToInventory, inventory, INVENTORY_CAP, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney, canvas, shortenNumber, go, autospinsettings, addMoney, hoveringTrue } from "../constants";
 
 export default function spinningScene() { // scene of wheel spinnin'
     menu("spinning");
@@ -49,6 +49,7 @@ export default function spinningScene() { // scene of wheel spinnin'
             }
         });
     }
+    const fullText = k.add([k.text("Inventory full!", { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 100, owneddisplay.pos.y + 90), k.color(255, 60, 60), k.opacity(0)]);
     const autospinsettingsbutton = k.add([k.sprite("settings"), k.pos(screenWidth / 2 + 82, owneddisplay.pos.y + 41), k.area(), k.scale(3)]);
     autospinsettingsbutton.onClick(() => {
         if (speed == 0) {
@@ -75,7 +76,7 @@ export default function spinningScene() { // scene of wheel spinnin'
         }
     });
     spinbutton.onClick(() => { // when spinbutton clicked, speed it set between 180 and 200
-        if (speed == 0 && packsowned[whichPack] > 0) {
+        if (speed == 0 && packsowned[whichPack] > 0 && inventory.length < INVENTORY_CAP) {
             turnMenuOff();
             packsowned[whichPack]--;
             try { if (window.saveNow) window.saveNow(); } catch (e) {}
@@ -102,12 +103,14 @@ export default function spinningScene() { // scene of wheel spinnin'
         else {
             buybutton.opacity = 1;
         }
-        if (packsowned[whichPack] == 0) {
+        const inventoryFull = inventory.length >= INVENTORY_CAP;
+        if (packsowned[whichPack] == 0 || inventoryFull) {
             spinbutton.opacity = 0.3;
         }
         else {
             spinbutton.opacity = 1;
         }
+        fullText.opacity = inventoryFull ? 1 : 0;
 
         if (buybutton.isHovering() || buymultbutton.isHovering() || spinbutton.isHovering() || autospinbutton[0].isHovering() || autospinbutton[1].isHovering() || autospinsettingsbutton.isHovering()) {
             hoveringTrue();
@@ -139,7 +142,7 @@ export default function spinningScene() { // scene of wheel spinnin'
                     box.move(5 + ((i - 2) % 2) * 2.5, 3.75);
                 }
             }   
-            if (autospinbutton[1].frame == 1 && packsowned[whichPack] > 0) {
+            if (autospinbutton[1].frame == 1 && packsowned[whichPack] > 0 && inventory.length < INVENTORY_CAP) { // autospin pauses when the inventory is full
                 
                     packsowned[whichPack]--;
                     try { if (window.saveNow) window.saveNow(); } catch (e) {}

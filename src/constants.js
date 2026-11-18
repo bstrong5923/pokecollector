@@ -853,7 +853,7 @@ export function selectPack(index) {
 export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height, spacingHorizontal, spacingVertical, pageArrowName="pagearrow", pageArrowScale=1, leftX=xmin, leftY=ymin, rightX=xmin, rightY=ymin) {
     const itemsPerRow = Math.floor((xmax - xmin + spacingHorizontal) / (width + spacingHorizontal));
     const maxRowsPerPage = Math.floor((ymax - ymin + spacingVertical) / (height + spacingVertical));
-    const rowsPerPage = Math.ceil(items.length / itemsPerRow);
+    let rowsPerPage = Math.ceil(items.length / itemsPerRow);
     if (rowsPerPage > maxRowsPerPage) {
         rowsPerPage = maxRowsPerPage;
     }
