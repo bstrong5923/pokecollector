@@ -114,6 +114,9 @@ k.onLoad(() => { // once everything is loaded
         // auth handling: load player data on login, reset on logout
         let currentUser = null;
         let autosaveInterval = null;
+        // The save as it was when this session loaded. Every save of the session carries it in a
+        // "backup" field, so a bad save can be undone from the Firebase console.
+        let sessionBackup = null;
         let stateLoaded = false; // true once the cloud save has been loaded; saving before then could overwrite it with defaults
 
         // A saved box only stores which pokemon it is (codename), its prefixes and its date.
@@ -136,6 +139,7 @@ k.onLoad(() => { // once everything is loaded
 
         function serializeState() {
             return {
+                backup: sessionBackup,
                 username: currentUser ? currentUser.displayName || null : null,
                 money: money,
                 packsowned: packsowned,
@@ -145,6 +149,26 @@ k.onLoad(() => { // once everything is loaded
                 sortStyle: sortStyle,
                 stacking: stacking,
             };
+        }
+
+        // red banner shown while the save could not be loaded safely (saving stays paused meanwhile)
+        function showLoadError(message) {
+            let banner = document.getElementById("load-error");
+            if (!banner) {
+                banner = document.createElement("div");
+                banner.id = "load-error";
+                Object.assign(banner.style, {
+                    position: "fixed", left: "0", top: "0", width: "100%", padding: "10px",
+                    background: "#b91c1c", color: "#fff", textAlign: "center",
+                    fontFamily: "pkmn, sans-serif", zIndex: "9998", boxSizing: "border-box",
+                });
+                document.body.appendChild(banner);
+            }
+            banner.textContent = message;
+        }
+        function hideLoadError() {
+            const banner = document.getElementById("load-error");
+            if (banner) banner.remove();
         }
 
         // back to the default autospin settings and inventory sorting (used on login and logout)
@@ -195,9 +219,11 @@ k.onLoad(() => { // once everything is loaded
             if (user) {
                 currentUser = user;
                 stateLoaded = false;
+                sessionBackup = null;
                 lastSavedJSON = null;
                 resetPreferences();
                 try {
+                    let rebuildFailures = 0; // saved boxes that could not be rebuilt
                     const data = await loadPlayerData(user.uid);
                     if (currentUser !== user) return; // logged out or switched accounts while loading
                     if (data) {
@@ -221,7 +247,8 @@ k.onLoad(() => { // once everything is loaded
                                 try {
                                     addToInventory(rebuildBox(it), true);
                                 } catch (e) {
-                                    console.warn('Failed to reconstruct inventory item', e);
+                                    console.error('Failed to reconstruct inventory item', it, e);
+                                    rebuildFailures++;
                                 }
                             }
                             sortInventory();
@@ -239,8 +266,9 @@ k.onLoad(() => { // once everything is loaded
                                         if (q.startTime) quest.startTime = q.startTime;
                                         quests[i] = quest;
                                     } catch (e) {
-                                        console.warn('Failed to reconstruct quest', e);
+                                        console.error('Failed to reconstruct quest', q, e);
                                         quests[i] = null;
+                                        rebuildFailures++;
                                     }
                                 }
                             }
@@ -272,9 +300,26 @@ k.onLoad(() => { // once everything is loaded
                             setStacking(data.stacking);
                         }
                     }
+                    // back up what was loaded. If it has no items but an older backup does, keep the older one,
+                    // so a session that started from an already-emptied save can't overwrite the good backup.
+                    if (data) {
+                        const { backup: olderBackup, ...loaded } = data;
+                        const hasItems = Array.isArray(loaded.inventory) && loaded.inventory.length > 0;
+                        sessionBackup = (hasItems || !olderBackup) ? { ...loaded, backedUpAt: Date.now() } : olderBackup;
+                    }
+                    else {
+                        sessionBackup = null;
+                    }
+
+                    if (rebuildFailures > 0) {
+                        // never save a shortened inventory over the real one
+                        throw new Error(rebuildFailures + " saved item(s) could not be rebuilt");
+                    }
+                    hideLoadError();
                     stateLoaded = true; // safe to save now (new accounts with no save count too)
                 } catch (err) {
                     console.error('Error loading player data, retrying in 5s', err);
+                    showLoadError("Could not load your save safely. Saving is paused so nothing gets overwritten. Retrying...");
                     setTimeout(() => { if (currentUser === user) handleAuth(user); }, 5000);
                     return; // no autosave: saving now would overwrite the cloud save with defaults
                 }
@@ -286,6 +331,8 @@ k.onLoad(() => { // once everything is loaded
                 // user logged out — reset to defaults
                 currentUser = null;
                 stateLoaded = false;
+                hideLoadError();
+                sessionBackup = null;
                 lastSavedJSON = null;
                 resetPreferences();
                 if (autosaveInterval) { clearInterval(autosaveInterval); autosaveInterval = null }
