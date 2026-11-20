@@ -13,17 +13,19 @@ export function hoveringTrue() {
 
 export function shortenNumber(num) {
     // Letters
-    const letters = ["", "[", "{", "]", "}", "\\\\", "|", "S"];
+    const letters = ["", "[", "{", "]", "}", "\\", "|", "S"];
     let threshold = 1;
+    let power = 0; // how many times we divided by 1000 (picks the letter)
     let decimals = 0;
-    while (num >= threshold * 1000) {
+    while (num >= threshold * 1000 && power < letters.length - 1) { // stops at the last letter instead of running out
         decimals = 2;
         if (num >= threshold * 10000) {
             decimals = 1;
         }
         threshold *= 1000;
+        power++;
     }
-    return Math.floor(num / threshold * (10 ** decimals)) / (10 ** decimals) + letters[Math.log(threshold) / Math.log(1000)];
+    return Math.floor(num / threshold * (10 ** decimals)) / (10 ** decimals) + letters[power];
 
     // // commas
     // let result = num + "";
@@ -209,12 +211,13 @@ export const screenHeight = kScreenHeight - menuHeight;
 // track current auth user (updated by auth state changes)
 export let currentAuthUser = null;
 onAuthChange((user) => {
-    currentAuthUser = user;
+    currentAuthUser = user && user.emailVerified ? user : null; // unverified accounts count as logged out
 });
 
 export let page = 0;
 let currentScene = "packs";
 export function go(scene) {
+    hideNumberInput(); // the number box belongs to the autospin settings scene only
     currentScene = scene;
     k.go(scene + "Scene");
 }
@@ -319,15 +322,24 @@ await fetch("pokemon_data.json")
         pokemon_data = pokemon_data_raw
 });
 
-for (let x = 0; x <= 3; x++) {
-    let num = Math.floor(x / 2);
-    if (x % 2 == 1) {
-        num += "v";
-    }
+// fill pokedex with pokemon data
+// How many sprite sheet files go into the pokedex. There are 20 in total (10 generations x normal/variant).
+// Raise this to 20 once pokemon past gen 1 have rarities and values in pokemon_data.json.
+const pokedexFilesToLoad = 4;
 
-    await fetch("images/pokemon/pokemon_icons_" + num + ".json") // chatgpt's work
-        .then((response2) => response2.json())  // chatgpt's work
-        .then((data2) => { // fill pokedex with pokemon data
+function atlasName(x) { // 0 -> "0", 1 -> "0v", 2 -> "1", 3 -> "1v", ...
+    return Math.floor(x / 2) + (x % 2 == 1 ? "v" : "");
+}
+
+// fetch all the sprite sheet data at the same time (faster startup)
+const atlasJsons = await Promise.all(
+    Array.from({ length: pokedexFilesToLoad }, (_, x) =>
+        fetch("images/pokemon/pokemon_icons_" + atlasName(x) + ".json").then((response) => response.json())
+    )
+);
+
+// adds every pokemon sprite from one sprite sheet file to the pokedex
+function addAtlasToPokedex(data2) {
             const frames = data2.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
 
             for (const sprite of frames) { // for each pokemon sprite
@@ -347,7 +359,7 @@ for (let x = 0; x <= 3; x++) {
                     regional_form = "Alolan ";
                     if (index > 4000) {
                         regional_form = "Galarian ";
-                        if (index > 600) {
+                        if (index > 6000) {
                             regional_form = "Hisuian ";
                         }
                     }
@@ -412,8 +424,12 @@ for (let x = 0; x <= 3; x++) {
                     rarity: pokemon_data[index - 1].rarity,
                 };
             }
-        })
-        .then(() => { console.log("pokedex loading " + (x + 1) + "/20"); });
+}
+
+// add the files in order, because shiny variants need their base form to exist first
+for (let x = 0; x < pokedexFilesToLoad; x++) {
+    addAtlasToPokedex(atlasJsons[x]);
+    console.log("pokedex loading " + (x + 1) + "/" + pokedexFilesToLoad);
 }
 
 // Export a helper to read pokedex entries by numeric index (e.g. 1 => Bulbasaur)
@@ -435,17 +451,7 @@ function getPokemon(index) {
             }
         }
     }
-    let result = pokedex[index + shinyText];
-    const random = Math.random() * 100;
-    let gender = "genderless";
-    if (random < result.gender[0]) {
-        gender = "male";
-    }
-    else if (random < result.gender[0] + result.gender[1]) {
-        gender = "female";
-    }
-    
-    return result;
+    return pokedex[index + shinyText];
 }
 
 
@@ -459,6 +465,9 @@ export class Box {
         this.y = 0;
         this.sprite = [];
         this.pokemon = pokemon;
+        this.prefixes = [];
+        this.prefixesData = [];
+        this.prefixMult = 1;
         this.name = pokemon.name;
         this.scale = 1;
         this.opacity = 1;
@@ -468,18 +477,55 @@ export class Box {
         this.value = this.basevalue * shinyMults[this.pokemon.shiny_level];
         this.onClickAction = null;
     }
+
+    setPrefixes(prefixArray) {
+        const list = Array.isArray(prefixArray) ? prefixArray.slice() : prefixArray == null ? [] : [prefixArray];
+        this.prefixes = list;
+        this.prefixesData = this.prefixes.map(prefix => {
+            const data = prefixes[prefix];
+            if (!data) return null;
+            return {
+                ...data,
+                frametime: data.frametime || 0,
+                frameCount: data.frameCount || 1,
+            };
+        }).filter(Boolean);
+        const prefixText = this.prefixes.join("");
+        this.name = prefixText + this.pokemon.name;
+        this.prefixMult = this.prefixesData.reduce((acc, data) => acc * data.mult, 1);
+        this.value = this.basevalue * shinyMults[this.pokemon.shiny_level] * this.prefixMult;
+    }
     setOnClickAction(callback) {
         this.onClickAction = callback;
     }
     add(x, y) {
         this.sprite = [
             k.add([k.sprite("boxes", { frame: this.rarity }), k.pos(x, y), k.opacity(this.opacity), k.area(), k.scale(this.scale)]),
-            k.add([k.text("*" + shortenNumber(this.value), { size: 14 * this.scale, font: "pkmn" }), k.pos(x + 10 * this.scale, y + 128 * this.scale), k.opacity(this.opacity), k.layer("3")]),
-            k.add([k.sprite(this.pokemon.codename), k.pos(x + (200 - this.pokemon.width)  * this.scale / 2, y + (150 - this.pokemon.height)  * this.scale / 2), k.scale(this.pokemon.scale * this.scale), k.opacity(this.opacity)]),
         ];
+        this.sprite.push(
+            k.add([k.sprite(this.pokemon.codename), k.pos(x + (200 - this.pokemon.width)  * this.scale / 2, y + (150 - this.pokemon.height)  * this.scale / 2), k.scale(this.pokemon.scale * this.scale), k.opacity(this.opacity)]),
+        );
         if (this.pokemon.shiny_level > 0) {
             this.sprite.push(k.add([k.sprite("shinies", { frame: this.pokemon.shiny_level - 1 }), k.pos(x + 160 * this.scale, y + 9 * this.scale), k.opacity(this.opacity), k.scale(this.scale * 2)]));
         }
+        if (this.prefixesData.length > 0) {
+            for (const prefixData of this.prefixesData) {
+                const prefixSprite = k.add([k.sprite("prefix-" + prefixData.sprite), k.pos(x, y), k.opacity(this.opacity), k.scale(this.scale), k.layer("4")]);
+                if (prefixData.frametime > 0 && prefixData.frameCount > 1) {
+                    prefixSprite.frame = 0;
+                    prefixSprite.__prefixFrameTime = Date.now() + prefixData.frametime * 1000;
+                    prefixSprite.onUpdate(() => {
+                        const now = Date.now();
+                        if (now >= prefixSprite.__prefixFrameTime) {
+                            prefixSprite.frame = (prefixSprite.frame + 1) % prefixData.frameCount;
+                            prefixSprite.__prefixFrameTime = now + prefixData.frametime * 1000;
+                        }
+                    });
+                }
+                this.sprite.push(prefixSprite);
+            }
+        }
+        this.sprite.push(k.add([k.text("*" + shortenNumber(this.value), { size: 14 * this.scale, font: "pkmn" }), k.pos(x + 10 * this.scale, y + 128 * this.scale), k.opacity(this.opacity), k.layer("3")]));
         this.x = x;
         this.y = y;
         this.sprite[0].onUpdate(() => {
@@ -538,6 +584,39 @@ export class Box {
     }
 }
 
+export const prefixes = {
+    "Gooey " : { mult: 49, sprite: "gooey" },
+    "Cloudy " : { mult: 22, sprite: "cloudy" },
+    "Censored " : { mult: 13, sprite: "censored" },
+    "Decorated " : { mult: 33, sprite: "decorated" },
+    "Spectral " : { mult: 73, sprite: "spectral", frametime: 0.08, frameCount: 35 },
+    "Lovey " : { mult: 38, sprite: "lovey", frametime: 0.1, frameCount: 16 },
+}
+
+const initialPrefixChance = 0.025;
+const repeatPrefixChance = 0.05;
+export function getRandomPrefix() {
+    const prefixKeys = Object.keys(prefixes);
+    return prefixKeys[Math.floor(Math.random() * prefixKeys.length)];
+}
+
+export function createBoxWithPrefix(pokemon) {
+    const box = new Box(pokemon);
+    const chosenPrefixes = [];
+    if (Math.random() < initialPrefixChance) {
+        const available = Object.keys(prefixes); // prefixes not picked yet
+        do {
+            // take a random prefix out of the available list, so there are never duplicates
+            const pick = available.splice(Math.floor(Math.random() * available.length), 1)[0];
+            chosenPrefixes.push(pick);
+        } while (available.length > 0 && Math.random() < repeatPrefixChance);
+    }
+    if (chosenPrefixes.length > 0) {
+        box.setPrefixes(chosenPrefixes);
+    }
+    return box;
+}
+
 // quest pokemon - pokemon sent on a quest for money
 export class Quest {
     constructor(box) {
@@ -558,11 +637,17 @@ export class Quest {
         const shinyDurationMults = [
             1,    // non-shiny
             60,
-            210,
-            900,
+            180,
+            600,
         ];
+        const prefixDurationMults = [1, 1.5, 2.5, 5, 10, 30, 90, 300, 1000, 1500, 6000]
+        let i = 0;
+        while (i < prefixDurationMults.length - 1 && this.box.prefixMult > prefixDurationMults[i] * 3) {
+            i++;
+        }
 
-        this.questDuration = rarityDurations[this.pokemon.rarity] * shinyDurationMults[this.pokemon.shiny_level] ?? 24 * 60 * 60 * 1000;
+        // duration = rarity x shiny level x prefix (no prefix = x1)
+        this.questDuration = rarityDurations[this.pokemon.rarity] * shinyDurationMults[this.pokemon.shiny_level] * prefixDurationMults[i];
         this.reward = Math.floor(box.value * 0.5); // 50% of pokemon value as reward
     }
     
@@ -697,7 +782,7 @@ export class Pack {
             for (const item of itemsOfRarity) {
                 cumulativeOfRarity += item[1];
                 if (randomOfRarity < cumulativeOfRarity) {
-                    return new Box(getPokemon(item[0]));
+                    return createBoxWithPrefix(getPokemon(item[0]));
                 }
             }
           }
@@ -763,11 +848,27 @@ export function selectPack(index) {
 // used in inventoryScene and packsScene and stuff to format items into rows and cols
 export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height, spacingHorizontal, spacingVertical, pageArrowName="pagearrow", pageArrowScale=1, leftX=xmin, leftY=ymin, rightX=xmin, rightY=ymin) {
     const itemsPerRow = Math.floor((xmax - xmin + spacingHorizontal) / (width + spacingHorizontal));
-    const rowsPerPage = Math.floor((ymax - ymin + spacingVertical) / (height + spacingVertical));
+    const maxRowsPerPage = Math.floor((ymax - ymin + spacingVertical) / (height + spacingVertical));
+    let rowsPerPage = Math.ceil(items.length / itemsPerRow);
+    if (rowsPerPage > maxRowsPerPage) {
+        rowsPerPage = maxRowsPerPage;
+    }
     const itemsPerPage = itemsPerRow * rowsPerPage;
 
+    // if items were removed (sold) and this page no longer exists, go to the last page
+    if (itemsPerPage > 0) {
+        const lastPage = Math.max(0, Math.ceil(items.length / itemsPerPage) - 1);
+        if (page > lastPage) {
+            page = lastPage;
+            if (scene) {
+                go(scene); // redraw the scene on the right page
+                return;
+            }
+        }
+    }
+
     const xindent = (xmax - xmin + spacingHorizontal - itemsPerRow * (width + spacingHorizontal)) / 2;
-    const yindent = (ymax - ymin + spacingVertical - rowsPerPage * (height + spacingVertical)) / 2;
+    const yindent = ymin - menuHeight + spacingVertical; // (ymax - ymin + spacingVertical - rowsPerPage * (height + spacingVertical)) / 2
 
     let pagearrowleft;
     let pagearrowright;
@@ -802,9 +903,11 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
     let y = ymin + yindent;
     for (let i = page * itemsPerPage; i < items.length && i < (page + 1) * itemsPerPage; i++) {
         const item = items[i];
+        if (currentScene == "inventory" || currentScene == "questSelection") {
+            item.scale = 1; // set directly before drawing (setScale would draw it twice); the display scene leaves boxes enlarged
+        }
         item.add(x, y);
         if (currentScene == "inventory") {
-            item.setScale(1);
             if (stacking && stackedIndexes[i].length > 1) {
                 k.add([k.text("x" + stackedIndexes[i].length, { size: 14, font: "pkmn" }), k.pos(x + 168 - 14 * Math.floor(Math.log10(stackedIndexes[i].length)), y + 128), k.layer("3")])
             }
@@ -821,10 +924,21 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
 export const autospinsettings = {
     sellUnder: 0,
     alwaysKeepShinies: false,
+    alwaysKeepPrefixes: false,
     specificPreferences: {},
 }
 for (const code in pokedex) {
     autospinsettings.specificPreferences[pokedex[code].index_regional] = 0;
+}
+
+// put every autospin setting back to its default
+export function resetAutospinSettings() {
+    autospinsettings.sellUnder = 0;
+    autospinsettings.alwaysKeepShinies = false;
+    autospinsettings.alwaysKeepPrefixes = false;
+    for (const key in autospinsettings.specificPreferences) {
+        autospinsettings.specificPreferences[key] = 0;
+    }
 }
 
 function positionInput(x, y) {
@@ -839,45 +953,55 @@ function positionInput(x, y) {
         correctX = (window.innerWidth - kScreenWidth * scale) / 2;
     }
 
-    input.style.top = y * scale + correctY;
-    input.style.left = x * scale + correctX;
+    input.style.top = (y * scale + correctY) + "px";
+    input.style.left = (x * scale + correctX) + "px";
+}
+
+// the number box is set up once; these remember what it is currently editing
+let numberInputReady = false;
+let numberInputSetting = null; // which setting it edits (null = hidden)
+let numberInputPos = { x: 0, y: 0 };
+
+export function hideNumberInput() {
+    numberInputSetting = null;
+    const input = document.getElementById("numberInput");
+    if (input) {
+        input.style.display = "none";
+        input.blur();
+    }
 }
 
 export function showNumberInput(settingKey, x, y) { // Chat gpt's work
     const input = document.getElementById("numberInput");
+
+    // listeners are added only the first time
+    if (!numberInputReady) {
+        numberInputReady = true;
+
+        window.addEventListener("resize", () => {
+            if (numberInputSetting != null) positionInput(numberInputPos.x, numberInputPos.y);
+        });
+
+        // Strip non-numeric input as user types
+        input.addEventListener("input", () => {
+            input.value = input.value.replace(/[^0-9]/g, "");
+        });
+
+        input.addEventListener("keydown", (e) => {
+            if (e.key !== "Enter" || numberInputSetting == null) return;
+            const value = parseInt(input.value.trim(), 10);
+            if (isNaN(value)) return; // empty: keep the box open
+
+            autospinsettings[numberInputSetting] = value;
+            try { if (window.saveNow) window.saveNow(); } catch (err) {}
+            go("autospinsettings"); // go() hides the box and redraws the scene
+        });
+    }
+
+    numberInputSetting = settingKey;
+    numberInputPos = { x: x, y: y };
     input.value = ""; // clear previous input
     input.style.display = "block";
     input.focus();
-    
     positionInput(x, y);
-
-    window.addEventListener('resize', () => {
-        positionInput(x, y);
-    });
-
-    // Strip non-numeric input as user types
-    input.addEventListener("input", () => {
-        input.value = input.value.replace(/[^0-9]/g, "");
-    });
-
-    input.addEventListener("keydown", function onKeyDown(e) {
-        if (e.key === "Enter") {
-        const value = parseInt(input.value.trim(), 10);
-
-        if (!isNaN(value)) {
-            input.style.display = "none";
-            input.blur();
-
-            // Save value to settings object or localStorage
-            autospinsettings[settingKey] = value;
-            try { if (window.saveNow) window.saveNow(); } catch (e) {}
-            console.log(`Set ${settingKey} to ${value}`);
-        }
-
-        go("autospinsettings");
-
-        // Clean up listener after use
-        input.removeEventListener("keydown", onKeyDown);
-        }
-    });
 }

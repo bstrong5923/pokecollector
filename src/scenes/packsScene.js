@@ -30,8 +30,8 @@ export default function packsScene() {
             k.pos(slotX + 10, slotY + 16),
         ]);
 
-        // Cover pokemon: use the first item id in the pack as cover
-        const coverIndex = packs[i].items && packs[i].items.length ? packs[i].items[0][0] : 1;
+        // Cover pokemon: the pack's coverPokemonIndex
+        const coverIndex = packs[i].coverPokemonIndex || 1;
         const p = getPokedexEntry(coverIndex) || { codename: "", scale: 1, width: 100 };
         const spriteScale = (p.scale || 1) * 1.6;
         const spriteY = slotY + 70;

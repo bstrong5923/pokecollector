@@ -10,7 +10,7 @@ const k = kaplay({
     background: [20, 20, 20],
     global: false,
     debugKey: "d",
-    debug: true,
+    debug: import.meta.env.DEV, // debug tools only when running "npm run dev", not in the shipped game
 });
 
 export default k;

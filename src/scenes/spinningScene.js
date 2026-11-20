@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { addToInventory, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney, canvas, shortenNumber, go, autospinsettings, addMoney, hoveringTrue } from "../constants";
+import { addToInventory, inventory, INVENTORY_CAP, whichPack, packs, menu, menuHeight, screenWidth, screenHeight, turnMenuOn, turnMenuOff, packsowned, money, subtractMoney, canvas, shortenNumber, go, autospinsettings, addMoney, hoveringTrue } from "../constants";
 
 export default function spinningScene() { // scene of wheel spinnin'
     menu("spinning");
@@ -49,6 +49,7 @@ export default function spinningScene() { // scene of wheel spinnin'
             }
         });
     }
+    const fullText = k.add([k.text("Inventory full!", { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 100, owneddisplay.pos.y + 90), k.color(255, 60, 60), k.opacity(0)]);
     const autospinsettingsbutton = k.add([k.sprite("settings"), k.pos(screenWidth / 2 + 82, owneddisplay.pos.y + 41), k.area(), k.scale(3)]);
     autospinsettingsbutton.onClick(() => {
         if (speed == 0) {
@@ -56,16 +57,15 @@ export default function spinningScene() { // scene of wheel spinnin'
         }
     });
 
+    let buyMax = false; // when true, buymult follows however many packs the player can afford
     buymultbutton.onClick(() => {
         buymultbutton.frame++;
         buymult = 10 ** buymultbutton.frame;
-        if (buymultbutton.frame == 5) {
-            buymult = Math.floor(money / packs[whichPack].price);
-        }
-        else if (buymultbutton.frame == 6) {
+        if (buymultbutton.frame == 6) {
             buymultbutton.frame = 0;
             buymult = 1;
         }
+        buyMax = buymultbutton.frame == 5;
     });
     buybutton.onClick(() => {
         if (speed == 0 && money >= buymult * packs[whichPack].price) {
@@ -75,7 +75,7 @@ export default function spinningScene() { // scene of wheel spinnin'
         }
     });
     spinbutton.onClick(() => { // when spinbutton clicked, speed it set between 180 and 200
-        if (speed == 0 && packsowned[whichPack] > 0) {
+        if (speed == 0 && packsowned[whichPack] > 0 && inventory.length < INVENTORY_CAP) {
             turnMenuOff();
             packsowned[whichPack]--;
             try { if (window.saveNow) window.saveNow(); } catch (e) {}
@@ -91,6 +91,10 @@ export default function spinningScene() { // scene of wheel spinnin'
 
 
     k.onUpdate(() => {
+        if (buyMax) {
+            buymult = Math.floor(money / packs[whichPack].price); // recalculated as money changes
+        }
+
         // update text displays
         pricedisplay.text = "Price: *" + shortenNumber(packs[whichPack].price * buymult);
         pricedisplay.pos.x = screenWidth / 2 - 70 - Math.floor(Math.log10(packs[whichPack].price * buymult + 1)) * 14;
@@ -102,12 +106,14 @@ export default function spinningScene() { // scene of wheel spinnin'
         else {
             buybutton.opacity = 1;
         }
-        if (packsowned[whichPack] == 0) {
+        const inventoryFull = inventory.length >= INVENTORY_CAP;
+        if (packsowned[whichPack] == 0 || inventoryFull) {
             spinbutton.opacity = 0.3;
         }
         else {
             spinbutton.opacity = 1;
         }
+        fullText.opacity = inventoryFull ? 1 : 0;
 
         if (buybutton.isHovering() || buymultbutton.isHovering() || spinbutton.isHovering() || autospinbutton[0].isHovering() || autospinbutton[1].isHovering() || autospinsettingsbutton.isHovering()) {
             hoveringTrue();
@@ -119,7 +125,8 @@ export default function spinningScene() { // scene of wheel spinnin'
             for (let i = 0; i < wheel.length; i++) {
                 const box = wheel[i];
                 if (i == 2) { // which box did it land on?
-                    if (autospinbutton[1].frame == 1 && !(box.pokemon.shiny_level != 0 && autospinsettings.alwaysKeepShinies) && (autospinsettings.specificPreferences[box.pokemon.index_regional] == 2 || (box.value < autospinsettings.sellUnder && autospinsettings.specificPreferences[box.pokemon.index_regional] == 0))) {
+                    const keepBecausePrefix = autospinsettings.alwaysKeepPrefixes && Array.isArray(box.prefixes) && box.prefixes.length > 0;
+                    if (autospinbutton[1].frame == 1 && !keepBecausePrefix && !(box.pokemon.shiny_level != 0 && autospinsettings.alwaysKeepShinies) && (autospinsettings.specificPreferences[box.pokemon.index_regional] == 2 || (box.value < autospinsettings.sellUnder && autospinsettings.specificPreferences[box.pokemon.index_regional] == 0))) {
                         addMoney(box.value); // autosell it if autospin is on and its supposed to autosell
                         try { if (window.saveNow) window.saveNow(); } catch (e) {}
                     }
@@ -138,7 +145,7 @@ export default function spinningScene() { // scene of wheel spinnin'
                     box.move(5 + ((i - 2) % 2) * 2.5, 3.75);
                 }
             }   
-            if (autospinbutton[1].frame == 1 && packsowned[whichPack] > 0) {
+            if (autospinbutton[1].frame == 1 && packsowned[whichPack] > 0 && inventory.length < INVENTORY_CAP) { // autospin pauses when the inventory is full
                 
                     packsowned[whichPack]--;
                     try { if (window.saveNow) window.saveNow(); } catch (e) {}
@@ -165,7 +172,7 @@ export default function spinningScene() { // scene of wheel spinnin'
             wheel[4].add(x, wheelY);
         }
         if (speed > 0) { 
-            speed *= 0.975 + .0001 * speed; // slow down a lil
+            speed *= 0.978 + .0001 * speed; // slow down a lil
         }
     });
 }

@@ -1,7 +1,7 @@
 // LoginUI.js
 // Plain HTML/JS login/signup UI for Pokecollector
 
-import { registerUser, loginUser, logoutUser, onAuthChange, sendVerificationEmail } from './authService.js'
+import { registerUser, loginUser, logoutUser, onAuthChange, sendVerificationEmail, announceVerified } from './authService.js'
 import { auth } from './firebase.js'
 
 function createEl(tag, attrs = {}, text) {
@@ -124,10 +124,10 @@ export function initLoginUI() {
     verifyControls = createEl('div')
     Object.assign(verifyControls.style, { marginTop: '12px', display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' })
 
-    // spam note
+    // spam note (inside verifyControls so it is removed along with them)
     const spamNote = createEl('div', {}, "If you don't see the email, check your spam/junk folder.")
     Object.assign(spamNote.style, { width: '100%', textAlign: 'center', color: '#ffb4b4', fontSize: '12px', marginTop: '8px' })
-    box.appendChild(spamNote)
+    verifyControls.appendChild(spamNote)
 
     const checkBtn = createEl('button', {}, 'I Verified (Check)')
     const resendBtn = createEl('button', {}, 'Resend Email')
@@ -149,6 +149,7 @@ export function initLoginUI() {
           setStatus(status, 'Email verified — welcome!')
           clearVerifyMonitor()
           overlay.style.display = 'none'
+          announceVerified()
         } else {
           setStatus(status, 'Still not verified — check your inbox', true)
         }
@@ -182,6 +183,7 @@ export function initLoginUI() {
           setStatus(status, 'Email verified — welcome!')
           clearVerifyMonitor()
           overlay.style.display = 'none'
+          announceVerified()
         }
       } catch (e) {
         console.warn('verification poll error', e)
@@ -251,10 +253,19 @@ export function initLoginUI() {
 
   // React to auth changes: show/hide the modal and display user email
   onAuthChange((user) => {
-    if (user) {
+    if (user && user.emailVerified) {
       overlay.style.display = 'none'
       userInfo.textContent = `Signed in as ${user.email}`
+    } else if (user) {
+      // signed in but email not verified yet: keep the modal up and show the verify buttons
+      overlay.style.display = 'flex'
+      userInfo.textContent = ''
+      if (!verifyInterval) {
+        setStatus(status, 'Please verify your email to play. Check your inbox.', true)
+        startVerificationMonitor(user)
+      }
     } else {
+      clearVerifyMonitor()
       overlay.style.display = 'flex'
       userInfo.textContent = ''
     }
@@ -263,14 +274,12 @@ export function initLoginUI() {
   // If auth already has a current user (e.g. auth state fired before this listener attached), hide modal
   try {
     if (auth) {
-      if (auth.currentUser) {
+      if (auth.currentUser && auth.currentUser.emailVerified) {
         overlay.style.display = 'none'
         userInfo.textContent = `Signed in as ${auth.currentUser.email}`
-      } else {
-        // no current user — show the modal
-        overlay.style.display = 'flex'
-        userInfo.textContent = ''
       }
+      // else: Firebase has not reported yet whether someone is signed in. The modal stays hidden
+      // (no flash for logged-in players); the onAuthChange listener above shows it if nobody is.
     }
   } catch (e) {
     // ignore

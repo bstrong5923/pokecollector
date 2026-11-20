@@ -57,12 +57,24 @@ export default function autospinsettingsScene() {
     ];
     for (const comp of alwaysKeepShinies) {
         comp.onClick(() => {
-            if (autospinsettings.alwaysKeepShinies) {
-                autospinsettings.alwaysKeepShinies = false;
+            autospinsettings.alwaysKeepShinies = !autospinsettings.alwaysKeepShinies;
+            try { if (window.saveNow) window.saveNow(); } catch (e) {}
+            go("autospinsettings");
+        });
+        comp.onUpdate(() => {
+            if (comp.isHovering()) {
+                hoveringTrue();
             }
-            else {
-                autospinsettings.alwaysKeepShinies = true;
-            }
+        });
+    }
+
+    const alwaysKeepPrefixes = [
+        k.add([k.text("Always keep prefixes", { size: 24, font: "pkmn" }), k.pos(autosellunder.pos.x + 29, autosellunder.pos.y + 105), k.area()]),
+        k.add([k.sprite("checkbox", { frame: Number(autospinsettings.alwaysKeepPrefixes) }), k.pos(autosellunder.pos.x, autosellunder.pos.y + 105), k.area(), k.scale(3)]),
+    ];
+    for (const comp of alwaysKeepPrefixes) {
+        comp.onClick(() => {
+            autospinsettings.alwaysKeepPrefixes = !autospinsettings.alwaysKeepPrefixes;
             try { if (window.saveNow) window.saveNow(); } catch (e) {}
             go("autospinsettings");
         });
@@ -80,7 +92,7 @@ export default function autospinsettingsScene() {
         items.push(new BoxWithChance(boxes[i], chances[i]));
         items[i].setScale(0.8);
     }
-    displayItems(items, null, 20, screenWidth - 20, alwaysKeepShinies[0].pos.y + 55, screenHeight + menuHeight - 50, 160, 155, 5, 5); // grid of possible pokemon
+    displayItems(items, null, 20, screenWidth - 20, alwaysKeepPrefixes[0].pos.y - 96, screenHeight + menuHeight - 50, 160, 155, 5, 5); // grid of possible pokemon
 
     k.onUpdate(() => {
         for (const item of items) {

@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { inventory, displayItems, menu, menuHeight, screenWidth, screenHeight, page, sortStyle, go, canvas, sortInventory, setSortStyle, toggleStacking, stacking, stackedIndexes, inventoryStacked, hoveringTrue, INVENTORY_CAP } from "../constants";
+import { inventory, displayItems, menu, menuHeight, screenWidth, screenHeight, page, sortStyle, go, canvas, sortInventory, setSortStyle, toggleStacking, stacking, stackedIndexes, inventoryStacked, hoveringTrue, INVENTORY_CAP, shortenNumber } from "../constants";
 
 export default function inventoryScene() { // scene showin inventory
     menu("inventory");
@@ -13,7 +13,7 @@ export default function inventoryScene() { // scene showin inventory
     for (const item of inventory) {
         totalvalue += item.value;
     }
-    k.add([k.text("Total Value: *" + totalvalue, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 + 468 + 24 * Math.floor(Math.log10(inventory.length + 1)), menuHeight + 24)]);
+    k.add([k.text("Total Value: *" + shortenNumber(totalvalue), { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 + 468 + 24 * Math.floor(Math.log10(inventory.length + 1)), menuHeight + 24)]);
     k.add([k.text("Owned: " + inventory.length + "/" + INVENTORY_CAP, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 + 146, menuHeight + 24)]);
 
     const sortButton = k.add([k.text("Sort by: " + sortStyle, { size: 24, font: "pkmn" }), k.pos(screenWidth / 2 - 10 * sortStyle.length - 400, menuHeight + 24), k.area()]);
@@ -59,6 +59,6 @@ export default function inventoryScene() { // scene showin inventory
         item.setOnClickAction(null);
     }
 
-    displayItems(inventoryStacked, "inventory", 20, screenWidth - 20, menuHeight + 24, menuHeight + screenHeight - 50, 200, 150, 6, 6, "small_", 3, screenWidth / 2 - 138, menuHeight + 24, screenWidth / 2 + 61, menuHeight + 24);
+    displayItems(inventoryStacked, "inventory", 20, screenWidth - 20, menuHeight + 34, menuHeight + screenHeight - 50, 200, 150, 6, 6, "small_", 3, screenWidth / 2 - 138, menuHeight + 24, screenWidth / 2 + 61, menuHeight + 24);
 
 }
