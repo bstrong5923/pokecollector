@@ -10,7 +10,6 @@ import {
   updateProfile,
   sendEmailVerification,
 } from 'firebase/auth'
-import { savePlayerData } from './playerDataService.js'
 
 /**
  * Create a new user account with email and password.
@@ -22,8 +21,7 @@ export async function registerUser(email, password, username) {
     try {
       if (username && cred.user) {
         await updateProfile(cred.user, { displayName: username })
-        // store username in player document as well
-        try { await savePlayerData(cred.user.uid, { username }) } catch (e) { console.warn('savePlayerData username failed', e) }
+        // (the username is saved to the player document with the first game save after verification)
       }
     } catch (e) {
       console.warn('updateProfile failed', e)
@@ -49,6 +47,20 @@ export async function sendVerificationEmail(user) {
     console.error('sendVerificationEmail error', err)
     throw err
   }
+}
+
+/**
+ * Call this after the user's email is confirmed verified (after user.reload()).
+ * Every onAuthChange listener is called again with the now-verified user.
+ */
+export async function announceVerified() {
+  // refresh the login token so it carries email_verified = true (the Firestore rules check it)
+  try {
+    if (auth.currentUser) await auth.currentUser.getIdToken(true)
+  } catch (e) {
+    console.warn('token refresh failed', e)
+  }
+  window.dispatchEvent(new Event('pco-verified'))
 }
 
 /**
@@ -84,7 +96,15 @@ export async function logoutUser() {
  */
 export function onAuthChange(callback) {
   try {
-    return onAuthStateChanged(auth, callback)
+    const unsubscribe = onAuthStateChanged(auth, callback)
+    // Firebase does not fire an auth event when an email gets verified,
+    // so announceVerified() tells every listener to re-check the current user
+    const onVerified = () => callback(auth.currentUser)
+    window.addEventListener('pco-verified', onVerified)
+    return () => {
+      unsubscribe()
+      window.removeEventListener('pco-verified', onVerified)
+    }
   } catch (err) {
     console.error('onAuthChange error', err)
     return () => {}

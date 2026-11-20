@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { quests, menu, menuHeight, screenWidth, screenHeight, checkQuestCompletion, hoveringTrue, startQuestSelection, cancelQuest, claimQuest, go } from "../constants";
+import { quests, menu, menuHeight, screenWidth, screenHeight, checkQuestCompletion, hoveringTrue, startQuestSelection, cancelQuest, claimQuest, go, shortenNumber } from "../constants";
 
 export default function questsScene() {
     menu("quests");
@@ -73,7 +73,7 @@ export default function questsScene() {
 
             // reward amount
             const rewardText = k.add([
-                k.text("Reward: *" + quest.reward, { size: 30, font: "pkmn", align: "center", width: slotWidth - 20 }),
+                k.text("Reward: *" + shortenNumber(quest.reward), { size: 30, font: "pkmn", align: "center", width: slotWidth - 20 }),
                 k.pos(slotX + 10, statsY + 70)
             ]);
             slot.textElements.push({ type: "reward", element: rewardText });

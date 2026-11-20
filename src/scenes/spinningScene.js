@@ -57,16 +57,15 @@ export default function spinningScene() { // scene of wheel spinnin'
         }
     });
 
+    let buyMax = false; // when true, buymult follows however many packs the player can afford
     buymultbutton.onClick(() => {
         buymultbutton.frame++;
         buymult = 10 ** buymultbutton.frame;
-        if (buymultbutton.frame == 5) {
-            buymult = Math.floor(money / packs[whichPack].price);
-        }
-        else if (buymultbutton.frame == 6) {
+        if (buymultbutton.frame == 6) {
             buymultbutton.frame = 0;
             buymult = 1;
         }
+        buyMax = buymultbutton.frame == 5;
     });
     buybutton.onClick(() => {
         if (speed == 0 && money >= buymult * packs[whichPack].price) {
@@ -92,6 +91,10 @@ export default function spinningScene() { // scene of wheel spinnin'
 
 
     k.onUpdate(() => {
+        if (buyMax) {
+            buymult = Math.floor(money / packs[whichPack].price); // recalculated as money changes
+        }
+
         // update text displays
         pricedisplay.text = "Price: *" + shortenNumber(packs[whichPack].price * buymult);
         pricedisplay.pos.x = screenWidth / 2 - 70 - Math.floor(Math.log10(packs[whichPack].price * buymult + 1)) * 14;
@@ -169,7 +172,7 @@ export default function spinningScene() { // scene of wheel spinnin'
             wheel[4].add(x, wheelY);
         }
         if (speed > 0) { 
-            speed *= 0.975 + .0001 * speed; // slow down a lil
+            speed *= 0.978 + .0001 * speed; // slow down a lil
         }
     });
 }

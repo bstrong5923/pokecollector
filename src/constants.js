@@ -13,17 +13,19 @@ export function hoveringTrue() {
 
 export function shortenNumber(num) {
     // Letters
-    const letters = ["", "[", "{", "]", "}", "\\\\", "|", "S"];
+    const letters = ["", "[", "{", "]", "}", "\\", "|", "S"];
     let threshold = 1;
+    let power = 0; // how many times we divided by 1000 (picks the letter)
     let decimals = 0;
-    while (num >= threshold * 1000) {
+    while (num >= threshold * 1000 && power < letters.length - 1) { // stops at the last letter instead of running out
         decimals = 2;
         if (num >= threshold * 10000) {
             decimals = 1;
         }
         threshold *= 1000;
+        power++;
     }
-    return Math.floor(num / threshold * (10 ** decimals)) / (10 ** decimals) + letters[Math.log(threshold) / Math.log(1000)];
+    return Math.floor(num / threshold * (10 ** decimals)) / (10 ** decimals) + letters[power];
 
     // // commas
     // let result = num + "";
@@ -209,12 +211,13 @@ export const screenHeight = kScreenHeight - menuHeight;
 // track current auth user (updated by auth state changes)
 export let currentAuthUser = null;
 onAuthChange((user) => {
-    currentAuthUser = user;
+    currentAuthUser = user && user.emailVerified ? user : null; // unverified accounts count as logged out
 });
 
 export let page = 0;
 let currentScene = "packs";
 export function go(scene) {
+    hideNumberInput(); // the number box belongs to the autospin settings scene only
     currentScene = scene;
     k.go(scene + "Scene");
 }
@@ -320,15 +323,23 @@ await fetch("pokemon_data.json")
 });
 
 // fill pokedex with pokemon data
-for (let x = 0; x <= 3; x++) {
-    let num = Math.floor(x / 2);
-    if (x % 2 == 1) {
-        num += "v";
-    }
+// How many sprite sheet files go into the pokedex. There are 20 in total (10 generations x normal/variant).
+// Raise this to 20 once pokemon past gen 1 have rarities and values in pokemon_data.json.
+const pokedexFilesToLoad = 4;
 
-    await fetch("images/pokemon/pokemon_icons_" + num + ".json") // chatgpt's work
-        .then((response2) => response2.json())  // chatgpt's work
-        .then((data2) => { 
+function atlasName(x) { // 0 -> "0", 1 -> "0v", 2 -> "1", 3 -> "1v", ...
+    return Math.floor(x / 2) + (x % 2 == 1 ? "v" : "");
+}
+
+// fetch all the sprite sheet data at the same time (faster startup)
+const atlasJsons = await Promise.all(
+    Array.from({ length: pokedexFilesToLoad }, (_, x) =>
+        fetch("images/pokemon/pokemon_icons_" + atlasName(x) + ".json").then((response) => response.json())
+    )
+);
+
+// adds every pokemon sprite from one sprite sheet file to the pokedex
+function addAtlasToPokedex(data2) {
             const frames = data2.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
 
             for (const sprite of frames) { // for each pokemon sprite
@@ -348,7 +359,7 @@ for (let x = 0; x <= 3; x++) {
                     regional_form = "Alolan ";
                     if (index > 4000) {
                         regional_form = "Galarian ";
-                        if (index > 600) {
+                        if (index > 6000) {
                             regional_form = "Hisuian ";
                         }
                     }
@@ -413,8 +424,12 @@ for (let x = 0; x <= 3; x++) {
                     rarity: pokemon_data[index - 1].rarity,
                 };
             }
-        })
-        .then(() => { console.log("pokedex loading " + (x + 1) + "/20"); });
+}
+
+// add the files in order, because shiny variants need their base form to exist first
+for (let x = 0; x < pokedexFilesToLoad; x++) {
+    addAtlasToPokedex(atlasJsons[x]);
+    console.log("pokedex loading " + (x + 1) + "/" + pokedexFilesToLoad);
 }
 
 // Export a helper to read pokedex entries by numeric index (e.g. 1 => Bulbasaur)
@@ -436,17 +451,7 @@ function getPokemon(index) {
             }
         }
     }
-    let result = pokedex[index + shinyText];
-    const random = Math.random() * 100;
-    let gender = "genderless";
-    if (random < result.gender[0]) {
-        gender = "male";
-    }
-    else if (random < result.gender[0] + result.gender[1]) {
-        gender = "female";
-    }
-    
-    return result;
+    return pokedex[index + shinyText];
 }
 
 
@@ -599,22 +604,12 @@ export function createBoxWithPrefix(pokemon) {
     const box = new Box(pokemon);
     const chosenPrefixes = [];
     if (Math.random() < initialPrefixChance) {
-        chosenPrefixes.push(getRandomPrefix());
-        while (Math.random() < repeatPrefixChance) {
-            let p = getRandomPrefix();
-            let again = true;
-            while (again) { // ensure no duplicate prefixes
-                again = false;
-                for (const cp of chosenPrefixes) {
-                    if (cp == p) {
-                        again = true;
-                        p = getRandomPrefix();
-                        break;
-                    }
-                }
-            }
-            chosenPrefixes.push(p);
-        }
+        const available = Object.keys(prefixes); // prefixes not picked yet
+        do {
+            // take a random prefix out of the available list, so there are never duplicates
+            const pick = available.splice(Math.floor(Math.random() * available.length), 1)[0];
+            chosenPrefixes.push(pick);
+        } while (available.length > 0 && Math.random() < repeatPrefixChance);
     }
     if (chosenPrefixes.length > 0) {
         box.setPrefixes(chosenPrefixes);
@@ -647,11 +642,12 @@ export class Quest {
         ];
         const prefixDurationMults = [1, 1.5, 2.5, 5, 10, 30, 90, 300, 1000, 1500, 6000]
         let i = 0;
-        while (this.box.prefixMult > prefixDurationMults[i] * 3) {
+        while (i < prefixDurationMults.length - 1 && this.box.prefixMult > prefixDurationMults[i] * 3) {
             i++;
         }
 
-        this.questDuration = rarityDurations[this.pokemon.rarity] * shinyDurationMults[this.pokemon.shiny_level] ?? 24 * 60 * 60 * 1000 * prefixDurationMults[i]; // base duration based on rarity and shiny level
+        // duration = rarity x shiny level x prefix (no prefix = x1)
+        this.questDuration = rarityDurations[this.pokemon.rarity] * shinyDurationMults[this.pokemon.shiny_level] * prefixDurationMults[i];
         this.reward = Math.floor(box.value * 0.5); // 50% of pokemon value as reward
     }
     
@@ -859,10 +855,20 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
     }
     const itemsPerPage = itemsPerRow * rowsPerPage;
 
+    // if items were removed (sold) and this page no longer exists, go to the last page
+    if (itemsPerPage > 0) {
+        const lastPage = Math.max(0, Math.ceil(items.length / itemsPerPage) - 1);
+        if (page > lastPage) {
+            page = lastPage;
+            if (scene) {
+                go(scene); // redraw the scene on the right page
+                return;
+            }
+        }
+    }
+
     const xindent = (xmax - xmin + spacingHorizontal - itemsPerRow * (width + spacingHorizontal)) / 2;
     const yindent = ymin - menuHeight + spacingVertical; // (ymax - ymin + spacingVertical - rowsPerPage * (height + spacingVertical)) / 2
-    console.log(ymax - ymin + spacingVertical);
-    console.log(rowsPerPage * (height + spacingVertical));
 
     let pagearrowleft;
     let pagearrowright;
@@ -897,9 +903,11 @@ export function displayItems(items, scene, xmin, xmax, ymin, ymax, width, height
     let y = ymin + yindent;
     for (let i = page * itemsPerPage; i < items.length && i < (page + 1) * itemsPerPage; i++) {
         const item = items[i];
+        if (currentScene == "inventory" || currentScene == "questSelection") {
+            item.scale = 1; // set directly before drawing (setScale would draw it twice); the display scene leaves boxes enlarged
+        }
         item.add(x, y);
         if (currentScene == "inventory") {
-            item.setScale(1);
             if (stacking && stackedIndexes[i].length > 1) {
                 k.add([k.text("x" + stackedIndexes[i].length, { size: 14, font: "pkmn" }), k.pos(x + 168 - 14 * Math.floor(Math.log10(stackedIndexes[i].length)), y + 128), k.layer("3")])
             }
@@ -923,6 +931,16 @@ for (const code in pokedex) {
     autospinsettings.specificPreferences[pokedex[code].index_regional] = 0;
 }
 
+// put every autospin setting back to its default
+export function resetAutospinSettings() {
+    autospinsettings.sellUnder = 0;
+    autospinsettings.alwaysKeepShinies = false;
+    autospinsettings.alwaysKeepPrefixes = false;
+    for (const key in autospinsettings.specificPreferences) {
+        autospinsettings.specificPreferences[key] = 0;
+    }
+}
+
 function positionInput(x, y) {
     const input = document.getElementById("numberInput");
 
@@ -935,45 +953,55 @@ function positionInput(x, y) {
         correctX = (window.innerWidth - kScreenWidth * scale) / 2;
     }
 
-    input.style.top = y * scale + correctY;
-    input.style.left = x * scale + correctX;
+    input.style.top = (y * scale + correctY) + "px";
+    input.style.left = (x * scale + correctX) + "px";
+}
+
+// the number box is set up once; these remember what it is currently editing
+let numberInputReady = false;
+let numberInputSetting = null; // which setting it edits (null = hidden)
+let numberInputPos = { x: 0, y: 0 };
+
+export function hideNumberInput() {
+    numberInputSetting = null;
+    const input = document.getElementById("numberInput");
+    if (input) {
+        input.style.display = "none";
+        input.blur();
+    }
 }
 
 export function showNumberInput(settingKey, x, y) { // Chat gpt's work
     const input = document.getElementById("numberInput");
+
+    // listeners are added only the first time
+    if (!numberInputReady) {
+        numberInputReady = true;
+
+        window.addEventListener("resize", () => {
+            if (numberInputSetting != null) positionInput(numberInputPos.x, numberInputPos.y);
+        });
+
+        // Strip non-numeric input as user types
+        input.addEventListener("input", () => {
+            input.value = input.value.replace(/[^0-9]/g, "");
+        });
+
+        input.addEventListener("keydown", (e) => {
+            if (e.key !== "Enter" || numberInputSetting == null) return;
+            const value = parseInt(input.value.trim(), 10);
+            if (isNaN(value)) return; // empty: keep the box open
+
+            autospinsettings[numberInputSetting] = value;
+            try { if (window.saveNow) window.saveNow(); } catch (err) {}
+            go("autospinsettings"); // go() hides the box and redraws the scene
+        });
+    }
+
+    numberInputSetting = settingKey;
+    numberInputPos = { x: x, y: y };
     input.value = ""; // clear previous input
     input.style.display = "block";
     input.focus();
-    
     positionInput(x, y);
-
-    window.addEventListener('resize', () => {
-        positionInput(x, y);
-    });
-
-    // Strip non-numeric input as user types
-    input.addEventListener("input", () => {
-        input.value = input.value.replace(/[^0-9]/g, "");
-    });
-
-    input.addEventListener("keydown", function onKeyDown(e) {
-        if (e.key === "Enter") {
-        const value = parseInt(input.value.trim(), 10);
-
-        if (!isNaN(value)) {
-            input.style.display = "none";
-            input.blur();
-
-            // Save value to settings object or localStorage
-            autospinsettings[settingKey] = value;
-            try { if (window.saveNow) window.saveNow(); } catch (e) {}
-            console.log(`Set ${settingKey} to ${value}`);
-        }
-
-        go("autospinsettings");
-
-        // Clean up listener after use
-        input.removeEventListener("keydown", onKeyDown);
-        }
-    });
 }

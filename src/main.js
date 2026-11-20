@@ -7,7 +7,7 @@ import testScene from "./scenes/testScene";
 import autospinsettingsScene from "./scenes/autospinsettingsScene";
 import questsScene from "./scenes/questsScene";
 import questSelectionScene from "./scenes/questSelectionScene";
-import { go, inventory, addToInventory, sortInventory, addMoney, subtractMoney, money, packsowned, quests, Box, Quest, autospinsettings, sortStyle, setSortStyle, stacking, setStacking, prefixes } from "./constants";
+import { go, inventory, addToInventory, sortInventory, addMoney, subtractMoney, money, packsowned, quests, Box, Quest, autospinsettings, sortStyle, setSortStyle, stacking, setStacking, prefixes, resetAutospinSettings, getPokedexEntry } from "./constants";
 import { initLoginUI } from "./LoginUI.js";
 import { onAuthChange } from "./authService.js";
 import { savePlayerData, loadPlayerData } from "./playerDataService.js";
@@ -65,28 +65,30 @@ k.loadSprite("textbox", "images/textboxes.png", {
     sliceY: 3,
 });
 
-// loading the pokemon
+// loading the pokemon (all 20 sprite sheets at the same time, which is much faster than one by one)
+let atlasesLoaded = 0;
+const atlasLoads = [];
 for (let x = 0; x <= 19; x++) {
     let num = Math.floor(x / 2);
     if (x % 2 == 1) {
         num += "v";
     }
 
-    const atlas = {}; // empty dictionary
-    await fetch("images/pokemon/pokemon_icons_" + num + ".json") // chatgpt's work
-        .then((response) => response.json())  // chatgpt's work
-        .then((data) => { // chatgpt's work
-            const frames = data.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
-
-            for (const sprite of frames) { // for each pokemon sprite
-                // define it in the atlas, where keyword is the pokemon filename and the data is all the sprite data
-                atlas[sprite.filename] = { x: sprite.frame.x, y: sprite.frame.y, width: sprite.frame.w, height: sprite.frame.h };
-            }
-        });
-
-    await k.loadSpriteAtlas("images/pokemon/pokemon_icons_" + num + ".png", atlas)
-        .then(() => { console.log("atlas loading " + (x + 1) + "/20"); });
+    atlasLoads.push(
+        fetch("images/pokemon/pokemon_icons_" + num + ".json")
+            .then((response) => response.json())
+            .then((data) => {
+                const frames = data.textures[0].frames; // frames is the list of pokemon with x, y, w, h, and other stuff in the json
+                const atlas = {}; // pokemon filename -> sprite data
+                for (const sprite of frames) { // for each pokemon sprite
+                    atlas[sprite.filename] = { x: sprite.frame.x, y: sprite.frame.y, width: sprite.frame.w, height: sprite.frame.h };
+                }
+                return k.loadSpriteAtlas("images/pokemon/pokemon_icons_" + num + ".png", atlas);
+            })
+            .then(() => { atlasesLoaded++; console.log("atlas loading " + atlasesLoaded + "/20"); })
+    );
 }
+await Promise.all(atlasLoads);
 
 
 // create the scenes
@@ -114,33 +116,87 @@ k.onLoad(() => { // once everything is loaded
         let autosaveInterval = null;
         let stateLoaded = false; // true once the cloud save has been loaded; saving before then could overwrite it with defaults
 
+        // A saved box only stores which pokemon it is (codename), its prefixes and its date.
+        // Name and value are worked out again from the current pokedex/prefix data when loading,
+        // so rebalancing values applies to boxes that players already own.
+        function serializeBox(box) {
+            return { codename: box.pokemon.codename, prefixes: box.prefixes, dateCreated: box.dateCreated };
+        }
+
+        function rebuildBox(saved) {
+            // old saves stored the whole pokemon object instead of just the codename
+            const codename = saved.codename || (saved.pokemon && saved.pokemon.codename);
+            const box = new Box(getPokedexEntry(codename) || saved.pokemon);
+            if (Array.isArray(saved.prefixes)) {
+                box.setPrefixes(saved.prefixes.filter((p) => prefixes[p])); // ignore prefixes that no longer exist
+            }
+            if (saved.dateCreated) box.dateCreated = saved.dateCreated;
+            return box;
+        }
+
         function serializeState() {
             return {
+                username: currentUser ? currentUser.displayName || null : null,
                 money: money,
                 packsowned: packsowned,
-                inventory: inventory.map(item => ({ pokemon: item.pokemon, value: item.value, dateCreated: item.dateCreated, name: item.name, prefixes: item.prefixes })),
-                quests: quests.map(q => q ? { box: { pokemon: q.box.pokemon, name: q.box.name, value: q.box.value, dateCreated: q.box.dateCreated, prefixes: q.box.prefixes }, startTime: q.startTime } : null),
+                inventory: inventory.map(serializeBox),
+                quests: quests.map(q => q ? { box: serializeBox(q.box), startTime: q.startTime } : null),
                 autospinsettings: autospinsettings,
                 sortStyle: sortStyle,
                 stacking: stacking,
             };
         }
 
-        async function saveNow() {
+        // back to the default autospin settings and inventory sorting (used on login and logout)
+        function resetPreferences() {
+            resetAutospinSettings();
+            setSortStyle("Time ^");
+            setStacking(1);
+        }
+
+        // Saving is limited to protect the Firestore write quota:
+        // - nothing is written if the data is identical to the last successful save
+        // - at most one write every SAVE_MIN_GAP ms (bursts, like autospin, collapse into one)
+        const SAVE_MIN_GAP = 3000;
+        let lastSavedJSON = null;
+        let lastSaveTime = 0;
+        let saveTimer = null;
+
+        async function writeSave() {
             if (!currentUser || !stateLoaded) return;
+            const state = serializeState();
+            const json = JSON.stringify(state);
+            if (json === lastSavedJSON) return; // nothing changed
+            lastSaveTime = Date.now();
             try {
-                await savePlayerData(currentUser.uid, serializeState());
+                await savePlayerData(currentUser.uid, state);
+                lastSavedJSON = json;
             } catch (err) {
                 console.error('Error saving player data', err);
             }
         }
-        // expose saveNow globally so scenes and constants can trigger an immediate save
+
+        // scenes call this after changes; it schedules a save
+        function saveNow() {
+            if (saveTimer) return; // a save is already scheduled
+            const wait = Math.max(0, SAVE_MIN_GAP - (Date.now() - lastSaveTime));
+            saveTimer = setTimeout(() => { saveTimer = null; writeSave(); }, wait);
+        }
+        // expose saveNow globally so scenes and constants can trigger a save
         try { window.saveNow = saveNow } catch (e) { /* non-browser or restricted env */ }
 
+        // save right away when the tab is hidden or closed, so a pending change isn't lost
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "hidden") writeSave();
+        });
+
         async function handleAuth(user) {
+            if (user && !user.emailVerified) user = null; // must verify email before playing (treated like logged out)
             if (user) {
                 currentUser = user;
                 stateLoaded = false;
+                lastSavedJSON = null;
+                resetPreferences();
                 try {
                     const data = await loadPlayerData(user.uid);
                     if (currentUser !== user) return; // logged out or switched accounts while loading
@@ -163,14 +219,7 @@ k.onLoad(() => { // once everything is loaded
                             inventory.length = 0;
                             for (const it of data.inventory) {
                                 try {
-                                    const box = new Box(it.pokemon);
-                                    if (Array.isArray(it.prefixes)) {
-                                        box.setPrefixes(it.prefixes);
-                                    }
-                                    if (it.value) box.value = it.value;
-                                    if (it.dateCreated) box.dateCreated = it.dateCreated;
-                                    if (it.name) box.name = it.name;
-                                    addToInventory(box, true);
+                                    addToInventory(rebuildBox(it), true);
                                 } catch (e) {
                                     console.warn('Failed to reconstruct inventory item', e);
                                 }
@@ -186,13 +235,7 @@ k.onLoad(() => { // once everything is loaded
                                     quests[i] = null;
                                 } else {
                                     try {
-                                        const b = new Box(q.box.pokemon || q.box);
-                                        if (Array.isArray(q.box.prefixes)) {
-                                            b.setPrefixes(q.box.prefixes);
-                                        }
-                                        if (q.box.value) b.value = q.box.value;
-                                        if (q.box.dateCreated) b.dateCreated = q.box.dateCreated;
-                                        const quest = new Quest(b);
+                                        const quest = new Quest(rebuildBox(q.box));
                                         if (q.startTime) quest.startTime = q.startTime;
                                         quests[i] = quest;
                                     } catch (e) {
@@ -205,7 +248,8 @@ k.onLoad(() => { // once everything is loaded
 
                         // restore autospinsettings
                         if (data.autospinsettings && typeof data.autospinsettings === 'object') {
-                            autospinsettings.sellUnder = Number(data.autospinsettings.sellUnder) || autospinsettings.sellUnder;
+                            const savedSellUnder = Number(data.autospinsettings.sellUnder);
+                            if (Number.isFinite(savedSellUnder)) autospinsettings.sellUnder = savedSellUnder;
                             autospinsettings.alwaysKeepShinies = Boolean(data.autospinsettings.alwaysKeepShinies);
                             autospinsettings.alwaysKeepPrefixes = Boolean(data.autospinsettings.alwaysKeepPrefixes);
                             if (data.autospinsettings.specificPreferences && typeof data.autospinsettings.specificPreferences === 'object') {
@@ -242,6 +286,8 @@ k.onLoad(() => { // once everything is loaded
                 // user logged out — reset to defaults
                 currentUser = null;
                 stateLoaded = false;
+                lastSavedJSON = null;
+                resetPreferences();
                 if (autosaveInterval) { clearInterval(autosaveInterval); autosaveInterval = null }
 
                 // reset money to default (10000)
