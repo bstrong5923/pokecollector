@@ -2,6 +2,7 @@ import k from "./kaplayCtx";
 import { kScreenWidth, kScreenHeight } from "./kaplayCtx";
 import { onAuthChange, logoutUser } from "./authService.js";
 import { format } from "date-fns";
+import prefixData from "./data/prefixes.json";
 
 export const canvas = document.querySelector("canvas");
 
@@ -490,7 +491,8 @@ export class Box {
                 frameCount: data.frameCount || 1,
             };
         }).filter(Boolean);
-        const prefixText = this.prefixes.join("");
+        // the name shown to the player uses each prefix's displayName (the key is only an id)
+        const prefixText = this.prefixes.map(key => (prefixes[key]?.displayName ?? key.trim()) + " ").join("");
         this.name = prefixText + this.pokemon.name;
         this.prefixMult = this.prefixesData.reduce((acc, data) => acc * data.mult, 1);
         this.value = this.basevalue * shinyMults[this.pokemon.shiny_level] * this.prefixMult;
@@ -584,20 +586,25 @@ export class Box {
     }
 }
 
-export const prefixes = {
-    "Gooey " : { mult: 49, sprite: "gooey" },
-    "Cloudy " : { mult: 22, sprite: "cloudy" },
-    "Censored " : { mult: 13, sprite: "censored" },
-    "Decorated " : { mult: 33, sprite: "decorated" },
-    "Spectral " : { mult: 73, sprite: "spectral", frametime: 0.08, frameCount: 35 },
-    "Lovey " : { mult: 38, sprite: "lovey", frametime: 0.1, frameCount: 16 },
+// prefix data lives in src/data/prefixes.json (edit it with tools/prefixBuilder.html)
+export const prefixes = prefixData.prefixes;
+const initialPrefixChance = prefixData.settings.initialPrefixChance;
+const repeatPrefixChance = prefixData.settings.repeatPrefixChance;
+const questDurationMults = prefixData.settings.questDurationMults;
+
+// picks a prefix from the list, where a higher weight means more likely
+function pickWeighted(keys) {
+    const weightOf = (key) => prefixes[key].weight ?? 1;
+    let roll = Math.random() * keys.reduce((sum, key) => sum + weightOf(key), 0);
+    for (const key of keys) {
+        roll -= weightOf(key);
+        if (roll < 0) return key;
+    }
+    return keys[keys.length - 1];
 }
 
-const initialPrefixChance = 0.025;
-const repeatPrefixChance = 0.05;
 export function getRandomPrefix() {
-    const prefixKeys = Object.keys(prefixes);
-    return prefixKeys[Math.floor(Math.random() * prefixKeys.length)];
+    return pickWeighted(Object.keys(prefixes));
 }
 
 export function createBoxWithPrefix(pokemon) {
@@ -606,8 +613,9 @@ export function createBoxWithPrefix(pokemon) {
     if (Math.random() < initialPrefixChance) {
         const available = Object.keys(prefixes); // prefixes not picked yet
         do {
-            // take a random prefix out of the available list, so there are never duplicates
-            const pick = available.splice(Math.floor(Math.random() * available.length), 1)[0];
+            // take a weighted random prefix out of the available list, so there are never duplicates
+            const pick = pickWeighted(available);
+            available.splice(available.indexOf(pick), 1);
             chosenPrefixes.push(pick);
         } while (available.length > 0 && Math.random() < repeatPrefixChance);
     }
@@ -640,7 +648,7 @@ export class Quest {
             180,
             600,
         ];
-        const prefixDurationMults = [1, 1.5, 2.5, 5, 10, 30, 90, 300, 1000, 1500, 6000]
+        const prefixDurationMults = questDurationMults;
         let i = 0;
         while (i < prefixDurationMults.length - 1 && this.box.prefixMult > prefixDurationMults[i] * 3) {
             i++;

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Prefix Builder</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 24px; background: #1e1f26; color: #e8e8ee; }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  h2 { font-size: 16px; margin: 24px 0 8px; }
+  .muted { color: #9a9aaa; font-size: 13px; }
+  button { background: #3b82f6; color: #fff; border: 0; border-radius: 6px; padding: 7px 14px; font-size: 14px; cursor: pointer; }
+  button:hover { background: #2f6fd8; }
+  button.secondary { background: #3a3c48; }
+  button.secondary:hover { background: #4a4c5a; }
+  button.danger { background: #b84040; padding: 4px 10px; }
+  button:disabled { opacity: .4; cursor: default; }
+  input { background: #2a2c37; color: #e8e8ee; border: 1px solid #454858; border-radius: 4px; padding: 5px 7px; font-size: 14px; }
+  input[type=number] { width: 80px; }
+  input.wide { width: 100%; box-sizing: border-box; }
+  input:read-only { background: transparent; border-color: transparent; color: #9a9aaa; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #343645; vertical-align: middle; }
+  th { font-size: 12px; text-transform: uppercase; color: #9a9aaa; }
+  .bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 16px 0; }
+  .preview { width: 96px; height: 72px; background: #2a2c37; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
+  .preview img { max-width: 96px; max-height: 72px; image-rendering: pixelated; }
+  canvas.onpoke { width: 160px; height: 120px; image-rendering: pixelated; border-radius: 4px; display: block; }
+  .seg { display: flex; gap: 0; }
+  .seg button { border-radius: 0; background: #3a3c48; padding: 6px 10px; }
+  .seg button:first-child { border-radius: 6px 0 0 6px; }
+  .seg button:last-child { border-radius: 0 6px 6px 0; }
+  .seg button.active { background: #3b82f6; }
+  .ok { color: #5fd68a; } .bad { color: #ff7a7a; }
+  #status { font-size: 14px; }
+  #errors { color: #ff7a7a; font-size: 14px; white-space: pre-line; margin: 8px 0; }
+  .settings { display: grid; grid-template-columns: 240px 1fr; gap: 8px 12px; max-width: 720px; align-items: center; }
+  .dirty { color: #ffcc66; }
+</style>
+</head>
+<body>
+<h1>Prefix Builder</h1>
+<div class="muted">Dev tool (not part of the game). Needs Chrome or Edge. Sprites are found automatically: a prefix named "Gooey" uses <code>gooey.png</code>, or a <code>gooey/</code> folder of frames <code>0.png, 1.png, ...</code> in <code>public/images/prefixes</code>.</div>
+
+<div class="bar">
+  <button id="openBtn">Open project folder</button>
+  <button id="rescanBtn" class="secondary" disabled>Rescan sprites</button>
+  <button id="addBtn" class="secondary" disabled>+ New prefix</button>
+  <button id="saveBtn" disabled>Save prefixes.json</button>
+  <span id="status" class="muted">Pick the pokecollector project folder to begin.</span>
+</div>
+<div class="bar">
+  <span class="muted">Preview on Pokémon (by rarity):</span>
+  <div class="seg" id="monSeg"></div>
+</div>
+<div id="errors"></div>
+
+<h2>Global settings</h2>
+<div class="settings">
+  <label>Chance a Pokémon gets a prefix (0-1)</label><input type="number" id="initialChance" step="any" min="0" max="1">
+  <label>Chance of each extra prefix (0-1)</label><input type="number" id="repeatChance" step="any" min="0" max="1">
+  <label>Quest duration multipliers<br><span class="muted">comma separated, ascending</span></label><input class="wide" id="questMults">
+</div>
+
+<h2>Prefixes</h2>
+<table>
+  <thead><tr>
+    <th>Sprite</th><th>On Pokémon</th><th>Name</th><th>Display name</th><th>Value mult</th><th>Weight</th><th>Spawn %</th><th>Frame time (s)</th><th>Sprite</th><th></th>
+  </tr></thead>
+  <tbody id="rows"></tbody>
+</table>
+<p class="muted">Name = the prefix's permanent ID (saved boxes remember it), so it can only be typed for new prefixes. Display name can be changed any time. Weight: higher = more common, relative to the others.</p>
+
+<script>
+let projectDir = null;      // handle to the project root
+let spritesDir = null;      // handle to public/images/prefixes
+let settings = { initialPrefixChance: 0.025, repeatPrefixChance: 0.05, questDurationMults: [] };
+let rows = [];              // { key, isNew, displayName, mult, weight, frametime }
+let sprites = {};           // spriteName -> { type: "static"|"anim", urls: [...], problem?: string }
+let dirty = false;
+
+const $ = (id) => document.getElementById(id);
+const spriteName = (key) => key.trim().toLowerCase();
+const keyFromName = (name) => name.trim() + " ";
+
+// ---------- loading ----------
+async function openProject() {
+  try {
+    projectDir = await window.showDirectoryPicker({ mode: "readwrite" });
+    const dataDir = await projectDir.getDirectoryHandle("src").then(d => d.getDirectoryHandle("data"));
+    const file = await (await dataDir.getFileHandle("prefixes.json")).getFile();
+    const json = JSON.parse(await file.text());
+    spritesDir = await projectDir.getDirectoryHandle("public")
+      .then(d => d.getDirectoryHandle("images")).then(d => d.getDirectoryHandle("prefixes"));
+    settings = json.settings;
+    rows = Object.entries(json.prefixes).map(([key, p]) => ({
+      key, isNew: false, displayName: p.displayName ?? key.trim(),
+      mult: p.mult, weight: p.weight ?? 1, frametime: p.frametime ?? 0.1,
+    }));
+    await scanSprites();
+    await loadMonAssets().catch(e => setStatus("Pokémon preview unavailable: " + e.message, true));
+    setDirty(false);
+    $("rescanBtn").disabled = $("addBtn").disabled = false;
+    renderSettings(); renderRows();
+    setStatus("Loaded " + rows.length + " prefixes.");
+  } catch (e) {
+    if (e.name !== "AbortError") setStatus("Could not open: " + e.message + " (is this the pokecollector root folder?)", true);
+  }
+}
+
+async function scanSprites() {
+  for (const s of Object.values(sprites)) s.urls.forEach(u => URL.revokeObjectURL(u));
+  sprites = {};
+  for await (const [name, handle] of spritesDir.entries()) {
+    if (handle.kind === "file" && name.endsWith(".png")) {
+      const base = name.slice(0, -4);
+      sprites[base] ??= { type: "static", urls: [URL.createObjectURL(await handle.getFile())] };
+    } else if (handle.kind === "directory") {
+      const frames = {};
+      for await (const [fname, fh] of handle.entries()) {
+        if (fh.kind === "file" && /^\d+\.png$/.test(fname)) frames[parseInt(fname)] = fh;
+      }
+      const count = Object.keys(frames).length;
+      if (count === 0) continue;
+      const urls = [];
+      let problem = null;
+      for (let i = 0; i < count; i++) {
+        if (!frames[i]) { problem = "frame " + i + ".png is missing (frames must be numbered 0 to " + (count - 1) + ")"; break; }
+        urls.push(URL.createObjectURL(await frames[i].getFile()));
+      }
+      sprites[name] = { type: "anim", urls, problem };
+    }
+  }
+}
+
+// ---------- rendering ----------
+function renderSettings() {
+  $("initialChance").value = settings.initialPrefixChance;
+  $("repeatChance").value = settings.repeatPrefixChance;
+  $("questMults").value = settings.questDurationMults.join(", ");
+}
+
+function renderRows() {
+  const tbody = $("rows");
+  tbody.innerHTML = "";
+  rows.forEach((row, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><div class="preview"><img></div></td>
+      <td><canvas class="onpoke" width="200" height="150"></canvas></td>
+      <td><input class="name" ${row.isNew ? "" : "readonly"}></td>
+      <td><input class="display"></td>
+      <td><input class="mult" type="number" step="any" min="0" value="${row.mult ?? ""}"></td>
+      <td><input class="weight" type="number" step="any" min="0" value="${row.weight}"></td>
+      <td class="pct"></td>
+      <td class="ft"></td>
+      <td class="sprite"></td>
+      <td><button class="danger">Delete</button></td>`;
+    tr.querySelector(".name").value = row.key.trim();       // set as properties so quotes in text are safe
+    tr.querySelector(".display").value = row.displayName;
+    const bind = (sel, field, parse) => tr.querySelector(sel).addEventListener("input", (ev) => {
+      row[field] = parse(ev.target.value); setDirty(true); updateDerived();
+    });
+    tr.querySelector(".name").addEventListener("input", (ev) => {
+      if (!row.isNew) return;
+      const wasSame = row.displayName === row.key.trim();
+      row.key = keyFromName(ev.target.value);
+      if (wasSame) { row.displayName = ev.target.value.trim(); tr.querySelector(".display").value = row.displayName; }
+      setDirty(true); updateDerived();
+    });
+    bind(".display", "displayName", v => v);
+    bind(".mult", "mult", v => v === "" ? NaN : Number(v));
+    bind(".weight", "weight", v => v === "" ? NaN : Number(v));
+    tr.querySelector(".ft").innerHTML = `<input class="frametime" type="number" step="any" min="0" value="${row.frametime}">`;
+    tr.querySelector(".frametime").addEventListener("input", (ev) => {
+      row.frametime = ev.target.value === "" ? NaN : Number(ev.target.value); setDirty(true); updateDerived();
+    });
+    tr.querySelector(".danger").addEventListener("click", () => {
+      const msg = row.isNew ? "Delete this new prefix?" :
+        "Delete \"" + row.key.trim() + "\"? Saved boxes that have this prefix will lose it the next time they load.";
+      if (confirm(msg)) { rows.splice(i, 1); setDirty(true); renderRows(); }
+    });
+    row.tr = tr;
+    tbody.appendChild(tr);
+  });
+  updateDerived();
+}
+
+// refreshes the computed cells without rebuilding inputs (so typing keeps focus)
+function updateDerived() {
+  const totalWeight = rows.reduce((sum, r) => sum + (r.weight > 0 ? r.weight : 0), 0);
+  for (const row of rows) {
+    const s = sprites[spriteName(row.key)];
+    const cell = row.tr.querySelector(".sprite");
+    if (!row.key.trim()) cell.innerHTML = `<span class="bad">type a name</span>`;
+    else if (!s) cell.innerHTML = `<span class="bad">${spriteName(row.key)}.png or ${spriteName(row.key)}/ not found</span>`;
+    else if (s.problem) cell.innerHTML = `<span class="bad">${spriteName(row.key)}/: ${s.problem}</span>`;
+    else cell.innerHTML = `<span class="ok">${s.type === "anim" ? spriteName(row.key) + "/ (" + s.urls.length + " frames)" : spriteName(row.key) + ".png"}</span>`;
+    row.tr.querySelector(".ft").style.visibility = s?.type === "anim" ? "visible" : "hidden";
+    row.tr.querySelector(".pct").textContent = totalWeight > 0 && row.weight > 0 ? (100 * row.weight / totalWeight).toFixed(1) + "%" : "-";
+  }
+}
+
+// ---------- preview on a pokemon ----------
+// one pokemon per rarity (0-6). "file" is the sprite's name inside the sprite sheet.
+const MONS = [
+  { name: "Eevee", file: "133" }, { name: "Magikarp", file: "129" }, { name: "Pikachu", file: "25" },
+  { name: "Bulbasaur", file: "1" }, { name: "Dratini", file: "147" }, { name: "Mewtwo", file: "150" }, { name: "Mew", file: "151" },
+];
+let monRarity = 0;
+let boxesImg = null;                 // allboxes.png (4 x 2 boxes, 200 x 150 each, frame = rarity)
+let monSheet = null;                 // { img, frames: { file -> {x, y, w, h} } } from pokemon_icons_1
+const imgCache = new Map();          // object url -> loaded Image
+
+function loadImage(url) {
+  if (!imgCache.has(url)) { const img = new Image(); img.src = url; imgCache.set(url, img); }
+  return imgCache.get(url);
+}
+
+async function loadMonAssets() {
+  const imagesDir = await projectDir.getDirectoryHandle("public").then(d => d.getDirectoryHandle("images"));
+  const pokeDir = await imagesDir.getDirectoryHandle("pokemon");
+  const fileUrl = async (dir, name) => URL.createObjectURL(await (await dir.getFileHandle(name)).getFile());
+  boxesImg = loadImage(await fileUrl(imagesDir, "allboxes.png"));
+  const atlas = JSON.parse(await (await (await pokeDir.getFileHandle("pokemon_icons_1.json")).getFile()).text());
+  const frames = {};
+  for (const f of atlas.textures[0].frames) frames[f.filename] = f.frame;
+  monSheet = { img: loadImage(await fileUrl(pokeDir, "pokemon_icons_1.png")), frames };
+}
+
+function renderMonButtons() {
+  const seg = $("monSeg");
+  seg.innerHTML = "";
+  MONS.forEach((m, r) => {
+    const b = document.createElement("button");
+    b.textContent = m.name + " (" + r + ")";
+    b.className = r === monRarity ? "active" : "";
+    b.onclick = () => { monRarity = r; renderMonButtons(); };
+    seg.appendChild(b);
+  });
+}
+
+// draws a box the way the game does: box background, pokemon, then the prefix on top
+function drawBox(canvas, prefixImg) {
+  const c = canvas.getContext("2d");
+  c.imageSmoothingEnabled = false;
+  c.clearRect(0, 0, 200, 150);
+  if (!boxesImg?.complete || !monSheet?.img.complete) return;
+  c.drawImage(boxesImg, (monRarity % 4) * 200, Math.floor(monRarity / 4) * 150, 200, 150, 0, 0, 200, 150);
+  const f = monSheet.frames[MONS[monRarity].file];
+  if (f) { // same size and position math as the game (constants.js)
+    let scale = Math.min(160 / f.w, 115 / f.h);
+    scale -= (scale - 5) / 2.5;
+    const w = f.w * scale, h = f.h * scale;
+    c.drawImage(monSheet.img, f.x, f.y, f.w, f.h, (200 - w) / 2, (150 - h) / 2, w, h);
+  }
+  if (prefixImg?.complete && prefixImg.naturalWidth) c.drawImage(prefixImg, 0, 0, 200, 150);
+}
+
+// animates previews
+setInterval(() => {
+  for (const row of rows) {
+    const s = sprites[spriteName(row.key)];
+    const img = row.tr?.querySelector(".preview img");
+    if (!img) continue;
+    const canvas = row.tr.querySelector(".onpoke");
+    if (!s || s.problem && s.urls.length === 0) { img.removeAttribute("src"); drawBox(canvas, null); continue; }
+    let frame = 0;
+    if (s.type === "anim" && row.frametime > 0) frame = Math.floor(Date.now() / (row.frametime * 1000)) % s.urls.length;
+    if (img.getAttribute("src") !== s.urls[frame]) img.src = s.urls[frame];
+    drawBox(canvas, loadImage(s.urls[frame]));
+  }
+}, 20);
+renderMonButtons();
+
+// ---------- validation + saving ----------
+function readSettings() {
+  settings.initialPrefixChance = Number($("initialChance").value);
+  settings.repeatPrefixChance = Number($("repeatChance").value);
+  settings.questDurationMults = $("questMults").value.split(",").map(s => s.trim()).filter(Boolean).map(Number);
+}
+
+function validate() {
+  const errors = [];
+  readSettings();
+  for (const [label, v] of [["Prefix chance", settings.initialPrefixChance], ["Extra prefix chance", settings.repeatPrefixChance]]) {
+    if (!(v >= 0 && v <= 1)) errors.push(label + " must be between 0 and 1.");
+  }
+  if (!settings.questDurationMults.length || settings.questDurationMults.some(n => !(n > 0))) errors.push("Quest duration multipliers must be a list of positive numbers.");
+  const seen = new Set();
+  for (const row of rows) {
+    const name = row.key.trim() || "(unnamed)";
+    if (!row.key.trim()) errors.push("A prefix has no name.");
+    if (seen.has(row.key.toLowerCase())) errors.push("Duplicate prefix name: " + name);
+    seen.add(row.key.toLowerCase());
+    if (!row.displayName.trim()) errors.push(name + ": display name is empty.");
+    if (!(row.mult > 0)) errors.push(name + ": value mult must be above 0.");
+    if (!(row.weight >= 0)) errors.push(name + ": weight must be 0 or more.");
+    const s = sprites[spriteName(row.key)];
+    if (!s) errors.push(name + ": sprite not found (expected " + spriteName(row.key) + ".png or a " + spriteName(row.key) + "/ folder).");
+    else if (s.problem) errors.push(name + ": " + s.problem);
+    else if (s.type === "anim" && !(row.frametime > 0)) errors.push(name + ": frame time must be above 0.");
+  }
+  if (!rows.some(r => r.weight > 0)) errors.push("At least one prefix needs a weight above 0.");
+  return errors;
+}
+
+function buildJson() {
+  const out = {};
+  for (const row of rows) {
+    const s = sprites[spriteName(row.key)];
+    const p = { displayName: row.displayName.trim(), mult: row.mult, weight: row.weight, sprite: spriteName(row.key) };
+    if (s.type === "anim") { p.frametime = row.frametime; p.frameCount = s.urls.length; }
+    out[row.key] = p;
+  }
+  // one line per prefix keeps the file easy to read
+  const lines = Object.entries(out).map(([k, p]) =>
+    `    ${JSON.stringify(k)}: { ` + Object.entries(p).map(([f, v]) => `${JSON.stringify(f)}: ${JSON.stringify(v)}`).join(", ") + " }");
+  return `{\n  "settings": {\n    "initialPrefixChance": ${settings.initialPrefixChance},\n    "repeatPrefixChance": ${settings.repeatPrefixChance},\n    "questDurationMults": [${settings.questDurationMults.join(", ")}]\n  },\n  "prefixes": {\n${lines.join(",\n")}\n  }\n}\n`;
+}
+
+async function save() {
+  const errors = validate();
+  $("errors").textContent = errors.join("\n");
+  if (errors.length) return setStatus("Fix the problems below, then save again.", true);
+  try {
+    const dataDir = await projectDir.getDirectoryHandle("src").then(d => d.getDirectoryHandle("data"));
+    const handle = await dataDir.getFileHandle("prefixes.json");
+    const w = await handle.createWritable();
+    await w.write(buildJson());
+    await w.close();
+    rows.forEach(r => r.isNew = false);
+    setDirty(false);
+    renderRows();
+    setStatus("Saved src/data/prefixes.json at " + new Date().toLocaleTimeString() + ".");
+  } catch (e) { setStatus("Save failed: " + e.message, true); }
+}
+
+// ---------- misc ----------
+function setStatus(msg, bad) { const s = $("status"); s.textContent = msg; s.className = bad ? "bad" : "muted"; }
+function setDirty(d) {
+  dirty = d; $("saveBtn").disabled = !projectDir;
+  if (d) { $("status").textContent = "Unsaved changes"; $("status").className = "dirty"; }
+}
+
+$("openBtn").onclick = openProject;
+$("saveBtn").onclick = save;
+$("addBtn").onclick = () => {
+  rows.push({ key: " ", isNew: true, displayName: "", mult: 10, weight: 1, frametime: 0.1 });
+  setDirty(true); renderRows();
+  rows[rows.length - 1].tr.querySelector(".name").focus();
+};
+$("rescanBtn").onclick = async () => { await scanSprites(); updateDerived(); setStatus("Sprites rescanned."); };
+for (const id of ["initialChance", "repeatChance", "questMults"]) $(id).addEventListener("input", () => setDirty(true));
+window.addEventListener("focus", async () => { if (spritesDir) { await scanSprites(); updateDerived(); } }); // pick up newly dropped sprites
+window.addEventListener("beforeunload", (e) => { if (dirty) e.preventDefault(); });
+if (!window.showDirectoryPicker) setStatus("This browser can't edit files directly. Please use Chrome or Edge.", true);
+</script>
+</body>
+</html>

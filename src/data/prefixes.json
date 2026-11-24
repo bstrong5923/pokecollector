@@ -1,0 +1,15 @@
+{
+  "settings": {
+    "initialPrefixChance": 0.025,
+    "repeatPrefixChance": 0.05,
+    "questDurationMults": [1, 1.5, 2.5, 5, 10, 30, 90, 300, 1000, 1500, 6000]
+  },
+  "prefixes": {
+    "Gooey ": { "displayName": "Gooey", "mult": 49, "weight": 1, "sprite": "gooey" },
+    "Cloudy ": { "displayName": "Cloudy", "mult": 22, "weight": 1, "sprite": "cloudy" },
+    "Censored ": { "displayName": "Censored", "mult": 13, "weight": 1, "sprite": "censored" },
+    "Decorated ": { "displayName": "Decorated", "mult": 33, "weight": 1, "sprite": "decorated" },
+    "Spectral ": { "displayName": "Spectral", "mult": 73, "weight": 1, "sprite": "spectral", "frametime": 0.08, "frameCount": 35 },
+    "Lovey ": { "displayName": "Lovey", "mult": 38, "weight": 1, "sprite": "lovey", "frametime": 0.1, "frameCount": 16 }
+  }
+}
